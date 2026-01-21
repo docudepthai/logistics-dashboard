@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import AuthLayout from '../components/AuthLayout';
 
 interface User {
   phoneNumber: string;
@@ -94,7 +93,6 @@ export default function UsersPage() {
   }, []);
 
   return (
-    <AuthLayout>
       <div className="min-h-screen bg-black text-white p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
@@ -219,6 +217,5 @@ export default function UsersPage() {
           ) : null}
         </div>
       </div>
-    </AuthLayout>
   );
 }
