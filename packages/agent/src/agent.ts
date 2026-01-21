@@ -36,6 +36,7 @@ interface ParsedLocations {
  * - "Kayseri'den İstanbul'a" → origin: "kayseri", destination: "istanbul"
  * - "ankaradan izmire" → origin: "ankara", destination: "izmir"
  * - "istanbul" (no suffix) → origin: "istanbul"
+ * - "bursaya" (-ya suffix) → destination: "bursa"
  */
 function parseLocationsFromMessage(text: string): ParsedLocations {
   const result: ParsedLocations = {};
@@ -45,6 +46,9 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
 
   // Split into tokens (handle apostrophes in Turkish: Kayseri'den)
   const tokens = normalized.split(/[\s,]+/);
+
+  // Track cities found without explicit direction suffixes
+  const citiesWithoutSuffix: string[] = [];
 
   for (const token of tokens) {
     // Clean the token (remove punctuation except apostrophe handling is in stripSuffix)
@@ -60,7 +64,21 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
         result.origin = stem;
       } else if (isDestination && !result.destination) {
         result.destination = stem;
+      } else if (!isOrigin && !isDestination) {
+        // City without suffix - save for later processing
+        citiesWithoutSuffix.push(stem);
       }
+    }
+  }
+
+  // Process cities without suffixes:
+  // - First city without suffix = origin (if no origin already set)
+  // - Second city without suffix = destination (if no destination already set)
+  for (const city of citiesWithoutSuffix) {
+    if (!result.origin) {
+      result.origin = city;
+    } else if (!result.destination) {
+      result.destination = city;
     }
   }
 

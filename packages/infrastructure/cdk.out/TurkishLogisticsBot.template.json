@@ -595,7 +595,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "734f7c7da1b4288260ff28136cfec9e44d6d541caad2630cd8aa5aae3edf7872.zip"
+     "S3Key": "a1a899157ec3ae18d96c18a204bc07a683fd1d7e7849e645c6b02fda623f13b7.zip"
     },
     "Environment": {
      "Variables": {
@@ -627,7 +627,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/QueryHandler/Resource",
-    "aws:asset:path": "asset.734f7c7da1b4288260ff28136cfec9e44d6d541caad2630cd8aa5aae3edf7872",
+    "aws:asset:path": "asset.a1a899157ec3ae18d96c18a204bc07a683fd1d7e7849e645c6b02fda623f13b7",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
