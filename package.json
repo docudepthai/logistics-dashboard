@@ -25,6 +25,9 @@
     "cdk:synth": "pnpm --filter @turkish-logistics/infrastructure synth",
     "cdk:deploy": "pnpm --filter @turkish-logistics/infrastructure deploy"
   },
+  "dependencies": {
+    "next": "^14.2.0"
+  },
   "devDependencies": {
     "@types/node": "^20.11.0",
     "esbuild": "^0.24.0",
