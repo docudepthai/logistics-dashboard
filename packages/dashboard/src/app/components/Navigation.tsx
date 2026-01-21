@@ -8,9 +8,9 @@ const tabs = [
   { name: 'Overview', href: '/' },
   { name: 'Routes', href: '/map' },
   { name: 'Analytics', href: '/analytics' },
-  { name: 'Health', href: '/health' },
-  { name: 'Conversations', href: '/conversations' },
+  { name: 'Finance', href: '/finance' },
   { name: 'Users', href: '/users' },
+  { name: 'Health', href: '/health' },
 ];
 
 export default function Navigation() {

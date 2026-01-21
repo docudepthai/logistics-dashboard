@@ -38,6 +38,8 @@ export class UserStore {
     this.client = DynamoDBDocumentClient.from(dynamoClient);
     this.tableName = options.tableName || process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
     this.freeTierDays = options.freeTierDays || 7;
+    // TODO: For testing, override to 1 minute. Change back to days for production!
+    // this.freeTierDays = 7;
   }
 
   /**
@@ -76,7 +78,9 @@ export class UserStore {
    */
   async createUser(phoneNumber: string): Promise<User> {
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + this.freeTierDays * 24 * 60 * 60 * 1000);
+    // TODO: For testing, 1 minute trial. Change back to days for production!
+    // const expiresAt = new Date(now.getTime() + this.freeTierDays * 24 * 60 * 60 * 1000);
+    const expiresAt = new Date(now.getTime() + 1 * 60 * 1000); // 1 minute for testing
 
     const user: User = {
       phoneNumber,

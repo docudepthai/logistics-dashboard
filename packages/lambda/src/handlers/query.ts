@@ -221,9 +221,11 @@ async function sendWelcomeMessage(to: string): Promise<void> {
   // Send welcome text
   const welcomeText = `Merhaba! Turkiye'nin en buyuk lojistik yuk bulma platformuna hos geldiniz.
 
-1 hafta boyunca tum ozellikleri UCRETSIZ kullanabilirsiniz!
+🎁 UCRETSIZ DENEME: Simdi tum ozellikleri ucretsiz deneyebilirsiniz!
 
-Nasil kullanilir? Sehir adi yazarak yuk arayabilirsiniz. Ornegin: "istanbul ankara"`;
+💰 Deneme suresi bittikten sonra telefon numaralarini gormek icin aylik 1000 TL uyelik ucreti alinir. Uyelik almadan da yuk arayabilirsiniz, sadece numaralar gizli kalir.
+
+📍 Nasil kullanilir? Sehir adi yazarak yuk arayabilirsiniz. Ornegin: "istanbul ankara" veya "bursa"`;
 
   await sendWhatsAppMessage(to, welcomeText);
 }
@@ -461,7 +463,10 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     let responseText = result.message;
     if (!canViewPhones) {
       responseText = maskPhoneNumbersInText(responseText);
-      responseText += '\n\n(Telefon numaralarini gormek icin uyelik alin)';
+      // Generate payment link for this user
+      const paymentBaseUrl = process.env.PAYMENT_URL || 'https://t50lrx3amk.execute-api.eu-central-1.amazonaws.com/prod/payment';
+      const paymentLink = `${paymentBaseUrl}?phone=${message.from}`;
+      responseText += `\n\n🔒 Deneme sureniz doldu! Telefon numaralarini gormek icin aylik 1000 TL uyelik alin:\n${paymentLink}`;
       console.log(`Masked phone numbers for expired user: ${message.from}`);
     }
 
