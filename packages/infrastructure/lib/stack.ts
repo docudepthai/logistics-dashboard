@@ -259,6 +259,38 @@ export class LogisticsStack extends cdk.Stack {
     query.addMethod('GET', queryIntegration); // Webhook verification
     query.addMethod('POST', queryIntegration); // Incoming messages
 
+    // Payment Lambda function (handles PayTR payments)
+    const paymentLambda = new NodejsFunction(this, 'PaymentHandler', {
+      functionName: 'turkish-logistics-payment',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      handler: 'handler',
+      entry: path.join(lambdaSrcPath, 'payment.ts'),
+      timeout: cdk.Duration.seconds(30),
+      memorySize: 256,
+      environment: {
+        CONVERSATIONS_TABLE: this.conversationsTable.tableName,
+        NODE_OPTIONS: '--enable-source-maps',
+        // Note: PAYTR_MERCHANT_ID, PAYTR_MERCHANT_KEY, PAYTR_MERCHANT_SALT set manually
+        SUBSCRIPTION_PRICE: '100000', // 1000 TL in kuruş
+      },
+      tracing: lambda.Tracing.ACTIVE,
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        externalModules: ['@aws-sdk/*'],
+      },
+    });
+
+    // Grant payment lambda permissions
+    this.conversationsTable.grantReadWriteData(paymentLambda);
+
+    // Add payment endpoint
+    const payment = api.root.addResource('payment');
+    const paymentIntegration = new apigateway.LambdaIntegration(paymentLambda);
+    payment.addMethod('GET', paymentIntegration); // Generate payment link
+    payment.addMethod('POST', paymentIntegration); // PayTR webhook callback
+    payment.addMethod('OPTIONS', paymentIntegration); // CORS preflight
+
     // Outputs
     this.webhookUrl = new cdk.CfnOutput(this, 'WebhookUrl', {
       value: `${api.url}webhook`,
@@ -313,6 +345,12 @@ export class LogisticsStack extends cdk.Stack {
       value: whatsappSecret.secretArn,
       description: 'WhatsApp Business API credentials secret ARN',
       exportName: 'TurkishLogisticsWhatsAppSecretArn',
+    });
+
+    new cdk.CfnOutput(this, 'PaymentUrl', {
+      value: `${api.url}payment`,
+      description: 'PayTR payment endpoint URL',
+      exportName: 'TurkishLogisticsPaymentUrl',
     });
   }
 }

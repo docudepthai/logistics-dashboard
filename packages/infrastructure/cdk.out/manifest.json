@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::426476636541:role/cdk-hnb659fds-deploy-role-426476636541-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::426476636541:role/cdk-hnb659fds-cfn-exec-role-426476636541-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-426476636541-eu-central-1/7aac62fc09992a10a5834e95cfc900a6a2341849f92d9cee57ec219e50dd1dac.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-426476636541-eu-central-1/bc52ab49c97030fdde175bc9f15ea6b7ee6b303ac2c67df7b7c0d2dde4721263.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -159,7 +159,7 @@
         "/TurkishLogisticsBot/WebhookApi/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "WebhookApiDeployment5953494D3c0035a11ef825d447dde852fb47aca7"
+            "data": "WebhookApiDeployment5953494Da201b9cb898d8d949e7dc8798278c7de"
           }
         ],
         "/TurkishLogisticsBot/WebhookApi/DeploymentStage.prod/Resource": [
@@ -240,6 +240,84 @@
             "data": "WebhookApiqueryPOST3937D854"
           }
         ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipayment4291102C"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/GET/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.GET..payment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentGETApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2GETpayment5580DE1C"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/GET/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.GET..payment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentGETApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2GETpayment426A8922"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentGETF7249A46"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/POST/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..payment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentPOSTApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2POSTpayment9C0DB459"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/POST/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..payment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentPOSTApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2POSTpaymentA677B6FC"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentPOSTB980D610"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/OPTIONS/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.OPTIONS..payment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentOPTIONSApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2OPTIONSpayment237A153A"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/OPTIONS/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.OPTIONS..payment": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentOPTIONSApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2OPTIONSpayment69759201"
+          }
+        ],
+        "/TurkishLogisticsBot/WebhookApi/Default/payment/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WebhookApipaymentOPTIONSC7B7C0F8"
+          }
+        ],
+        "/TurkishLogisticsBot/PaymentHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PaymentHandlerServiceRole3E592AC7"
+          }
+        ],
+        "/TurkishLogisticsBot/PaymentHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PaymentHandlerServiceRoleDefaultPolicy79856866"
+          }
+        ],
+        "/TurkishLogisticsBot/PaymentHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PaymentHandler5B1365B9"
+          }
+        ],
         "/TurkishLogisticsBot/WebhookUrl": [
           {
             "type": "aws:cdk:logicalId",
@@ -292,6 +370,12 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "WhatsAppSecretArn"
+          }
+        ],
+        "/TurkishLogisticsBot/PaymentUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "PaymentUrl"
           }
         ],
         "/TurkishLogisticsBot/CDKMetadata/Default": [

@@ -238,7 +238,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "9d149a62a6f2ab74520b5c5d7d87f3236ed259a5f56158ebd45a87152dc60731.zip"
+     "S3Key": "cc19dad5668363f8fb6685df57efc8bde22c91666801cbe493780cb6e4a4892f.zip"
     },
     "Environment": {
      "Variables": {
@@ -272,7 +272,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/WebhookHandler/Resource",
-    "aws:asset:path": "asset.9d149a62a6f2ab74520b5c5d7d87f3236ed259a5f56158ebd45a87152dc60731",
+    "aws:asset:path": "/Users/caglarbinici/Whatsapp_Aggregator_Bot",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -369,7 +369,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "a6c00f6dc83b1db6c15ffb735f40c79bba3f3f882f355baff29f5864a7f4f773.zip"
+     "S3Key": "ec8ac806ea3c1430072d1025adcded0ffe3330200cf536d170a507a405f1e307.zip"
     },
     "Environment": {
      "Variables": {
@@ -397,7 +397,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/ProcessorHandler/Resource",
-    "aws:asset:path": "asset.a6c00f6dc83b1db6c15ffb735f40c79bba3f3f882f355baff29f5864a7f4f773",
+    "aws:asset:path": "/Users/caglarbinici/Whatsapp_Aggregator_Bot",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -595,7 +595,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "a1a899157ec3ae18d96c18a204bc07a683fd1d7e7849e645c6b02fda623f13b7.zip"
+     "S3Key": "30262e9941146d0da2629839e7f2f36615533b1400675c967478d41b73a93ffe.zip"
     },
     "Environment": {
      "Variables": {
@@ -627,7 +627,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/QueryHandler/Resource",
-    "aws:asset:path": "asset.a1a899157ec3ae18d96c18a204bc07a683fd1d7e7849e645c6b02fda623f13b7",
+    "aws:asset:path": "/Users/caglarbinici/Whatsapp_Aggregator_Bot",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -642,7 +642,7 @@
     "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Resource"
    }
   },
-  "WebhookApiDeployment5953494D3c0035a11ef825d447dde852fb47aca7": {
+  "WebhookApiDeployment5953494Da201b9cb898d8d949e7dc8798278c7de": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Receives Evolution API webhooks",
@@ -651,6 +651,10 @@
     }
    },
    "DependsOn": [
+    "WebhookApipaymentGETF7249A46",
+    "WebhookApipaymentOPTIONSC7B7C0F8",
+    "WebhookApipaymentPOSTB980D610",
+    "WebhookApipayment4291102C",
     "WebhookApiqueryGETB8BE97C0",
     "WebhookApiqueryPOST3937D854",
     "WebhookApiquery4E058700",
@@ -666,7 +670,7 @@
    "Type": "AWS::ApiGateway::Stage",
    "Properties": {
     "DeploymentId": {
-     "Ref": "WebhookApiDeployment5953494D3c0035a11ef825d447dde852fb47aca7"
+     "Ref": "WebhookApiDeployment5953494Da201b9cb898d8d949e7dc8798278c7de"
     },
     "MethodSettings": [
      {
@@ -1008,6 +1012,435 @@
     "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/POST/Resource"
    }
   },
+  "WebhookApipayment4291102C": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "WebhookApi28122C53",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "payment",
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/Resource"
+   }
+  },
+  "WebhookApipaymentGETApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2GETpayment5580DE1C": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PaymentHandler5B1365B9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/",
+       {
+        "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+       },
+       "/GET/payment"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/GET/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.GET..payment"
+   }
+  },
+  "WebhookApipaymentGETApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2GETpayment426A8922": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PaymentHandler5B1365B9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/test-invoke-stage/GET/payment"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/GET/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.GET..payment"
+   }
+  },
+  "WebhookApipaymentGETF7249A46": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "PaymentHandler5B1365B9",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebhookApipayment4291102C"
+    },
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/GET/Resource"
+   }
+  },
+  "WebhookApipaymentPOSTApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2POSTpayment9C0DB459": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PaymentHandler5B1365B9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/",
+       {
+        "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+       },
+       "/POST/payment"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/POST/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..payment"
+   }
+  },
+  "WebhookApipaymentPOSTApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2POSTpaymentA677B6FC": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PaymentHandler5B1365B9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/test-invoke-stage/POST/payment"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/POST/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..payment"
+   }
+  },
+  "WebhookApipaymentPOSTB980D610": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "PaymentHandler5B1365B9",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebhookApipayment4291102C"
+    },
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/POST/Resource"
+   }
+  },
+  "WebhookApipaymentOPTIONSApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2OPTIONSpayment237A153A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PaymentHandler5B1365B9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/",
+       {
+        "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+       },
+       "/OPTIONS/payment"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/OPTIONS/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.OPTIONS..payment"
+   }
+  },
+  "WebhookApipaymentOPTIONSApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2OPTIONSpayment69759201": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "PaymentHandler5B1365B9",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/test-invoke-stage/OPTIONS/payment"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/OPTIONS/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.OPTIONS..payment"
+   }
+  },
+  "WebhookApipaymentOPTIONSC7B7C0F8": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "PaymentHandler5B1365B9",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebhookApipayment4291102C"
+    },
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/payment/OPTIONS/Resource"
+   }
+  },
+  "PaymentHandlerServiceRole3E592AC7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/PaymentHandler/ServiceRole/Resource"
+   }
+  },
+  "PaymentHandlerServiceRoleDefaultPolicy79856866": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ConversationsTableCD91EB96",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "PaymentHandlerServiceRoleDefaultPolicy79856866",
+    "Roles": [
+     {
+      "Ref": "PaymentHandlerServiceRole3E592AC7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/PaymentHandler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "PaymentHandler5B1365B9": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
+     "S3Key": "6a04a736f708b8484df11931cb9f5d78eff2376e642b26c1370225848ed678c2.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "CONVERSATIONS_TABLE": {
+       "Ref": "ConversationsTableCD91EB96"
+      },
+      "NODE_OPTIONS": "--enable-source-maps",
+      "SUBSCRIPTION_PRICE": "100000"
+     }
+    },
+    "FunctionName": "turkish-logistics-payment",
+    "Handler": "index.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "PaymentHandlerServiceRole3E592AC7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 30,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "PaymentHandlerServiceRoleDefaultPolicy79856866",
+    "PaymentHandlerServiceRole3E592AC7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/PaymentHandler/Resource",
+    "aws:asset:path": "/Users/caglarbinici/Whatsapp_Aggregator_Bot",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
@@ -1154,6 +1587,32 @@
    },
    "Export": {
     "Name": "TurkishLogisticsWhatsAppSecretArn"
+   }
+  },
+  "PaymentUrl": {
+   "Description": "PayTR payment endpoint URL",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WebhookApi28122C53"
+      },
+      ".execute-api.eu-central-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+      },
+      "/payment"
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "TurkishLogisticsPaymentUrl"
    }
   }
  },

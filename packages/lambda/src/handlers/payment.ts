@@ -181,7 +181,7 @@ async function generatePaymentLink(phoneNumber: string, userIp: string): Promise
  * Handle PayTR webhook callback
  */
 async function handleWebhook(payload: PayTRWebhookPayload): Promise<boolean> {
-  console.log('PayTR webhook received:', payload);
+  console.log('PayTR webhook received:', JSON.stringify(payload, null, 2));
 
   // Verify hash
   const hashStr = payload.merchant_oid + PAYTR_MERCHANT_SALT + payload.status + payload.total_amount;
@@ -189,15 +189,49 @@ async function handleWebhook(payload: PayTRWebhookPayload): Promise<boolean> {
     .update(hashStr)
     .digest('base64');
 
+  console.log('Hash verification:', {
+    received: payload.hash,
+    calculated: calculatedHash,
+    match: calculatedHash === payload.hash
+  });
+
   if (calculatedHash !== payload.hash) {
     console.error('PayTR hash verification failed');
     return false;
   }
 
-  // Extract phone number from merchant_oid (format: phoneNumberTimestamp)
-  // Turkish phone: 12 digits starting with 90 (e.g., 905321234567)
-  const phoneMatch = payload.merchant_oid.match(/^(\d{12})/);
-  const phoneNumber = phoneMatch ? phoneMatch[1] : payload.merchant_oid.substring(0, 12);
+  // Look up phone number from payment record (more reliable than extracting from merchantOid)
+  let phoneNumber: string | undefined;
+  try {
+    const paymentRecord = await docClient.send(new GetCommand({
+      TableName: CONVERSATIONS_TABLE,
+      Key: { pk: `PAYMENT#${payload.merchant_oid}`, sk: 'PENDING' },
+    }));
+    phoneNumber = paymentRecord.Item?.phoneNumber as string;
+    console.log('Found phone from payment record:', phoneNumber);
+  } catch (err) {
+    console.error('Error looking up payment record:', err);
+  }
+
+  // Fallback: extract from merchant_oid (phone numbers can be 10-12 digits)
+  if (!phoneNumber) {
+    // Try different phone number lengths (US: 11 digits, Turkish: 12 digits)
+    const phoneMatch = payload.merchant_oid.match(/^(\d{10,12})/);
+    if (phoneMatch && phoneMatch[1]) {
+      // If starts with 90, it's Turkish (12 digits); otherwise check length
+      const extracted = phoneMatch[1];
+      if (extracted.startsWith('90') && extracted.length >= 12) {
+        phoneNumber = extracted.substring(0, 12);
+      } else if (extracted.startsWith('1') && extracted.length >= 11) {
+        phoneNumber = extracted.substring(0, 11);
+      } else {
+        phoneNumber = extracted;
+      }
+    } else {
+      phoneNumber = payload.merchant_oid.substring(0, 11);
+    }
+    console.log('Extracted phone from merchantOid:', phoneNumber);
+  }
 
   if (payload.status === 'success') {
     // Calculate new expiration date (30 days from now)
@@ -253,7 +287,11 @@ async function handleWebhook(payload: PayTRWebhookPayload): Promise<boolean> {
 }
 
 export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> {
-  console.log('Payment handler:', event.httpMethod, event.path);
+  console.log('Payment handler:', event.httpMethod, event.path, event.queryStringParameters);
+  if (event.httpMethod === 'POST') {
+    console.log('POST body:', event.body?.substring(0, 500));
+    console.log('POST headers:', JSON.stringify(event.headers, null, 2));
+  }
 
   // Handle CORS preflight
   if (event.httpMethod === 'OPTIONS') {

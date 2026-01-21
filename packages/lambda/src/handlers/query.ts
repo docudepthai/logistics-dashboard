@@ -417,17 +417,6 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       return response(200, { status: 'duplicate_ignored' });
     }
 
-    // Easter eggs
-    if (message.text.toLowerCase().includes('yarrak')) {
-      await sendWhatsAppMessage(message.from, 'xd');
-      return response(200, { status: 'xd' });
-    }
-
-    if (message.text.toLowerCase().includes('sadettin okan')) {
-      await sendWhatsAppMessage(message.from, 'gay');
-      return response(200, { status: 'easter_egg' });
-    }
-
     // === USER MANAGEMENT ===
     const store = getUserStore();
     const { user, isNewUser } = await store.getOrCreateUser(message.from);
