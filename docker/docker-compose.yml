@@ -1,0 +1,69 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: logistics-postgres
+    environment:
+      POSTGRES_DB: logistics
+      POSTGRES_USER: logistics_user
+      POSTGRES_PASSWORD: logistics_dev
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U logistics_user -d logistics"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  localstack:
+    image: localstack/localstack:3.0
+    container_name: logistics-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,sqs,secretsmanager
+      - DEBUG=0
+      - PERSISTENCE=1
+    volumes:
+      - localstack_data:/var/lib/localstack
+      - ./localstack/init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh:ro
+
+  redis:
+    image: redis:7-alpine
+    container_name: logistics-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  evolution:
+    image: atendai/evolution-api:v2.1.1
+    container_name: logistics-evolution
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8080:8080"
+    environment:
+      - SERVER_URL=http://localhost:8080
+      - AUTHENTICATION_API_KEY=logistics-bot-secret-2024
+      - DATABASE_PROVIDER=postgresql
+      - DATABASE_CONNECTION_URI=postgresql://logistics_user:logistics_dev@postgres:5432/logistics
+      - CACHE_REDIS_ENABLED=true
+      - CACHE_REDIS_URI=redis://redis:6379
+      - CACHE_REDIS_PREFIX_KEY=evolution
+      - QRCODE_LIMIT=30
+      - LOG_BAILEYS=error
+      - CONFIG_SESSION_PHONE_CLIENT=Turkish Logistics Bot
+      - CONFIG_SESSION_PHONE_NAME=Chrome
+    volumes:
+      - evolution_data:/evolution/instances
+
+volumes:
+  postgres_data:
+  localstack_data:
+  redis_data:
+  evolution_data:

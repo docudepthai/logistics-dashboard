@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+*.tsbuildinfo
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+.env.*.local
+docker/.env
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+
+# Turbo
+.turbo/
+
+# CDK
+infrastructure/cdk.out/
+
+# Docker volumes (local)
+docker/data/
+
+# Temporary files
+tmp/
+temp/
+
+# DocuDepth AI generated files
+.docudepth/
+CLAUDE.md
+.cursorrules
+.windsurfrules
+.continuerules
+.aider/

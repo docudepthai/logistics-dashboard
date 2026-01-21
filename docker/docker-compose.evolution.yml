@@ -1,0 +1,48 @@
+version: '3.9'
+
+services:
+  evolution-api:
+    image: atendai/evolution-api:v2.1.1
+    container_name: evolution-api
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      # Server Configuration
+      - SERVER_URL=http://localhost:8080
+
+      # Authentication
+      - AUTHENTICATION_API_KEY=${EVOLUTION_API_KEY:-your-api-key-change-me}
+      - AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES=true
+
+      # Database (use file-based for simplicity in dev)
+      - DATABASE_ENABLED=false
+
+      # Webhook Configuration
+      - WEBHOOK_GLOBAL_URL=http://host.docker.internal:3000/webhook
+      - WEBHOOK_GLOBAL_ENABLED=true
+      - WEBHOOK_EVENTS_MESSAGES_UPSERT=true
+      - WEBHOOK_EVENTS_APPLICATION_STARTUP=false
+      - WEBHOOK_EVENTS_QRCODE_UPDATED=true
+      - WEBHOOK_EVENTS_CONNECTION_UPDATE=true
+
+      # Log Level
+      - LOG_LEVEL=WARN
+
+    volumes:
+      - evolution_instances:/evolution/instances
+
+  # Optional: Evolution Manager UI
+  evolution-manager:
+    image: atendai/evolution-manager:latest
+    container_name: evolution-manager
+    ports:
+      - "3001:80"
+    environment:
+      - VITE_EVOLUTION_API_URL=http://localhost:8080
+      - VITE_EVOLUTION_API_KEY=${EVOLUTION_API_KEY:-your-api-key-change-me}
+    depends_on:
+      - evolution-api
+
+volumes:
+  evolution_instances:

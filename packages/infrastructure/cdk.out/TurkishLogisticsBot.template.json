@@ -1,0 +1,1194 @@
+{
+ "Description": "Turkish Logistics WhatsApp Message Aggregator",
+ "Resources": {
+  "RawMessagesBucket7FC21897": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "turkish-logistics-raw-messages-426476636541",
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "Id": "ArchiveOldMessages",
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "STANDARD_IA",
+         "TransitionInDays": 30
+        },
+        {
+         "StorageClass": "GLACIER",
+         "TransitionInDays": 90
+        }
+       ]
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/RawMessagesBucket/Resource"
+   }
+  },
+  "MessageDLQ9DC2574C": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "FifoQueue": true,
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "turkish-logistics-messages-dlq.fifo"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/MessageDLQ/Resource"
+   }
+  },
+  "MessageQueue7A3BF959": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "ContentBasedDeduplication": false,
+    "FifoQueue": true,
+    "QueueName": "turkish-logistics-messages.fifo",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "MessageDLQ9DC2574C",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "VisibilityTimeout": 60
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/MessageQueue/Resource"
+   }
+  },
+  "DatabaseSecret86DBB7B3": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "Database connection string for Turkish Logistics Bot",
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "GenerateStringKey": "password",
+     "SecretStringTemplate": "{\"host\":\"localhost\",\"port\":5432,\"database\":\"logistics\",\"username\":\"logistics\"}"
+    },
+    "Name": "turkish-logistics/database"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/DatabaseSecret/Resource"
+   }
+  },
+  "WebhookApiKeySecret568A065D": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "API key for Evolution API webhook authentication",
+    "GenerateSecretString": {
+     "ExcludePunctuation": true,
+     "PasswordLength": 32
+    },
+    "Name": "turkish-logistics/webhook-api-key"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApiKeySecret/Resource"
+   }
+  },
+  "WebhookHandlerServiceRoleF07A4D12": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookHandler/ServiceRole/Resource"
+   }
+  },
+  "WebhookHandlerServiceRoleDefaultPolicyE376E30C": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "s3:Abort*",
+        "s3:DeleteObject*",
+        "s3:PutObject",
+        "s3:PutObjectLegalHold",
+        "s3:PutObjectRetention",
+        "s3:PutObjectTagging",
+        "s3:PutObjectVersionTagging"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "RawMessagesBucket7FC21897",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "RawMessagesBucket7FC21897",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": [
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:SendMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MessageQueue7A3BF959",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "WebhookApiKeySecret568A065D"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "WebhookHandlerServiceRoleDefaultPolicyE376E30C",
+    "Roles": [
+     {
+      "Ref": "WebhookHandlerServiceRoleF07A4D12"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookHandler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "WebhookHandler40BDAF19": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
+     "S3Key": "9d149a62a6f2ab74520b5c5d7d87f3236ed259a5f56158ebd45a87152dc60731.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "MESSAGE_QUEUE_URL": {
+       "Ref": "MessageQueue7A3BF959"
+      },
+      "RAW_MESSAGES_BUCKET": {
+       "Ref": "RawMessagesBucket7FC21897"
+      },
+      "NODE_OPTIONS": "--enable-source-maps"
+     }
+    },
+    "FunctionName": "turkish-logistics-webhook",
+    "Handler": "index.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "WebhookHandlerServiceRoleF07A4D12",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 30,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "WebhookHandlerServiceRoleDefaultPolicyE376E30C",
+    "WebhookHandlerServiceRoleF07A4D12"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookHandler/Resource",
+    "aws:asset:path": "asset.9d149a62a6f2ab74520b5c5d7d87f3236ed259a5f56158ebd45a87152dc60731",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ProcessorHandlerServiceRoleC29770A9": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/ProcessorHandler/ServiceRole/Resource"
+   }
+  },
+  "ProcessorHandlerServiceRoleDefaultPolicyA484A7CA": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Ref": "DatabaseSecret86DBB7B3"
+       }
+      },
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "MessageQueue7A3BF959",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "ProcessorHandlerServiceRoleDefaultPolicyA484A7CA",
+    "Roles": [
+     {
+      "Ref": "ProcessorHandlerServiceRoleC29770A9"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/ProcessorHandler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "ProcessorHandler94663E8C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
+     "S3Key": "a6c00f6dc83b1db6c15ffb735f40c79bba3f3f882f355baff29f5864a7f4f773.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "NODE_OPTIONS": "--enable-source-maps"
+     }
+    },
+    "FunctionName": "turkish-logistics-processor",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "ProcessorHandlerServiceRoleC29770A9",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 60,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "ProcessorHandlerServiceRoleDefaultPolicyA484A7CA",
+    "ProcessorHandlerServiceRoleC29770A9"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/ProcessorHandler/Resource",
+    "aws:asset:path": "asset.a6c00f6dc83b1db6c15ffb735f40c79bba3f3f882f355baff29f5864a7f4f773",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "ProcessorHandlerSqsEventSourceTurkishLogisticsBotMessageQueue20243C5192BC2BD4": {
+   "Type": "AWS::Lambda::EventSourceMapping",
+   "Properties": {
+    "BatchSize": 10,
+    "EventSourceArn": {
+     "Fn::GetAtt": [
+      "MessageQueue7A3BF959",
+      "Arn"
+     ]
+    },
+    "FunctionName": {
+     "Ref": "ProcessorHandler94663E8C"
+    },
+    "FunctionResponseTypes": [
+     "ReportBatchItemFailures"
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/ProcessorHandler/SqsEventSource:TurkishLogisticsBotMessageQueue20243C51/Resource"
+   }
+  },
+  "ConversationsTableCD91EB96": {
+   "Type": "AWS::DynamoDB::Table",
+   "Properties": {
+    "AttributeDefinitions": [
+     {
+      "AttributeName": "pk",
+      "AttributeType": "S"
+     },
+     {
+      "AttributeName": "sk",
+      "AttributeType": "S"
+     }
+    ],
+    "BillingMode": "PAY_PER_REQUEST",
+    "KeySchema": [
+     {
+      "AttributeName": "pk",
+      "KeyType": "HASH"
+     },
+     {
+      "AttributeName": "sk",
+      "KeyType": "RANGE"
+     }
+    ],
+    "TableName": "turkish-logistics-conversations",
+    "TimeToLiveSpecification": {
+     "AttributeName": "ttl",
+     "Enabled": true
+    }
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/ConversationsTable/Resource"
+   }
+  },
+  "OpenAIApiKeySecretA2160ED7": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "OpenAI API key for GPT agent",
+    "GenerateSecretString": {},
+    "Name": "turkish-logistics/openai-api-key"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/OpenAIApiKeySecret/Resource"
+   }
+  },
+  "WhatsAppSecret66EA396B": {
+   "Type": "AWS::SecretsManager::Secret",
+   "Properties": {
+    "Description": "WhatsApp Business API credentials",
+    "GenerateSecretString": {
+     "GenerateStringKey": "accessToken",
+     "SecretStringTemplate": "{\"phoneNumberId\":\"YOUR_PHONE_NUMBER_ID\",\"verifyToken\":\"turkish-logistics-verify\",\"appSecret\":\"YOUR_APP_SECRET\"}"
+    },
+    "Name": "turkish-logistics/whatsapp"
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WhatsAppSecret/Resource"
+   }
+  },
+  "QueryHandlerServiceRole1E45AE91": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/QueryHandler/ServiceRole/Resource"
+   }
+  },
+  "QueryHandlerServiceRoleDefaultPolicy4F3BC6F2": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ConversationsTableCD91EB96",
+         "Arn"
+        ]
+       }
+      },
+      {
+       "Action": [
+        "secretsmanager:DescribeSecret",
+        "secretsmanager:GetSecretValue"
+       ],
+       "Effect": "Allow",
+       "Resource": [
+        {
+         "Ref": "DatabaseSecret86DBB7B3"
+        },
+        {
+         "Ref": "OpenAIApiKeySecretA2160ED7"
+        },
+        {
+         "Ref": "WhatsAppSecret66EA396B"
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "QueryHandlerServiceRoleDefaultPolicy4F3BC6F2",
+    "Roles": [
+     {
+      "Ref": "QueryHandlerServiceRole1E45AE91"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/QueryHandler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "QueryHandler432DEBA0": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
+     "S3Key": "734f7c7da1b4288260ff28136cfec9e44d6d541caad2630cd8aa5aae3edf7872.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "CONVERSATIONS_TABLE": {
+       "Ref": "ConversationsTableCD91EB96"
+      },
+      "NODE_OPTIONS": "--enable-source-maps",
+      "NODE_TLS_REJECT_UNAUTHORIZED": "0"
+     }
+    },
+    "FunctionName": "turkish-logistics-query",
+    "Handler": "index.handler",
+    "MemorySize": 512,
+    "Role": {
+     "Fn::GetAtt": [
+      "QueryHandlerServiceRole1E45AE91",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 60,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "QueryHandlerServiceRoleDefaultPolicy4F3BC6F2",
+    "QueryHandlerServiceRole1E45AE91"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/QueryHandler/Resource",
+    "aws:asset:path": "asset.734f7c7da1b4288260ff28136cfec9e44d6d541caad2630cd8aa5aae3edf7872",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "WebhookApi28122C53": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Receives Evolution API webhooks",
+    "Name": "Turkish Logistics Webhook API"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Resource"
+   }
+  },
+  "WebhookApiDeployment5953494D3c0035a11ef825d447dde852fb47aca7": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Receives Evolution API webhooks",
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "DependsOn": [
+    "WebhookApiqueryGETB8BE97C0",
+    "WebhookApiqueryPOST3937D854",
+    "WebhookApiquery4E058700",
+    "WebhookApiwebhookPOST86DAF885",
+    "WebhookApiwebhook45FF8A56"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true
+   }
+  },
+  "WebhookApiDeploymentStageprodF1908D9A": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "WebhookApiDeployment5953494D3c0035a11ef825d447dde852fb47aca7"
+    },
+    "MethodSettings": [
+     {
+      "DataTraceEnabled": false,
+      "HttpMethod": "*",
+      "ResourcePath": "/*",
+      "ThrottlingBurstLimit": 200,
+      "ThrottlingRateLimit": 100
+     }
+    ],
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    },
+    "StageName": "prod"
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/DeploymentStage.prod/Resource"
+   }
+  },
+  "WebhookApiwebhook45FF8A56": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "WebhookApi28122C53",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "webhook",
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/webhook/Resource"
+   }
+  },
+  "WebhookApiwebhookPOSTApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2POSTwebhook790BCB6A": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "WebhookHandler40BDAF19",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/",
+       {
+        "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+       },
+       "/POST/webhook"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/webhook/POST/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..webhook"
+   }
+  },
+  "WebhookApiwebhookPOSTApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2POSTwebhook33BC5384": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "WebhookHandler40BDAF19",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/test-invoke-stage/POST/webhook"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/webhook/POST/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..webhook"
+   }
+  },
+  "WebhookApiwebhookPOST86DAF885": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "WebhookHandler40BDAF19",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebhookApiwebhook45FF8A56"
+    },
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/webhook/POST/Resource"
+   }
+  },
+  "WebhookApiquery4E058700": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "WebhookApi28122C53",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "query",
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/Resource"
+   }
+  },
+  "WebhookApiqueryGETApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2GETqueryECB5F3E3": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QueryHandler432DEBA0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/",
+       {
+        "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+       },
+       "/GET/query"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/GET/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.GET..query"
+   }
+  },
+  "WebhookApiqueryGETApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2GETqueryB924B8CE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QueryHandler432DEBA0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/test-invoke-stage/GET/query"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/GET/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.GET..query"
+   }
+  },
+  "WebhookApiqueryGETB8BE97C0": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QueryHandler432DEBA0",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebhookApiquery4E058700"
+    },
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/GET/Resource"
+   }
+  },
+  "WebhookApiqueryPOSTApiPermissionTurkishLogisticsBotWebhookApi4BE2F5E2POSTquery782ED3A7": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QueryHandler432DEBA0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/",
+       {
+        "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+       },
+       "/POST/query"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/POST/ApiPermission.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..query"
+   }
+  },
+  "WebhookApiqueryPOSTApiPermissionTestTurkishLogisticsBotWebhookApi4BE2F5E2POSTquery5D87E97F": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "QueryHandler432DEBA0",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:eu-central-1:426476636541:",
+       {
+        "Ref": "WebhookApi28122C53"
+       },
+       "/test-invoke-stage/POST/query"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/POST/ApiPermission.Test.TurkishLogisticsBotWebhookApi4BE2F5E2.POST..query"
+   }
+  },
+  "WebhookApiqueryPOST3937D854": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "NONE",
+    "HttpMethod": "POST",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:eu-central-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "QueryHandler432DEBA0",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WebhookApiquery4E058700"
+    },
+    "RestApiId": {
+     "Ref": "WebhookApi28122C53"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/WebhookApi/Default/query/POST/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Ry07DMBD8Fu6uQQ18QMvjVigt92jrLMFJbIes3SqK8u+s7ahw4DSzo8nserKW66KQdzdwoZWq2lWnT3I6elCtYKmcqJDTNqgWvXj8tAvLsAXCWdA3yek9YMBoSIRFVAN6MmChxoED0xwNmc2iA3OqoLSuwobka4KXYJXXzgoNRk4H16XIhHvXaTXGMTNeUZRAxEvkJsISKCe2XHOez2j90YVB4Q76Xts6Jvyv7nEwmog/m0U1WjCu4iY+4JSvSGQW0OsaPF5g5AOR/KbX6caFPmHfudFwflT/TNxonXIyYX/aHyu8DktQ5jv0X66KUmbz/OtLD45By+lvwfeBO41lyoZuz+t7+cD/tCGtV0OwXhuUh4w/qN5Vj/ABAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "WebhookApiEndpoint5B53C9C0": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WebhookApi28122C53"
+      },
+      ".execute-api.eu-central-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "WebhookUrl": {
+   "Description": "Evolution API webhook URL (message ingestion)",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WebhookApi28122C53"
+      },
+      ".execute-api.eu-central-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+      },
+      "/webhook"
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "TurkishLogisticsWebhookUrl"
+   }
+  },
+  "QueryWebhookUrl": {
+   "Description": "WhatsApp Business API webhook URL (user queries)",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WebhookApi28122C53"
+      },
+      ".execute-api.eu-central-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "WebhookApiDeploymentStageprodF1908D9A"
+      },
+      "/query"
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "TurkishLogisticsQueryWebhookUrl"
+   }
+  },
+  "RawMessagesBucketName": {
+   "Description": "S3 bucket for raw messages",
+   "Value": {
+    "Ref": "RawMessagesBucket7FC21897"
+   },
+   "Export": {
+    "Name": "TurkishLogisticsRawMessagesBucket"
+   }
+  },
+  "MessageQueueUrl": {
+   "Description": "SQS queue URL for messages",
+   "Value": {
+    "Ref": "MessageQueue7A3BF959"
+   },
+   "Export": {
+    "Name": "TurkishLogisticsMessageQueueUrl"
+   }
+  },
+  "DatabaseSecretArn": {
+   "Description": "Database connection secret ARN",
+   "Value": {
+    "Ref": "DatabaseSecret86DBB7B3"
+   },
+   "Export": {
+    "Name": "TurkishLogisticsDatabaseSecretArn"
+   }
+  },
+  "WebhookApiKeySecretArn": {
+   "Description": "Webhook API key secret ARN",
+   "Value": {
+    "Ref": "WebhookApiKeySecret568A065D"
+   },
+   "Export": {
+    "Name": "TurkishLogisticsWebhookApiKeySecretArn"
+   }
+  },
+  "ConversationsTableName": {
+   "Description": "DynamoDB table for conversation history",
+   "Value": {
+    "Ref": "ConversationsTableCD91EB96"
+   },
+   "Export": {
+    "Name": "TurkishLogisticsConversationsTable"
+   }
+  },
+  "OpenAIApiKeySecretArn": {
+   "Description": "OpenAI API key secret ARN",
+   "Value": {
+    "Ref": "OpenAIApiKeySecretA2160ED7"
+   },
+   "Export": {
+    "Name": "TurkishLogisticsOpenAIApiKeySecretArn"
+   }
+  },
+  "WhatsAppSecretArn": {
+   "Description": "WhatsApp Business API credentials secret ARN",
+   "Value": {
+    "Ref": "WhatsAppSecret66EA396B"
+   },
+   "Export": {
+    "Name": "TurkishLogisticsWhatsAppSecretArn"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

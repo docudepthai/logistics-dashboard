@@ -1,0 +1,37 @@
+{
+  "name": "turkish-logistics-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-powered Turkish logistics WhatsApp message aggregator",
+  "packageManager": "pnpm@9.15.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "test:coverage": "turbo run test:coverage",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "db:generate": "pnpm --filter @turkish-logistics/database db:generate",
+    "db:migrate": "pnpm --filter @turkish-logistics/database db:migrate",
+    "db:push": "pnpm --filter @turkish-logistics/database db:push",
+    "db:studio": "pnpm --filter @turkish-logistics/database db:studio",
+    "docker:up": "docker compose -f docker/docker-compose.yml up -d",
+    "docker:down": "docker compose -f docker/docker-compose.yml down",
+    "docker:evolution": "docker compose -f docker/docker-compose.evolution.yml up -d",
+    "cdk:synth": "pnpm --filter @turkish-logistics/infrastructure synth",
+    "cdk:deploy": "pnpm --filter @turkish-logistics/infrastructure deploy"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
+  }
+}
