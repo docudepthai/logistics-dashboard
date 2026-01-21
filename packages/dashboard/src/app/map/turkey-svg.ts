@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+export const TURKEY_SVG = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- Created for MapSVG plugin: http://mapsvg.com -->
 <svg
    xmlns:mapsvg="http://mapsvg.com"
@@ -7,7 +7,7 @@
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    mapsvg:geoViewBox="25.664066 42.105360 44.819234 35.806126"
-   width="792.5976"
+   viewBox="0 0 792.5976 334.55841" preserveAspectRatio="xMidYMid meet" width="792.5976"
    height="334.55841">
  
   <path
@@ -335,3 +335,4 @@
      title="Zonguldak"
      id="TR-67" />
 </svg>
+`;
