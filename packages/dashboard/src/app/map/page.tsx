@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback, memo } from 'react';
 import { provinceCoordinates, normalizeProvinceName, provinceIdMap } from './turkey-paths';
+import { TURKEY_SVG } from './turkey-svg';
 
 interface RouteData {
   origin: string;
@@ -64,23 +65,13 @@ export default function MapPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Fetch and inject SVG content once
+  // Set SVG content from embedded file
   useEffect(() => {
-    const fetchSvg = async () => {
-      try {
-        const res = await fetch('/turkey.svg');
-        if (res.ok) {
-          let svg = await res.text();
-          // Remove XML declaration and comments
-          svg = svg.replace(/<\?xml[^?]*\?>/g, '');
-          svg = svg.replace(/<!--[\s\S]*?-->/g, '');
-          setSvgContent(svg);
-        }
-      } catch (error) {
-        console.error('Failed to load SVG:', error);
-      }
-    };
-    fetchSvg();
+    // Remove XML declaration and comments from embedded SVG
+    let svg = TURKEY_SVG;
+    svg = svg.replace(/<\?xml[^?]*\?>/g, '');
+    svg = svg.replace(/<!--[\s\S]*?-->/g, '');
+    setSvgContent(svg);
   }, []);
 
   // Style SVG provinces and add routes
