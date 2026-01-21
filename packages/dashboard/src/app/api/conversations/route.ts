@@ -35,9 +35,14 @@ interface Conversation {
 
 export async function GET() {
   try {
+    // Only get CONVERSATION items (not PROFILE items)
     const result = await docClient.send(
       new ScanCommand({
         TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
+        FilterExpression: 'sk = :sk',
+        ExpressionAttributeValues: {
+          ':sk': 'CONVERSATION',
+        },
       })
     );
 
