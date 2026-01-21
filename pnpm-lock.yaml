@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      next:
+        specifier: ^14.2.0
+        version: 14.2.35(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
     devDependencies:
       '@types/node':
         specifier: ^20.11.0
@@ -5555,6 +5559,14 @@ snapshots:
     optionalDependencies:
       vite: 5.4.21(@types/node@20.19.27)
 
+  '@vitest/mocker@2.1.9(vite@5.4.21(@types/node@22.19.3))':
+    dependencies:
+      '@vitest/spy': 2.1.9
+      estree-walker: 3.0.3
+      magic-string: 0.30.21
+    optionalDependencies:
+      vite: 5.4.21(@types/node@22.19.3)
+
   '@vitest/pretty-format@2.1.9':
     dependencies:
       tinyrainbow: 1.2.0
@@ -6949,7 +6961,7 @@ snapshots:
   vitest@2.1.9(@types/node@22.19.3):
     dependencies:
       '@vitest/expect': 2.1.9
-      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@20.19.27))
+      '@vitest/mocker': 2.1.9(vite@5.4.21(@types/node@22.19.3))
       '@vitest/pretty-format': 2.1.9
       '@vitest/runner': 2.1.9
       '@vitest/snapshot': 2.1.9
