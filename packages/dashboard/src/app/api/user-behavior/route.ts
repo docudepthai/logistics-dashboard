@@ -97,7 +97,10 @@ export async function GET() {
       : 0;
 
     // Users who performed at least one search (have lastOrigin or lastDestination in context)
-    const usersWhoSearched = conversations.filter(c => c.context.lastOrigin || c.context.lastDestination).length;
+    const conversationsWithSearch = conversations.filter(c => c.context.lastOrigin || c.context.lastDestination);
+    const conversationsWithoutSearch = conversations.filter(c => !c.context.lastOrigin && !c.context.lastDestination);
+    const usersWhoSearched = conversationsWithSearch.length;
+    const usersWhoDidntSearch = conversationsWithoutSearch.map(c => c.userId);
     const searchRate = conversations.length > 0
       ? Math.round((usersWhoSearched / conversations.length) * 100)
       : 0;
@@ -169,6 +172,7 @@ export async function GET() {
       totalMessages,
       avgMessagesPerUser,
       usersWhoSearched,
+      usersWhoDidntSearch,
       searchRate,
       usersWithMultipleDays,
       returnRate,

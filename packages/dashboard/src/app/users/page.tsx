@@ -35,6 +35,7 @@ interface EngagementData {
   totalMessages: number;
   avgMessagesPerUser: number;
   usersWhoSearched: number;
+  usersWhoDidntSearch: string[];
   searchRate: number;
   usersWithMultipleDays: number;
   returnRate: number;
@@ -106,6 +107,7 @@ export default function UsersPage() {
   const [behaviorData, setBehaviorData] = useState<BehaviorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [expandedFunnelStep, setExpandedFunnelStep] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -216,6 +218,9 @@ export default function UsersPage() {
                         const prevStep = index > 0 ? behaviorData.conversion.funnel[index - 1] : null;
                         const dropoff = prevStep ? prevStep.count - step.count : 0;
                         const dropoffPct = prevStep && prevStep.count > 0 ? Math.round((dropoff / prevStep.count) * 100) : 0;
+                        const isFirstSearch = step.step === 'First Search';
+                        const hasDropoffUsers = isFirstSearch && behaviorData.engagement.usersWhoDidntSearch.length > 0;
+                        const isExpanded = expandedFunnelStep === step.step;
 
                         return (
                           <div key={step.step}>
@@ -241,8 +246,34 @@ export default function UsersPage() {
                               />
                             </div>
                             {!isLast && dropoff > 0 && (
-                              <div className="ml-7 mt-1 text-xs text-zinc-600">
-                                -{dropoff} ({dropoffPct}% dropoff)
+                              <div className="ml-7 mt-1">
+                                {hasDropoffUsers ? (
+                                  <button
+                                    onClick={() => setExpandedFunnelStep(isExpanded ? null : step.step)}
+                                    className="text-xs text-zinc-500 hover:text-zinc-300 transition-colors flex items-center space-x-1"
+                                  >
+                                    <span>-{dropoff} ({dropoffPct}% dropoff)</span>
+                                    <span className="text-amber-400 ml-2">
+                                      {isExpanded ? '▼' : '▶'} Show {behaviorData.engagement.usersWhoDidntSearch.length} users who didn't search
+                                    </span>
+                                  </button>
+                                ) : (
+                                  <div className="text-xs text-zinc-600">
+                                    -{dropoff} ({dropoffPct}% dropoff)
+                                  </div>
+                                )}
+                                {isExpanded && hasDropoffUsers && (
+                                  <div className="mt-2 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50">
+                                    <div className="text-xs text-zinc-400 mb-2">Users who haven't searched yet:</div>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto">
+                                      {behaviorData.engagement.usersWhoDidntSearch.map((phone) => (
+                                        <div key={phone} className="font-mono text-xs text-zinc-300 bg-zinc-900/50 px-2 py-1 rounded">
+                                          +{phone}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
                             )}
                           </div>
