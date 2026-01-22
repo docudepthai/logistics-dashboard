@@ -27,9 +27,9 @@ export default function Navigation() {
           <div className="flex items-center space-x-3">
             <div className="flex items-center space-x-2">
               <div className="w-6 h-6 bg-white rounded-sm flex items-center justify-center">
-                <span className="text-black font-bold text-xs">L</span>
+                <span className="text-black font-bold text-xs">P</span>
               </div>
-              <span className="text-white font-medium tracking-tight">logistics</span>
+              <span className="text-white font-medium tracking-tight">Patron</span>
             </div>
           </div>
 
