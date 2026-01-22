@@ -15,6 +15,29 @@ const dynamoClient = new DynamoDBClient({
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const CONVERSATIONS_TABLE = process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
 
+// Helper function for paginated scans
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function scanAllItems(params: any): Promise<any[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const allItems: any[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let lastEvaluatedKey: Record<string, any> | undefined;
+
+  do {
+    const result = await docClient.send(
+      new ScanCommand({
+        ...params,
+        ExclusiveStartKey: lastEvaluatedKey,
+      })
+    );
+
+    allItems.push(...(result.Items || []));
+    lastEvaluatedKey = result.LastEvaluatedKey;
+  } while (lastEvaluatedKey);
+
+  return allItems;
+}
+
 export interface CallListItem {
   phoneNumber: string;
   reason: string;
@@ -33,41 +56,37 @@ function hasSearched(context: Record<string, unknown> | undefined): boolean {
 // GET - Get all call list items (also auto-adds users who haven't searched)
 export async function GET() {
   try {
-    // Fetch both call list items and conversations in parallel
-    const [callListResult, conversationsResult] = await Promise.all([
-      docClient.send(
-        new ScanCommand({
-          TableName: CONVERSATIONS_TABLE,
-          FilterExpression: 'sk = :callList',
-          ExpressionAttributeValues: {
-            ':callList': 'CALL_LIST',
-          },
-        })
-      ),
-      docClient.send(
-        new ScanCommand({
-          TableName: CONVERSATIONS_TABLE,
-          FilterExpression: 'sk = :conversation',
-          ExpressionAttributeValues: {
-            ':conversation': 'CONVERSATION',
-          },
-          ProjectionExpression: 'pk, #ctx',
-          ExpressionAttributeNames: {
-            '#ctx': 'context',
-          },
-        })
-      ),
+    // Fetch both call list items and conversations in parallel (with pagination)
+    const [callListItems, conversationItems] = await Promise.all([
+      scanAllItems({
+        TableName: CONVERSATIONS_TABLE,
+        FilterExpression: 'sk = :callList',
+        ExpressionAttributeValues: {
+          ':callList': 'CALL_LIST',
+        },
+      }),
+      scanAllItems({
+        TableName: CONVERSATIONS_TABLE,
+        FilterExpression: 'sk = :conversation',
+        ExpressionAttributeValues: {
+          ':conversation': 'CONVERSATION',
+        },
+        ProjectionExpression: 'pk, #ctx',
+        ExpressionAttributeNames: {
+          '#ctx': 'context',
+        },
+      }),
     ]);
 
     // Build a map of phone -> context for quick lookup
     const phoneContextMap = new Map<string, Record<string, unknown> | undefined>();
-    for (const item of conversationsResult.Items || []) {
+    for (const item of conversationItems) {
       const phone = (item.pk as string)?.replace('USER#', '') || '';
       phoneContextMap.set(phone, item.context as Record<string, unknown> | undefined);
     }
 
     // Get existing call list items
-    const existingCallListItems = callListResult.Items || [];
+    const existingCallListItems = callListItems;
     const existingPhones = new Set(
       existingCallListItems.map(item => item.phoneNumber as string)
     );
@@ -104,7 +123,7 @@ export async function GET() {
     }
 
     // Find users who haven't searched and aren't in call list
-    const usersToAdd = (conversationsResult.Items || [])
+    const usersToAdd = conversationItems
       .filter(item => {
         const phone = (item.pk as string)?.replace('USER#', '') || '';
         // Must be a valid phone number (10+ digits)
@@ -141,19 +160,17 @@ export async function GET() {
     }
 
     // Re-fetch call list after auto-adding/removing
-    const finalResult = (usersToAdd.length > 0 || usersToRemove.length > 0)
-      ? await docClient.send(
-          new ScanCommand({
-            TableName: CONVERSATIONS_TABLE,
-            FilterExpression: 'sk = :callList',
-            ExpressionAttributeValues: {
-              ':callList': 'CALL_LIST',
-            },
-          })
-        )
-      : callListResult;
+    const finalItems = (usersToAdd.length > 0 || usersToRemove.length > 0)
+      ? await scanAllItems({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'sk = :callList',
+          ExpressionAttributeValues: {
+            ':callList': 'CALL_LIST',
+          },
+        })
+      : callListItems;
 
-    const items: CallListItem[] = (finalResult.Items || []).map(item => ({
+    const items: CallListItem[] = finalItems.map(item => ({
       phoneNumber: item.phoneNumber || '',
       reason: item.reason || '',
       notes: item.notes || '',

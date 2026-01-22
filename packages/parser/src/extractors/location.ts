@@ -21,28 +21,39 @@ const COMMON_WORDS_TO_SKIP = new Set([
   'alan',    // "alan" = field/area, matches Alan district
   'bey',     // common word/title
   'ova',     // "ova" = plain, too generic
+  'olur',    // "olur" = "it happens/okay", matches Olur district in Erzurum
+  'var',     // "var" = "there is", common word
+  'yok',     // "yok" = "there isn't", common word
 ]);
 
 /**
  * Check if a number token looks like a plate code based on context
- * Returns false for times (HH:MM), measurements (58 km), etc.
+ * Returns false for times (HH:MM), measurements (58 km), truck dimensions (13.60), etc.
  */
 function looksLikePlateCode(token: string, originalText: string): boolean {
   // Find the token in original text with surrounding context
   const normalizedText = normalizeToAscii(originalText).toLowerCase();
 
+  // FIRST: Check if part of a decimal number like "13.60" (truck dimensions)
+  // This must be checked before standalone check, as "60" in "13.60" won't match standalone
+  const decimalPattern = new RegExp(`\\d+[.,]${token}|${token}[.,]\\d+`);
+  if (decimalPattern.test(normalizedText)) {
+    return false;
+  }
+
   // Need to find exact matches - the token might appear multiple times
   // Look for the token as a standalone number (with boundaries)
-  const tokenRegex = new RegExp(`(^|[^0-9])${token}([^0-9]|$)`);
+  const tokenRegex = new RegExp(`(^|[^0-9.])${token}([^0-9]|$)`);
   const match = tokenRegex.exec(normalizedText);
 
-  if (!match) return true; // Can't find context, allow it
+  // If not found as standalone number, it's likely part of another number - not a plate code
+  if (!match) return false;
 
   const tokenIndex = match.index + (match[1]?.length || 0);
 
-  // Get surrounding text (15 chars before and after)
-  const start = Math.max(0, tokenIndex - 15);
-  const end = Math.min(normalizedText.length, tokenIndex + token.length + 15);
+  // Get surrounding text (20 chars before and after for better context)
+  const start = Math.max(0, tokenIndex - 20);
+  const end = Math.min(normalizedText.length, tokenIndex + token.length + 20);
   const context = normalizedText.slice(start, end);
 
   // Skip if it looks like a time (e.g., "20:00", "12:00", "08:30")
@@ -52,14 +63,14 @@ function looksLikePlateCode(token: string, originalText: string): boolean {
     return false;
   }
 
-  // Skip if followed by measurement units (km, m, ton, kg, etc.)
-  const measurementPattern = new RegExp(`${token}\\s*(km|m|ton|kg|lt|saat|dakika|gun|arac|tir)`);
+  // Skip if followed by measurement units (km, m, cm, mm, ton, kg, etc.)
+  const measurementPattern = new RegExp(`${token}\\s*(km|m|cm|mm|mt|metre|meter|ton|kg|lt|saat|dakika|gun|arac|tir|uzunluk|genislik|yukseklik)`);
   if (measurementPattern.test(context)) {
     return false;
   }
 
   // Skip if it looks like a price or currency
-  const currencyPattern = new RegExp(`${token}\\s*(tl|lira|euro|dolar|\\$|€)`);
+  const currencyPattern = new RegExp(`${token}\\s*(tl|lira|euro|dolar|\\$|€|₺)`);
   if (currencyPattern.test(context)) {
     return false;
   }
@@ -76,6 +87,26 @@ function looksLikePlateCode(token: string, originalText: string): boolean {
     return false;
   }
 
+  // Skip if part of phone number pattern (e.g., "0532 684 15 56", "05xx xxx xx xx")
+  // Turkish mobile numbers: 05XX XXX XX XX
+  const phonePatterns = [
+    new RegExp(`05\\d{2}\\s*\\d{3}\\s*\\d{2}\\s*${token}`),  // End of phone
+    new RegExp(`05\\d{2}\\s*\\d{3}\\s*${token}\\s*\\d{2}`),   // Middle of phone (15 in 05xx xxx 15 56)
+    new RegExp(`05\\d{2}\\s*${token}\\s*\\d{2}\\s*\\d{2}`),   // After area code
+    new RegExp(`${token}\\s*\\d{3}\\s*\\d{2}\\s*\\d{2}`),     // Start of phone-like sequence
+  ];
+  if (phonePatterns.some(p => p.test(context))) {
+    return false;
+  }
+
+  // Skip if looks like dimensions format (e.g., "13 60", "1360", common truck length)
+  const dimensionPattern = new RegExp(`13\\s*\\.?\\s*${token}|${token}\\s*\\.?\\s*60`);
+  if (token === '60' || token === '13') {
+    if (dimensionPattern.test(context)) {
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -87,6 +118,8 @@ const ROUTE_PATTERNS = [
   /(\S+)\s*[-–—]\s*(\S+)/g,
   // "Mersin >> Ankara" or "Mersin > Ankara"
   /(\S+)\s*>+\s*(\S+)/g,
+  // "TEKİRDAĞ_ARNAVUTKÖY" underscore-separated
+  /([A-Za-z\u00C0-\u017F]+)_([A-Za-z\u00C0-\u017F]+)/g,
   // "antalyadan izmire" or "istanbul'dan ankara'ya"
   /(\S+)[''']?dan\s+(\S+)[''']?[ayeı]a?/gi,
   /(\S+)[''']?den\s+(\S+)[''']?[eyeı]e?/gi,
@@ -122,8 +155,8 @@ export function extractLocations(text: string): ParsedLocation[] {
     }
   }
 
-  // Token-by-token matching (include / + and apostrophes as separators)
-  const tokens = normalizedText.split(/[\s,;:\-\>\<\(\)\[\]\/\+\.''`']+/);
+  // Token-by-token matching (include / + _ and apostrophes as separators)
+  const tokens = normalizedText.split(/[\s,;:\-\>\<\(\)\[\]\/\+\._''`']+/);
 
   for (const token of tokens) {
     if (token.length < 2) continue;

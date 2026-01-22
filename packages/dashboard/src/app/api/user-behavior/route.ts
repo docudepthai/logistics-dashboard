@@ -44,14 +44,23 @@ interface ConversationData {
 
 export async function GET() {
   try {
-    // Scan all items from table
-    const result = await docClient.send(
-      new ScanCommand({
-        TableName: CONVERSATIONS_TABLE,
-      })
-    );
+    // Scan all items from table with pagination
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const items: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lastEvaluatedKey: Record<string, any> | undefined;
 
-    const items = result.Items || [];
+    do {
+      const result = await docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          ExclusiveStartKey: lastEvaluatedKey,
+        })
+      );
+
+      items.push(...(result.Items || []));
+      lastEvaluatedKey = result.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
     const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);

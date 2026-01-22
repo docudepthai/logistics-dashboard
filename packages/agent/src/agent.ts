@@ -52,6 +52,10 @@ interface ParsedLocations {
   destinations?: string[];       // Multiple destinations when origin has explicit suffix
   // Cargo type detection
   cargoType?: string;            // Detected cargo type (parsiyel, palet, etc.)
+  // International destination detection
+  internationalDestination?: string;  // Detected international country name
+  // Istanbul side filter (Avrupa/Anadolu Yakası)
+  istanbulSide?: 'european' | 'asian';  // Which side of Istanbul to filter
 }
 
 /**
@@ -75,6 +79,69 @@ const VEHICLE_TERMS_NOT_LOCATIONS = new Set([
   'tenteli', 'tente', 'tentel', // tarpaulin body type
   'damperli', 'damper', 'damperl', // dump truck
   'frigo', 'frigorifik', // refrigerated
+]);
+
+/**
+ * Common Turkish words that happen to match district names but should be skipped.
+ * These are conversational words that are NOT location searches.
+ */
+const COMMON_WORDS_NOT_LOCATIONS = new Set([
+  'olur',    // "olur" = "it happens/okay", matches Olur district in Erzurum
+  'var',     // "var" = "there is"
+  'yok',     // "yok" = "there isn't"
+  'alan',    // "alan" = "field/area", matches Alan district
+  'bey',     // common word/title
+  'ova',     // "ova" = "plain", too generic
+]);
+
+/**
+ * International destinations that Turkish truck drivers commonly ask about.
+ * When detected, bot should explain it only handles Turkey-internal routes.
+ */
+const INTERNATIONAL_DESTINATIONS = new Set([
+  // Neighboring countries
+  'irak', 'iraq',           // Iraq
+  'iran',                   // Iran
+  'suriye', 'syria',        // Syria
+  'gurcistan', 'georgia',   // Georgia
+  'ermenistan', 'armenia',  // Armenia
+  'azerbaycan', 'azerbaijan', // Azerbaijan
+  'yunanistan', 'greece',   // Greece
+  'bulgaristan', 'bulgaria', // Bulgaria
+  // Common trade partners
+  'almanya', 'germany',     // Germany
+  'rusya', 'russia',        // Russia
+  'italya', 'italy',        // Italy
+  'fransa', 'france',       // France
+  'ingiltere', 'uk', 'england', // UK
+  'hollanda', 'netherlands', // Netherlands
+  'ispanya', 'spain',       // Spain
+  'polonya', 'poland',      // Poland
+  'romanya', 'romania',     // Romania
+  'ukrayna', 'ukraine',     // Ukraine
+  'kibris', 'cyprus',       // Cyprus
+  // Generic terms
+  'yurtdisi', 'yurt disi', 'abroad', 'export', 'ihracat',
+]);
+
+/**
+ * Istanbul districts on the European side (Avrupa Yakası)
+ */
+const ISTANBUL_EUROPEAN_DISTRICTS = new Set([
+  'arnavutkoy', 'avcilar', 'bagcilar', 'bahcelievler', 'bakirkoy',
+  'basaksehir', 'bayrampasa', 'besiktas', 'beylikduzu', 'beyoglu',
+  'buyukcekmece', 'catalca', 'esenler', 'esenyurt', 'eyupsultan', 'eyup',
+  'fatih', 'gaziosmanpasa', 'gungoren', 'kagithane', 'kucukcekmece',
+  'sariyer', 'silivri', 'sultangazi', 'sisli', 'zeytinburnu',
+]);
+
+/**
+ * Istanbul districts on the Asian side (Anadolu Yakası)
+ */
+const ISTANBUL_ASIAN_DISTRICTS = new Set([
+  'adalar', 'atasehir', 'beykoz', 'cekmekoy', 'kadikoy',
+  'kartal', 'maltepe', 'pendik', 'sancaktepe', 'sultanbeyli',
+  'sile', 'tuzla', 'umraniye', 'uskudar',
 ]);
 
 /**
@@ -109,8 +176,25 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
     normalized = normalized.replace(pattern, `$1${suffix}`);
   }
 
-  // Split into tokens
-  const tokens = normalized.split(/[\s,]+/);
+  // Split into tokens (including hyphen/dash as separator for "istanbul-gebze" format)
+  const tokens = normalized.split(/[\s,\-–—]+/);
+
+  // Check for international destinations early
+  for (const token of tokens) {
+    const cleanToken = token.replace(/[?!.'"]/g, '').toLowerCase();
+    if (INTERNATIONAL_DESTINATIONS.has(cleanToken)) {
+      result.internationalDestination = cleanToken;
+      // Continue parsing to get the origin, but we'll handle the response differently
+    }
+  }
+
+  // Check for Istanbul side filter (Avrupa Yakası / Anadolu Yakası)
+  const normalizedLower = normalized.toLowerCase();
+  if (normalizedLower.includes('avrupa') && (normalizedLower.includes('yakasi') || normalizedLower.includes('yaka'))) {
+    result.istanbulSide = 'european';
+  } else if (normalizedLower.includes('anadolu') && (normalizedLower.includes('yakasi') || normalizedLower.includes('yaka'))) {
+    result.istanbulSide = 'asian';
+  }
 
   // Track cities found without explicit direction suffixes
   const citiesWithoutSuffix: { name: string; province: string; district?: string }[] = [];
@@ -123,7 +207,7 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
   function resolveLocation(stem: string): { province: string; district?: string } | null {
     // CRITICAL: Skip common vehicle/logistics terms that happen to match district names
     // e.g., "araç" is a vehicle term but also a district in Kastamonu
-    if (VEHICLE_TERMS_NOT_LOCATIONS.has(stem)) {
+    if (VEHICLE_TERMS_NOT_LOCATIONS.has(stem) || COMMON_WORDS_NOT_LOCATIONS.has(stem)) {
       return null;
     }
 
@@ -185,10 +269,12 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
       const destSuffixes = ['a', 'e', 'ya', 'ye', 'na', 'ne'].sort((a, b) => a.length - b.length);
 
       const suffixesToTry = isOrigin ? originSuffixes : destSuffixes;
+      console.log(`[Parser] Bugfix #2: token=${lower}, isOrigin=${isOrigin}, isDestination=${isDestination}, trying suffixes:`, suffixesToTry);
       for (const suffix of suffixesToTry) {
         if (lower.endsWith(suffix) && lower.length > suffix.length + 2) {
           const tryStem = lower.slice(0, -suffix.length);
           const tryLocation = resolveLocation(tryStem);
+          console.log(`[Parser] Trying suffix "${suffix}": stem="${tryStem}", location=`, tryLocation);
           if (tryLocation) {
             location = tryLocation;
             // Keep the original direction (isOrigin/isDestination) from stripSuffix
@@ -1126,6 +1212,20 @@ export class LogisticsAgent {
         limit: (args.limit as number) || 10, // Show 10 by default
       };
 
+      // Check for international destinations first
+      if (parsedLocations?.internationalDestination) {
+        const country = parsedLocations.internationalDestination;
+        const origin = parsedLocations?.origin || params.origin;
+        const msg = origin
+          ? `${origin}'dan ${country}'a yurt disi yukler bakamiyorum abi, sadece Turkiye ici is bakiyorum.`
+          : `${country}'a yurt disi yukler bakamiyorum abi, sadece Turkiye ici is bakiyorum.`;
+        return {
+          data: 'International destination',
+          contextUpdate: {},
+          directResponse: msg,
+        };
+      }
+
       // CRITICAL: ALWAYS use pre-parsed locations - they're more reliable than GPT
       // GPT often misinterprets conversation history and uses wrong origin/destination
       if (parsedLocations?.origin) {
@@ -1158,8 +1258,14 @@ export class LogisticsAgent {
 
       // Detect if this is a NEW search (user provided new locations) vs a filter addition
       // If user gives new origin/destination, DON'T carry over vehicle/body type from context
-      const isNewSearch = (parsedLocations?.origin && parsedLocations.origin !== currentContext.lastOrigin) ||
-                          (parsedLocations?.destination && parsedLocations.destination !== currentContext.lastDestination);
+      const locationChanged = (parsedLocations?.origin && parsedLocations.origin !== currentContext.lastOrigin) ||
+                              (parsedLocations?.destination && parsedLocations.destination !== currentContext.lastDestination);
+
+      // Also consider it a "new search" if user repeats the same route WITHOUT specifying filters
+      // This allows users to "reset" their search by just typing the route again
+      const hasFiltersInCurrentMessage = Boolean(params.vehicleType || params.bodyType || params.cargoType || params.isRefrigerated);
+      const sameRouteNoFilters = !locationChanged && (parsedLocations?.origin || parsedLocations?.destination) && !hasFiltersInCurrentMessage;
+      const isNewSearch = locationChanged || sameRouteNoFilters;
 
       // Apply context from previous search ONLY if doing a follow-up (not a new search)
       if (!params.origin && currentContext.lastOrigin) {
@@ -1170,6 +1276,7 @@ export class LogisticsAgent {
       }
 
       // Only apply vehicle/body filters from context if NOT a new search
+      // This ensures filters are CLEARED when user repeats the same route without filters
       if (!isNewSearch) {
         if (!params.vehicleType && currentContext.lastVehicleType) {
           params.vehicleType = currentContext.lastVehicleType;
@@ -1190,6 +1297,36 @@ export class LogisticsAgent {
 
       let result = await searchJobs(this.sql, params);
       console.log(`[Agent] searchJobs result: ${result.jobs.length} jobs, total: ${result.totalCount}`, { params });
+
+      // Apply Istanbul side filter if specified (Avrupa/Anadolu Yakası)
+      if (parsedLocations?.istanbulSide && result.jobs.length > 0) {
+        const sideDistricts = parsedLocations.istanbulSide === 'european'
+          ? ISTANBUL_EUROPEAN_DISTRICTS
+          : ISTANBUL_ASIAN_DISTRICTS;
+        const sideName = parsedLocations.istanbulSide === 'european' ? 'avrupa yakasi' : 'anadolu yakasi';
+
+        const filteredJobs = result.jobs.filter(job => {
+          // Check if origin is Istanbul and district matches the side
+          const originIsIstanbul = job.originProvince?.toLowerCase() === 'istanbul';
+          const destIsIstanbul = job.destinationProvince?.toLowerCase() === 'istanbul';
+
+          if (originIsIstanbul && params.origin?.toLowerCase() === 'istanbul') {
+            // Filter by origin district
+            const originDistrict = job.originDistrict?.toLowerCase().replace(/[^a-z]/g, '');
+            return originDistrict && sideDistricts.has(originDistrict);
+          }
+          if (destIsIstanbul && params.destination?.toLowerCase() === 'istanbul') {
+            // Filter by destination district
+            const destDistrict = job.destinationDistrict?.toLowerCase().replace(/[^a-z]/g, '');
+            return destDistrict && sideDistricts.has(destDistrict);
+          }
+          // If neither origin nor destination is Istanbul with side filter, include the job
+          return true;
+        });
+
+        console.log(`[Agent] Istanbul ${sideName} filter: ${result.jobs.length} -> ${filteredJobs.length} jobs`);
+        result = { ...result, jobs: filteredJobs, totalCount: filteredJobs.length };
+      }
 
       // Fallback for parsiyel: if no parsiyel jobs found, search without cargo filter
       // and tell user to call and ask about parsiyel
@@ -1310,8 +1447,8 @@ export class LogisticsAgent {
       return true;
     }
 
-    // Split into tokens and check each against locations
-    const tokens = normalized.split(/[\s,]+/);
+    // Split into tokens and check each against locations (including hyphen/dash as separator)
+    const tokens = normalized.split(/[\s,\-–—]+/);
 
     for (const token of tokens) {
       // Clean token
@@ -1321,8 +1458,8 @@ export class LogisticsAgent {
       // Strip Turkish suffixes to get the stem
       const { stem } = stripSuffix(cleanToken);
 
-      // CRITICAL: Skip vehicle terms that happen to match district names
-      if (VEHICLE_TERMS_NOT_LOCATIONS.has(stem)) {
+      // CRITICAL: Skip vehicle terms and common words that happen to match district names
+      if (VEHICLE_TERMS_NOT_LOCATIONS.has(stem) || COMMON_WORDS_NOT_LOCATIONS.has(stem)) {
         continue;
       }
 

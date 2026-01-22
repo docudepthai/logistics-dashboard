@@ -35,18 +35,29 @@ interface Conversation {
 
 export async function GET() {
   try {
-    // Only get CONVERSATION items (not PROFILE items)
-    const result = await docClient.send(
-      new ScanCommand({
-        TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
-        FilterExpression: 'sk = :sk',
-        ExpressionAttributeValues: {
-          ':sk': 'CONVERSATION',
-        },
-      })
-    );
+    // Scan with pagination to get ALL conversation items
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allItems: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lastEvaluatedKey: Record<string, any> | undefined;
 
-    const conversations: Conversation[] = (result.Items || [])
+    do {
+      const result = await docClient.send(
+        new ScanCommand({
+          TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
+          FilterExpression: 'sk = :sk',
+          ExpressionAttributeValues: {
+            ':sk': 'CONVERSATION',
+          },
+          ExclusiveStartKey: lastEvaluatedKey,
+        })
+      );
+
+      allItems.push(...(result.Items || []));
+      lastEvaluatedKey = result.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
+
+    const conversations: Conversation[] = allItems
       .map((item) => {
         // Extract user ID from pk (format: "USER#18575401309")
         const userId = (item.pk as string)?.replace('USER#', '') || 'unknown';
