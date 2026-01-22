@@ -208,7 +208,7 @@ export async function POST(request: NextRequest) {
           pk: `USER#${phoneNumber}`,
           sk: 'CALL_LIST',
           phoneNumber: phoneNumber,
-          reason: reason || 'Kullanmadı',
+          reason: reason || 'İş fonksiyonu kullanılmamış',
           notes: notes || '',
           calledAt: null,
           addedAt: new Date().toISOString(),
