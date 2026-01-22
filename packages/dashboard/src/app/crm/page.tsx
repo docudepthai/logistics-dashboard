@@ -172,7 +172,7 @@ export default function CRMPage() {
   return (
     <div className="flex min-h-[calc(100vh-56px)]">
       {/* Sidebar */}
-      <div className="w-56 bg-zinc-900/30 border-r border-zinc-800/50 p-4">
+      <div className="w-48 bg-zinc-900/30 border-r border-zinc-800/50 p-3">
         <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">CRM</h2>
         <nav className="space-y-1">
           {sidebarItems.map((item) => {
@@ -196,9 +196,9 @@ export default function CRMPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-4">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-2xl font-semibold text-white">İletişime Geçilecekler</h1>
           <p className="text-zinc-500 text-sm mt-1">İletişime geçilmesi gereken kullanıcılar</p>
         </div>
