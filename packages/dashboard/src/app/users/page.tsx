@@ -109,13 +109,27 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Pagination calculations
-  const users = data?.users || [];
-  const totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
+  // Filter users by search query
+  const allUsers = data?.users || [];
+  const filteredUsers = searchQuery.trim()
+    ? allUsers.filter(user =>
+        user.phoneNumber.includes(searchQuery.trim().replace(/\s+/g, '').replace(/^\+/, ''))
+      )
+    : allUsers;
+
+  // Pagination calculations (based on filtered users)
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedUsers = users.slice(startIndex, endIndex);
+  const paginatedUsers = filteredUsers.slice(startIndex, endIndex);
+
+  // Reset to page 1 when search changes
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -289,14 +303,41 @@ export default function UsersPage() {
               <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
                 <div className="px-4 py-3 border-b border-zinc-800/50 flex items-center justify-between">
                   <h2 className="text-sm font-medium text-white">
-                    All Users ({data.users.length})
+                    {searchQuery ? `Found ${filteredUsers.length} of ${allUsers.length} users` : `All Users (${allUsers.length})`}
                     {totalPages > 1 && <span className="text-zinc-500 font-normal"> · Page {currentPage} of {totalPages}</span>}
                   </h2>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      placeholder="Search by phone..."
+                      value={searchQuery}
+                      onChange={(e) => handleSearchChange(e.target.value)}
+                      className="w-64 px-3 py-1.5 pl-9 text-sm bg-zinc-800/50 border border-zinc-700/50 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600 transition-colors"
+                    />
+                    <svg
+                      className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                    {searchQuery && (
+                      <button
+                        onClick={() => handleSearchChange('')}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
 
-                {data.users.length === 0 ? (
+                {filteredUsers.length === 0 ? (
                   <div className="p-8 text-center text-zinc-500">
-                    No users yet. Users will appear here when they message the bot.
+                    {searchQuery ? `No users found matching "${searchQuery}"` : 'No users yet. Users will appear here when they message the bot.'}
                   </div>
                 ) : (
                   <div className="overflow-x-auto">
