@@ -24,20 +24,87 @@ export interface CallListItem {
   autoAdded: boolean; // true if auto-added because user didn't search
 }
 
-// GET - Get all call list items
+// GET - Get all call list items (also auto-adds users who didn't search)
 export async function GET() {
   try {
-    const result = await docClient.send(
-      new ScanCommand({
-        TableName: CONVERSATIONS_TABLE,
-        FilterExpression: 'sk = :callList',
-        ExpressionAttributeValues: {
-          ':callList': 'CALL_LIST',
-        },
-      })
+    // First, get all conversations and call list items in parallel
+    const [conversationsResult, callListResult] = await Promise.all([
+      docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'sk = :conversation',
+          ExpressionAttributeValues: {
+            ':conversation': 'CONVERSATION',
+          },
+          ProjectionExpression: 'pk, context',
+        })
+      ),
+      docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'sk = :callList',
+          ExpressionAttributeValues: {
+            ':callList': 'CALL_LIST',
+          },
+        })
+      ),
+    ]);
+
+    // Find users who didn't search and aren't in call list
+    const callListPhones = new Set(
+      (callListResult.Items || []).map(item => item.phoneNumber as string)
     );
 
-    const items: CallListItem[] = (result.Items || []).map(item => ({
+    const usersToAdd = (conversationsResult.Items || [])
+      .filter(item => {
+        const phoneNumber = (item.pk as string)?.replace('USER#', '');
+        if (!phoneNumber || !/^[+]?\d+$/.test(phoneNumber) || phoneNumber.length < 10) return false;
+        if (callListPhones.has(phoneNumber)) return false;
+        const context = item.context as Record<string, unknown> | undefined;
+        return !context?.lastOrigin && !context?.lastDestination;
+      })
+      .map(item => (item.pk as string).replace('USER#', ''));
+
+    // Auto-add users who didn't search
+    for (const phoneNumber of usersToAdd) {
+      try {
+        await docClient.send(
+          new PutCommand({
+            TableName: CONVERSATIONS_TABLE,
+            Item: {
+              pk: `USER#${phoneNumber}`,
+              sk: 'CALL_LIST',
+              phoneNumber,
+              reason: 'Kullanmadı',
+              notes: '',
+              calledAt: null,
+              addedAt: new Date().toISOString(),
+              autoAdded: true,
+            },
+            ConditionExpression: 'attribute_not_exists(pk)',
+          })
+        );
+      } catch {
+        // Ignore - item might already exist
+      }
+    }
+
+    // Re-fetch call list if we added new items
+    let finalItems = callListResult.Items || [];
+    if (usersToAdd.length > 0) {
+      const refreshedResult = await docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'sk = :callList',
+          ExpressionAttributeValues: {
+            ':callList': 'CALL_LIST',
+          },
+        })
+      );
+      finalItems = refreshedResult.Items || [];
+    }
+
+    const items: CallListItem[] = finalItems.map(item => ({
       phoneNumber: item.phoneNumber,
       reason: item.reason || '',
       notes: item.notes || '',
@@ -55,7 +122,7 @@ export async function GET() {
       return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     });
 
-    return NextResponse.json({ items });
+    return NextResponse.json({ items, autoAdded: usersToAdd.length });
   } catch (error) {
     console.error('Error fetching call list:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
