@@ -6,10 +6,10 @@ export const dynamic = 'force-dynamic';
 
 const dynamoClient = new DynamoDBClient({
   region: process.env.REGION || 'eu-central-1',
-  credentials: {
-    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID || '',
+  credentials: process.env.MY_AWS_ACCESS_KEY_ID ? {
+    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
     secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY || '',
-  },
+  } : undefined,
 });
 
 const docClient = DynamoDBDocumentClient.from(dynamoClient);

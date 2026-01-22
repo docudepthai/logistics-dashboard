@@ -23,6 +23,7 @@ interface CallListItem {
 }
 
 const CALL_REASONS = [
+  'Kullanmadı',
   'Sistem arızası oluşmuş ve düzeltildi',
   'İş fonksiyonu kullanılmamış',
   'Şu araç var mı diyor ama bizde yok',
@@ -49,18 +50,50 @@ export default function ConversationsPage() {
           fetch('/api/call-list'),
         ]);
 
+        let convos: Conversation[] = [];
         if (convRes.ok) {
           const data = await convRes.json();
-          setConversations(data.conversations || []);
+          convos = data.conversations || [];
+          setConversations(convos);
         }
 
+        const map = new Map<string, CallListItem>();
         if (callRes.ok) {
           const data = await callRes.json();
-          const map = new Map<string, CallListItem>();
           for (const item of data.items || []) {
             map.set(item.phoneNumber, item);
           }
           setCallList(map);
+        }
+
+        // Auto-add users who didn't search (no context) to call list with "Kullanmadı"
+        const usersToAdd = convos.filter(c =>
+          !map.has(c.userId) &&
+          !c.context?.lastOrigin &&
+          !c.context?.lastDestination
+        );
+
+        for (const user of usersToAdd) {
+          try {
+            const res = await fetch('/api/call-list', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                phoneNumber: user.userId,
+                reason: 'Kullanmadı',
+                autoAdded: true
+              }),
+            });
+            if (res.ok) {
+              map.set(user.userId, { phoneNumber: user.userId, reason: 'Kullanmadı' });
+            }
+          } catch (err) {
+            console.error('Failed to auto-add user:', err);
+          }
+        }
+
+        if (usersToAdd.length > 0) {
+          setCallList(new Map(map));
         }
       } finally {
         setLoading(false);
@@ -77,10 +110,6 @@ export default function ConversationsPage() {
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
     return `${Math.floor(seconds / 86400)}d ago`;
-  };
-
-  const hasSearched = (convo: Conversation) => {
-    return !!(convo.context?.lastOrigin || convo.context?.lastDestination);
   };
 
   const isInCallList = (userId: string) => {
@@ -130,7 +159,6 @@ export default function ConversationsPage() {
       ) : (
         <div className="space-y-3">
           {conversations.map((convo) => {
-            const searched = hasSearched(convo);
             const inCallList = isInCallList(convo.userId);
 
             return (
@@ -148,30 +176,20 @@ export default function ConversationsPage() {
                       <p className="text-white font-mono text-sm">+{convo.userId}</p>
                       <p className="text-zinc-500 text-xs">
                         {convo.messageCount} messages · {formatTimeAgo(convo.updatedAt)}
-                        {searched && (
-                          <span className="text-emerald-400 ml-2">• Arama yaptı</span>
-                        )}
                       </p>
                     </div>
                   </button>
 
                   {/* Call List Actions */}
                   <div className="flex items-center space-x-3 ml-4">
-                    {!searched ? (
-                      // User didn't search - auto added
+                    {inCallList ? (
                       <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-1 rounded">
                         Aranacaklara eklendi
                       </span>
-                    ) : inCallList ? (
-                      // User searched and is in call list
-                      <span className="text-xs text-blue-400 bg-blue-400/10 px-2 py-1 rounded">
-                        Aranacaklarda
-                      </span>
                     ) : (
-                      // User searched and not in call list - show button
                       <div className="relative">
                         {showReasonDropdown === convo.userId ? (
-                          <div className="absolute right-0 top-0 z-10 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-2 min-w-[280px]">
+                          <div className="absolute right-0 top-full mt-1 z-50 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-2 min-w-[280px]">
                             <div className="text-xs text-zinc-400 px-2 py-1 mb-1">Arama nedeni seçin:</div>
                             {CALL_REASONS.map((reason) => (
                               <button
