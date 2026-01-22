@@ -128,14 +128,19 @@ export async function GET() {
       : 0;
 
     // Return users: users who have messages on multiple different days
-    const usersWithMultipleDays = conversations.filter(c => {
+    // Only count users who signed up at least 1 day ago (they had a chance to return)
+    const eligibleForReturn = conversations.filter(c => {
+      const createdDate = new Date(c.createdAt);
+      return createdDate < oneDayAgo; // Signed up before today
+    });
+    const usersWithMultipleDays = eligibleForReturn.filter(c => {
       const uniqueDays = new Set(
         c.messages.map(m => new Date(m.timestamp).toDateString())
       );
       return uniqueDays.size > 1;
     }).length;
-    const returnRate = conversations.length > 0
-      ? Math.round((usersWithMultipleDays / conversations.length) * 100)
+    const returnRate = eligibleForReturn.length > 0
+      ? Math.round((usersWithMultipleDays / eligibleForReturn.length) * 100)
       : 0;
 
     // ===== CONVERSION FUNNEL =====
