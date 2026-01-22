@@ -232,7 +232,7 @@ export default function UsersPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="ml-7 w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+                            <div className="ml-7 h-2 bg-zinc-800 rounded-full overflow-hidden" style={{ width: 'calc(100% - 1.75rem)' }}>
                               <div
                                 className={`h-full rounded-full transition-all duration-500 ${
                                   step.percentage >= 50 ? 'bg-emerald-500' : step.percentage >= 20 ? 'bg-amber-500' : 'bg-red-500'
