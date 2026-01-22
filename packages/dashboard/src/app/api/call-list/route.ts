@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand, PutCommand, UpdateCommand, DeleteCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand, PutCommand, UpdateCommand, DeleteCommand } from '@aws-sdk/lib-dynamodb';
 
 export const dynamic = 'force-dynamic';
 
@@ -24,88 +24,21 @@ export interface CallListItem {
   autoAdded: boolean; // true if auto-added because user didn't search
 }
 
-// GET - Get all call list items (also auto-adds users who didn't search)
+// GET - Get all call list items
 export async function GET() {
   try {
-    // First, get all conversations and call list items in parallel
-    const [conversationsResult, callListResult] = await Promise.all([
-      docClient.send(
-        new ScanCommand({
-          TableName: CONVERSATIONS_TABLE,
-          FilterExpression: 'sk = :conversation',
-          ExpressionAttributeValues: {
-            ':conversation': 'CONVERSATION',
-          },
-          ProjectionExpression: 'pk, context',
-        })
-      ),
-      docClient.send(
-        new ScanCommand({
-          TableName: CONVERSATIONS_TABLE,
-          FilterExpression: 'sk = :callList',
-          ExpressionAttributeValues: {
-            ':callList': 'CALL_LIST',
-          },
-        })
-      ),
-    ]);
-
-    // Find users who didn't search and aren't in call list
-    const callListPhones = new Set(
-      (callListResult.Items || []).map(item => item.phoneNumber as string)
+    const result = await docClient.send(
+      new ScanCommand({
+        TableName: CONVERSATIONS_TABLE,
+        FilterExpression: 'sk = :callList',
+        ExpressionAttributeValues: {
+          ':callList': 'CALL_LIST',
+        },
+      })
     );
 
-    const usersToAdd = (conversationsResult.Items || [])
-      .filter(item => {
-        const phoneNumber = (item.pk as string)?.replace('USER#', '');
-        if (!phoneNumber || !/^[+]?\d+$/.test(phoneNumber) || phoneNumber.length < 10) return false;
-        if (callListPhones.has(phoneNumber)) return false;
-        const context = item.context as Record<string, unknown> | undefined;
-        return !context?.lastOrigin && !context?.lastDestination;
-      })
-      .map(item => (item.pk as string).replace('USER#', ''));
-
-    // Auto-add users who didn't search
-    for (const phoneNumber of usersToAdd) {
-      try {
-        await docClient.send(
-          new PutCommand({
-            TableName: CONVERSATIONS_TABLE,
-            Item: {
-              pk: `USER#${phoneNumber}`,
-              sk: 'CALL_LIST',
-              phoneNumber,
-              reason: 'Kullanmadı',
-              notes: '',
-              calledAt: null,
-              addedAt: new Date().toISOString(),
-              autoAdded: true,
-            },
-            ConditionExpression: 'attribute_not_exists(pk)',
-          })
-        );
-      } catch {
-        // Ignore - item might already exist
-      }
-    }
-
-    // Re-fetch call list if we added new items
-    let finalItems = callListResult.Items || [];
-    if (usersToAdd.length > 0) {
-      const refreshedResult = await docClient.send(
-        new ScanCommand({
-          TableName: CONVERSATIONS_TABLE,
-          FilterExpression: 'sk = :callList',
-          ExpressionAttributeValues: {
-            ':callList': 'CALL_LIST',
-          },
-        })
-      );
-      finalItems = refreshedResult.Items || [];
-    }
-
-    const items: CallListItem[] = finalItems.map(item => ({
-      phoneNumber: item.phoneNumber,
+    const items: CallListItem[] = (result.Items || []).map(item => ({
+      phoneNumber: item.phoneNumber || '',
       reason: item.reason || '',
       notes: item.notes || '',
       calledAt: item.calledAt || null,
@@ -122,7 +55,7 @@ export async function GET() {
       return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     });
 
-    return NextResponse.json({ items, autoAdded: usersToAdd.length });
+    return NextResponse.json({ items });
   } catch (error) {
     console.error('Error fetching call list:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -133,60 +66,32 @@ export async function GET() {
   }
 }
 
-// POST - Add to call list or update existing
+// POST - Add to call list (upsert)
 export async function POST(request: NextRequest) {
   try {
-    const { phoneNumber, reason, notes, autoAdded } = await request.json();
+    const body = await request.json();
+    const { phoneNumber, reason, notes, autoAdded } = body;
 
     if (!phoneNumber) {
       return NextResponse.json({ error: 'Phone number required' }, { status: 400 });
     }
 
-    // Check if already exists
-    const existing = await docClient.send(
-      new GetCommand({
+    // Simple upsert - just put the item (will overwrite if exists)
+    await docClient.send(
+      new PutCommand({
         TableName: CONVERSATIONS_TABLE,
-        Key: {
+        Item: {
           pk: `USER#${phoneNumber}`,
           sk: 'CALL_LIST',
+          phoneNumber: phoneNumber,
+          reason: reason || 'Kullanmadı',
+          notes: notes || '',
+          calledAt: null,
+          addedAt: new Date().toISOString(),
+          autoAdded: autoAdded === true,
         },
       })
     );
-
-    if (existing.Item) {
-      // Update existing
-      await docClient.send(
-        new UpdateCommand({
-          TableName: CONVERSATIONS_TABLE,
-          Key: {
-            pk: `USER#${phoneNumber}`,
-            sk: 'CALL_LIST',
-          },
-          UpdateExpression: 'SET reason = :reason, notes = :notes',
-          ExpressionAttributeValues: {
-            ':reason': reason || existing.Item.reason || '',
-            ':notes': notes !== undefined ? notes : (existing.Item.notes || ''),
-          },
-        })
-      );
-    } else {
-      // Create new
-      await docClient.send(
-        new PutCommand({
-          TableName: CONVERSATIONS_TABLE,
-          Item: {
-            pk: `USER#${phoneNumber}`,
-            sk: 'CALL_LIST',
-            phoneNumber,
-            reason: reason || '',
-            notes: notes || '',
-            calledAt: null,
-            addedAt: new Date().toISOString(),
-            autoAdded: autoAdded || false,
-          },
-        })
-      );
-    }
 
     return NextResponse.json({ success: true, phoneNumber });
   } catch (error) {
