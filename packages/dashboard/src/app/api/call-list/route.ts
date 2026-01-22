@@ -87,7 +87,7 @@ export async function GET() {
               pk: `USER#${phone}`,
               sk: 'CALL_LIST',
               phoneNumber: phone,
-              reason: 'Kullanmadı',
+              reason: 'İş fonksiyonu kullanılmamış',
               notes: '',
               calledAt: null,
               addedAt: new Date().toISOString(),

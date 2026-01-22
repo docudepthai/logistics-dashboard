@@ -7,7 +7,7 @@ import { useSession, signOut } from 'next-auth/react';
 const tabs = [
   { name: 'Overview', href: '/' },
   { name: 'Conversations', href: '/conversations' },
-  { name: 'Aranacaklar', href: '/aranacaklar' },
+  { name: 'CRM', href: '/crm' },
   { name: 'Routes', href: '/map' },
   { name: 'Analytics', href: '/analytics' },
   { name: 'Finance', href: '/finance' },
