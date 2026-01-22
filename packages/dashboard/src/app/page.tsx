@@ -14,6 +14,7 @@ interface Stats {
   hourly: { hour: string; count: number }[];
   topRoutes: { origin: string; destination: string; count: number }[];
   bodyTypes: { bodyType: string; count: number }[];
+  cargoTypes: { cargoType: string; count: number }[];
 }
 
 export default function Dashboard() {
@@ -158,9 +159,9 @@ export default function Dashboard() {
           })()}
         </div>
 
-        {/* Body Types */}
+        {/* Vehicle Body Types */}
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
-          <h2 className="text-sm font-medium text-white mb-4">Body Types</h2>
+          <h2 className="text-sm font-medium text-white mb-4">Vehicle Body Types</h2>
           <div className="space-y-3">
             {stats.bodyTypes.slice(0, 6).map((bt) => {
               const percentage = (bt.count / maxBodyType) * 100;
@@ -183,21 +184,49 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Top Routes */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
-        <h2 className="text-sm font-medium text-white mb-4">Top Routes</h2>
-        <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-          {stats.topRoutes.slice(0, 10).map((route, i) => (
-            <div key={i} className="flex items-center justify-between py-2 border-b border-zinc-800/30">
-              <div className="flex items-center space-x-3">
-                <span className="text-zinc-600 text-xs font-mono w-4">{i + 1}</span>
-                <span className="text-zinc-300 text-sm">{route.origin}</span>
-                <span className="text-zinc-600">→</span>
-                <span className="text-zinc-400 text-sm">{route.destination || 'Any'}</span>
+      {/* Top Routes and Cargo Types - Side by Side */}
+      <div className="grid grid-cols-2 gap-6">
+        {/* Top Routes */}
+        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+          <h2 className="text-sm font-medium text-white mb-4">Top Routes</h2>
+          <div className="space-y-2">
+            {stats.topRoutes.slice(0, 6).map((route, i) => (
+              <div key={i} className="flex items-center justify-between py-2 border-b border-zinc-800/30">
+                <div className="flex items-center space-x-3">
+                  <span className="text-zinc-600 text-xs font-mono w-4">{i + 1}</span>
+                  <span className="text-zinc-300 text-sm">{route.origin}</span>
+                  <span className="text-zinc-600">→</span>
+                  <span className="text-zinc-400 text-sm">{route.destination || 'Any'}</span>
+                </div>
+                <span className="text-zinc-500 font-mono text-sm">{route.count}</span>
               </div>
-              <span className="text-zinc-500 font-mono text-sm">{route.count}</span>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Cargo Types */}
+        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+          <h2 className="text-sm font-medium text-white mb-4">Cargo Types</h2>
+          <div className="space-y-3">
+            {stats.cargoTypes.slice(0, 6).map((ct) => {
+              const maxCargoType = Math.max(...stats.cargoTypes.map(x => x.count), 1);
+              const percentage = (ct.count / maxCargoType) * 100;
+              return (
+                <div key={ct.cargoType}>
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-zinc-400 text-sm">{ct.cargoType || 'Unspecified'}</span>
+                    <span className="text-white font-mono text-sm">{ct.count}</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-blue-500 rounded-full transition-all duration-500"
+                      style={{ width: `${percentage}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

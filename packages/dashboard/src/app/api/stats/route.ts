@@ -32,6 +32,7 @@ export async function GET() {
       hourlyResult,
       topRoutesResult,
       bodyTypesResult,
+      cargoTypesResult,
       conversationsCount,
     ] = await Promise.all([
       // Overview stats - count unique jobs (deduplicated)
@@ -122,6 +123,22 @@ export async function GET() {
         ORDER BY count DESC
       `,
 
+      // Cargo types - unique jobs only
+      sql`
+        SELECT cargo_type, COUNT(*) as count FROM (
+          SELECT DISTINCT
+            COALESCE(cargo_type, 'Not specified') as cargo_type,
+            COALESCE(origin_province, ''), COALESCE(destination_province, ''),
+            COALESCE(vehicle_type, ''), COALESCE(body_type, ''),
+            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
+            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
+          FROM jobs
+          WHERE created_at > NOW() - INTERVAL '24 hours'
+        ) unique_jobs
+        GROUP BY cargo_type
+        ORDER BY count DESC
+      `,
+
       // DynamoDB conversations count
       getConversationsCount(),
     ]);
@@ -155,6 +172,10 @@ export async function GET() {
       bodyTypes: bodyTypesResult.map(b => ({
         bodyType: b.body_type,
         count: Number(b.count),
+      })),
+      cargoTypes: cargoTypesResult.map(c => ({
+        cargoType: c.cargo_type,
+        count: Number(c.count),
       })),
     });
   } catch (error) {

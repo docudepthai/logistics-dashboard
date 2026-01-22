@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+const ITEMS_PER_PAGE = 50;
+
 interface Message {
   role: string;
   content: string;
@@ -40,6 +42,13 @@ export default function ConversationsPage() {
   const [loading, setLoading] = useState(true);
   const [addingToCallList, setAddingToCallList] = useState<string | null>(null);
   const [showReasonDropdown, setShowReasonDropdown] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Pagination calculations
+  const totalPages = Math.ceil(conversations.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedConversations = conversations.slice(startIndex, endIndex);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -113,9 +122,14 @@ export default function ConversationsPage() {
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
-        <p className="text-zinc-500 text-sm mt-1">{conversations.length} active conversations</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
+          <p className="text-zinc-500 text-sm mt-1">
+            {conversations.length} active conversations
+            {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
+          </p>
+        </div>
       </div>
 
       {/* Conversations List */}
@@ -125,7 +139,7 @@ export default function ConversationsPage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {conversations.map((convo) => {
+          {paginatedConversations.map((convo) => {
             const inCallList = isInCallList(convo.userId);
 
             return (
@@ -225,6 +239,71 @@ export default function ConversationsPage() {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center space-x-2 pt-6">
+          <button
+            onClick={() => setCurrentPage(1)}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            First
+          </button>
+          <button
+            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            Prev
+          </button>
+
+          {/* Page Numbers */}
+          <div className="flex items-center space-x-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(page => {
+                // Show first, last, current, and pages around current
+                if (page === 1 || page === totalPages) return true;
+                if (Math.abs(page - currentPage) <= 2) return true;
+                return false;
+              })
+              .map((page, idx, arr) => {
+                // Add ellipsis if there's a gap
+                const showEllipsisBefore = idx > 0 && page - arr[idx - 1] > 1;
+                return (
+                  <span key={page} className="flex items-center">
+                    {showEllipsisBefore && <span className="px-2 text-zinc-600">...</span>}
+                    <button
+                      onClick={() => setCurrentPage(page)}
+                      className={`w-8 h-8 text-sm rounded transition-colors ${
+                        currentPage === page
+                          ? 'bg-white text-black font-medium'
+                          : 'text-zinc-400 hover:text-white hover:bg-zinc-700/50'
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  </span>
+                );
+              })}
+          </div>
+
+          <button
+            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            Next
+          </button>
+          <button
+            onClick={() => setCurrentPage(totalPages)}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+          >
+            Last
+          </button>
         </div>
       )}
     </div>

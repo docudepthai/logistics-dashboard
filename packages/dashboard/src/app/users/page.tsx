@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 
+const ITEMS_PER_PAGE = 50;
+
 interface User {
   phoneNumber: string;
   firstContactAt: string;
@@ -106,6 +108,14 @@ export default function UsersPage() {
   const [behaviorData, setBehaviorData] = useState<BehaviorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // Pagination calculations
+  const users = data?.users || [];
+  const totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const endIndex = startIndex + ITEMS_PER_PAGE;
+  const paginatedUsers = users.slice(startIndex, endIndex);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -277,8 +287,11 @@ export default function UsersPage() {
 
               {/* Users Table */}
               <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
-                <div className="px-4 py-3 border-b border-zinc-800/50">
-                  <h2 className="text-sm font-medium text-white">All Users ({data.users.length})</h2>
+                <div className="px-4 py-3 border-b border-zinc-800/50 flex items-center justify-between">
+                  <h2 className="text-sm font-medium text-white">
+                    All Users ({data.users.length})
+                    {totalPages > 1 && <span className="text-zinc-500 font-normal"> · Page {currentPage} of {totalPages}</span>}
+                  </h2>
                 </div>
 
                 {data.users.length === 0 ? (
@@ -300,13 +313,12 @@ export default function UsersPage() {
                         </tr>
                       </thead>
                       <tbody>
-                        {data.users.map((user, index) => {
+                        {paginatedUsers.map((user, index) => {
                           const badge = getStatusBadge(user);
                           return (
                             <tr
                               key={user.phoneNumber}
                               className="border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors"
-                              style={{ animationDelay: `${index * 50}ms` }}
                             >
                               <td className="px-4 py-3">
                                 <span className="font-mono text-sm text-white">
@@ -354,6 +366,69 @@ export default function UsersPage() {
                         })}
                       </tbody>
                     </table>
+                  </div>
+                )}
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center space-x-2 py-4 border-t border-zinc-800/50">
+                    <button
+                      onClick={() => setCurrentPage(1)}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      First
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Prev
+                    </button>
+
+                    {/* Page Numbers */}
+                    <div className="flex items-center space-x-1">
+                      {Array.from({ length: totalPages }, (_, i) => i + 1)
+                        .filter(page => {
+                          if (page === 1 || page === totalPages) return true;
+                          if (Math.abs(page - currentPage) <= 2) return true;
+                          return false;
+                        })
+                        .map((page, idx, arr) => {
+                          const showEllipsisBefore = idx > 0 && page - arr[idx - 1] > 1;
+                          return (
+                            <span key={page} className="flex items-center">
+                              {showEllipsisBefore && <span className="px-2 text-zinc-600">...</span>}
+                              <button
+                                onClick={() => setCurrentPage(page)}
+                                className={`w-8 h-8 text-sm rounded transition-colors ${
+                                  currentPage === page
+                                    ? 'bg-white text-black font-medium'
+                                    : 'text-zinc-400 hover:text-white hover:bg-zinc-700/50'
+                                }`}
+                              >
+                                {page}
+                              </button>
+                            </span>
+                          );
+                        })}
+                    </div>
+
+                    <button
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next
+                    </button>
+                    <button
+                      onClick={() => setCurrentPage(totalPages)}
+                      disabled={currentPage === totalPages}
+                      className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Last
+                    </button>
                   </div>
                 )}
               </div>
