@@ -59,10 +59,49 @@ export async function GET() {
       ),
     ]);
 
-    // Get existing call list phone numbers
+    // Build a map of phone -> context for quick lookup
+    const phoneContextMap = new Map<string, Record<string, unknown> | undefined>();
+    for (const item of conversationsResult.Items || []) {
+      const phone = (item.pk as string)?.replace('USER#', '') || '';
+      phoneContextMap.set(phone, item.context as Record<string, unknown> | undefined);
+    }
+
+    // Get existing call list items
+    const existingCallListItems = callListResult.Items || [];
     const existingPhones = new Set(
-      (callListResult.Items || []).map(item => item.phoneNumber as string)
+      existingCallListItems.map(item => item.phoneNumber as string)
     );
+
+    // Find auto-added users who have NOW searched - remove them from call list
+    const usersToRemove = existingCallListItems
+      .filter(item => {
+        // Only auto-remove if they were auto-added (not manually added)
+        if (!item.autoAdded) return false;
+        // Check if they have now searched
+        const context = phoneContextMap.get(item.phoneNumber as string);
+        return hasSearched(context);
+      })
+      .map(item => item.phoneNumber as string);
+
+    // Remove users who have now searched
+    if (usersToRemove.length > 0) {
+      const removePromises = usersToRemove.map(phone =>
+        docClient.send(
+          new DeleteCommand({
+            TableName: CONVERSATIONS_TABLE,
+            Key: {
+              pk: `USER#${phone}`,
+              sk: 'CALL_LIST',
+            },
+          })
+        ).catch(() => {}) // Ignore errors
+      );
+      await Promise.all(removePromises);
+      // Update the existing phones set
+      for (const phone of usersToRemove) {
+        existingPhones.delete(phone);
+      }
+    }
 
     // Find users who haven't searched and aren't in call list
     const usersToAdd = (conversationsResult.Items || [])
@@ -101,8 +140,8 @@ export async function GET() {
       await Promise.all(addPromises);
     }
 
-    // Re-fetch call list after auto-adding
-    const finalResult = usersToAdd.length > 0
+    // Re-fetch call list after auto-adding/removing
+    const finalResult = (usersToAdd.length > 0 || usersToRemove.length > 0)
       ? await docClient.send(
           new ScanCommand({
             TableName: CONVERSATIONS_TABLE,
@@ -132,7 +171,7 @@ export async function GET() {
       return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     });
 
-    return NextResponse.json({ items, autoAdded: usersToAdd.length });
+    return NextResponse.json({ items, autoAdded: usersToAdd.length, autoRemoved: usersToRemove.length });
   } catch (error) {
     console.error('Error fetching call list:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
