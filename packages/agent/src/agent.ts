@@ -47,6 +47,11 @@ interface ParsedLocations {
   destinationProvince?: string;  // Resolved province name
   destinationDistrict?: string;  // District name if destination is a district
   sameProvinceSearch?: boolean;  // True if both origin and destination resolve to same province
+  // Multi-destination support: "Samsundan istanbul ankara izmir varmi"
+  // = origin: samsun, destinations: [istanbul, ankara, izmir]
+  destinations?: string[];       // Multiple destinations when origin has explicit suffix
+  // Cargo type detection
+  cargoType?: string;            // Detected cargo type (parsiyel, palet, etc.)
 }
 
 /**
@@ -85,10 +90,26 @@ const VEHICLE_TERMS_NOT_LOCATIONS = new Set([
 function parseLocationsFromMessage(text: string): ParsedLocations {
   const result: ParsedLocations = {};
 
-  // Normalize Turkish characters and lowercase
-  const normalized = normalizeToAscii(text);
+  // First, normalize Turkish characters to ASCII and lowercase
+  // This converts İstanbul → istanbul, Çorlu → corlu, etc.
+  let normalized = normalizeToAscii(text);
 
-  // Split into tokens (handle apostrophes in Turkish: Kayseri'den)
+  // Then handle apostrophes AFTER normalizing (so \w+ works)
+  // Normalize all apostrophe variants: U+0027('), U+2019('), U+2018('), U+0060(`)
+  normalized = normalized.replace(/[\u0027\u2019\u2018\u0060]/g, "'");
+  // Remove apostrophes between word and Turkish suffix: "istanbul'dan" → "istanbuldan"
+  normalized = normalized.replace(/(\w+)'(dan|den|tan|ten|ndan|nden|a|e|ya|ye|na|ne)(?=\s|$)/gi, '$1$2');
+
+  // Preprocess: merge "city dan/den/a/e/ya/ye" patterns (space between city and suffix)
+  // Examples: "istanbul dan" → "istanbuldan", "ankara ya" → "ankaraya"
+  const suffixPatterns = ['dan', 'den', 'tan', 'ten', 'ndan', 'nden', 'a', 'e', 'ya', 'ye', 'na', 'ne'];
+  for (const suffix of suffixPatterns) {
+    // Match: word + space + apostrophe? + suffix (as standalone word)
+    const pattern = new RegExp(`(\\w+)\\s+'?${suffix}(?=\\s|$)`, 'gi');
+    normalized = normalized.replace(pattern, `$1${suffix}`);
+  }
+
+  // Split into tokens
   const tokens = normalized.split(/[\s,]+/);
 
   // Track cities found without explicit direction suffixes
@@ -173,20 +194,53 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
   }
 
   // Process locations without suffixes:
-  // - First location without suffix = origin (if no origin already set)
-  // - Second location without suffix = destination (if no destination already set)
-  for (const { province, district } of citiesWithoutSuffix) {
-    if (!result.origin) {
-      result.origin = province;
-      result.originProvince = province;
-      if (district) {
-        result.originDistrict = district;
-      }
-    } else if (!result.destination) {
-      result.destination = province;
-      result.destinationProvince = province;
-      if (district) {
-        result.destinationDistrict = district;
+  // MULTI-DESTINATION PATTERNS:
+  //
+  // Pattern 1: Explicit origin suffix + multiple cities
+  // "Samsundan istanbul ankara izmir varmi" = origin: samsun, destinations: [istanbul, ankara, izmir]
+  //
+  // Pattern 2: Multiple cities without ANY suffixes (3+)
+  // "istanbul van izmir bursa" = origin: istanbul (first), destinations: [van, izmir, bursa] (rest)
+  //
+  if (result.origin && citiesWithoutSuffix.length >= 2) {
+    // Pattern 1: Origin has explicit suffix, all others are destinations
+    result.destinations = citiesWithoutSuffix.map(c => c.province);
+    result.destination = citiesWithoutSuffix[0].province;
+    result.destinationProvince = citiesWithoutSuffix[0].province;
+    if (citiesWithoutSuffix[0].district) {
+      result.destinationDistrict = citiesWithoutSuffix[0].district;
+    }
+  } else if (!result.origin && !result.destination && citiesWithoutSuffix.length >= 3) {
+    // Pattern 2: No suffixes at all, 3+ cities = first is origin, rest are destinations
+    const [first, ...rest] = citiesWithoutSuffix;
+    result.origin = first.province;
+    result.originProvince = first.province;
+    if (first.district) {
+      result.originDistrict = first.district;
+    }
+    result.destinations = rest.map(c => c.province);
+    result.destination = rest[0].province;
+    result.destinationProvince = rest[0].province;
+    if (rest[0].district) {
+      result.destinationDistrict = rest[0].district;
+    }
+  } else {
+    // Standard processing (1-2 cities):
+    // - First location without suffix = origin (if no origin already set)
+    // - Second location without suffix = destination (if no destination already set)
+    for (const { province, district } of citiesWithoutSuffix) {
+      if (!result.origin) {
+        result.origin = province;
+        result.originProvince = province;
+        if (district) {
+          result.originDistrict = district;
+        }
+      } else if (!result.destination) {
+        result.destination = province;
+        result.destinationProvince = province;
+        if (district) {
+          result.destinationDistrict = district;
+        }
       }
     }
   }
@@ -195,6 +249,18 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
   if (result.originProvince && result.destinationProvince &&
       result.originProvince === result.destinationProvince) {
     result.sameProvinceSearch = true;
+  }
+
+  // Detect cargo type from message
+  // "parça yük", "parça", "parsiyel" → parsiyel
+  // "komple yük", "komple", "full" → komple
+  // "palet" → palet
+  if (/\bparca\s*yuk\b|\bparça\s*yük\b|\bparsiyel\b|\bparca\b|\bparça\b/i.test(normalized)) {
+    result.cargoType = 'parsiyel';
+  } else if (/\bkomple\s*yuk\b|\bkomple\s*yük\b|\bkomple\b|\bfull\b/i.test(normalized)) {
+    result.cargoType = 'komple';
+  } else if (/\bpalet\b/i.test(normalized)) {
+    result.cargoType = 'palet';
   }
 
   return result;
@@ -238,6 +304,11 @@ ARAC VE KASA TIPLERI:
 - "tenteli", "tente" → bodyType: TENTELI
 - "tir" → vehicleType: TIR
 - "kamyon" → vehicleType: KAMYON
+
+YUK TIPLERI (cargoType):
+- "parça yük", "parça", "parsiyel" → cargoType: parsiyel
+- "komple yük", "komple", "full" → cargoType: komple
+- "palet" → cargoType: palet
 
 KONUSMA AKISI:
 
@@ -352,17 +423,20 @@ export class LogisticsAgent {
     const normalizedMsg = normalizeToAscii(msg);
 
     // Foul language handling
+    // Use word boundary matching to avoid false positives like "kocaeli" matching "oc"
     const swearWords = [
       'amk', 'aq', 'amina', 'aminakoyim', 'aminakoyayim', 'amq',
       'sikeyim', 'siktir', 'sikerim', 'siktirgit', 'sik',
-      'orospu', 'orosbu', 'orospucocugu', 'orosbucocugu', 'oc',
+      'orospu', 'orosbu', 'orospucocugu', 'orosbucocugu',
       'piç', 'pic', 'piclik',
       'yarrak', 'yarak', 'yarrак',
       'gotten', 'gotune', 'got',
       'ananı', 'anani', 'ananin', 'anana',
-      'ibne', 'top', 'gavat',
+      'ibne', 'gavat',
     ];
-    const hasFoulLanguage = swearWords.some(word => normalizedMsg.includes(word));
+    // Split message into words and check each word (not substring)
+    const msgWords = normalizedMsg.split(/[\s,.']+/);
+    const hasFoulLanguage = swearWords.some(swear => msgWords.includes(swear));
 
     if (hasFoulLanguage) {
       // Warn them politely
@@ -441,7 +515,7 @@ export class LogisticsAgent {
       // How to use
       {
         patterns: ['nasil kullan', 'ne yapiyorsun', 'ne is yap', 'nasl', 'nasil calis'],
-        response: 'sehir yazarsan yuk bulurum. ornegin "istanbul" veya "ankara izmir" yaz.',
+        response: 'sehir yazarsan yuk bulurum. ornegin *"istanbul"* veya *"ankara izmir"* yaz.',
       },
       // Where are there jobs - check before generic "ne kadar"
       {
@@ -522,7 +596,7 @@ export class LogisticsAgent {
       let response = formattedResults;
       const remaining = (ctx.lastTotalCount || 0) - currentOffset - result.jobs.length;
       if (remaining > 0) {
-        response += `\n\nhint: ${remaining} is daha var, "devam" yaz gosteririm.`;
+        response += `\n\nhint: ${remaining} is daha var, *"devam"* yaz gosteririm.`;
       }
 
       await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
@@ -560,7 +634,7 @@ export class LogisticsAgent {
 
         let response = formattedResults;
         if (result.totalCount > result.jobs.length) {
-          response += `\n\nhint: ${origin}'den toplam ${result.totalCount} is var, "devam" yaz daha fazla gosteririm.`;
+          response += `\n\nhint: ${origin}'den toplam ${result.totalCount} is var, *"devam"* yaz daha fazla gosteririm.`;
         }
 
         await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
@@ -614,8 +688,10 @@ export class LogisticsAgent {
     const parsedLocations = parseLocationsFromMessage(userMessage);
 
     // Handle "X ici" / "X icinde" - intra-city search (same origin and destination)
-    const intraCityPatterns = [' ici ', ' ici', ' icinde ', ' icinde', ' icinden'];
-    const isIntraCitySearch = intraCityPatterns.some(p => (' ' + normalizedMsg + ' ').includes(p));
+    // IMPORTANT: Use word boundaries to avoid matching "için" (Turkish for "for")
+    // "ici" means "inside", "için" means "for" - very different meanings!
+    const intraCityRegex = /\bici\b|\bicinde\b|\bicinden\b/i;
+    const isIntraCitySearch = intraCityRegex.test(normalizedMsg);
 
     if (isIntraCitySearch && (parsedLocations.origin || conversation?.context.lastOrigin)) {
       const city = parsedLocations.origin || conversation?.context.lastOrigin;
@@ -652,7 +728,7 @@ export class LogisticsAgent {
           finalJobs = interCityResult.jobs;
           finalTotalCount = interCityResult.totalCount;
           if (interCityResult.totalCount > interCityResult.jobs.length) {
-            response += `\n\nhint: ${city}'dan ${interCityResult.totalCount} is var, "devam" yaz daha fazla gosteririm.`;
+            response += `\n\nhint: ${city}'dan ${interCityResult.totalCount} is var, *"devam"* yaz daha fazla gosteririm.`;
           }
         } else {
           response = `${city} ici ve ${city}'dan cikan is yok su an abi.`;
@@ -660,7 +736,7 @@ export class LogisticsAgent {
       } else {
         response = this.formatJobsAsText(result.jobs, params);
         if (result.totalCount > result.jobs.length) {
-          response += `\n\nhint: ${city} icinde ${result.totalCount} is var, "devam" yaz daha fazla gosteririm.`;
+          response += `\n\nhint: ${city} icinde ${result.totalCount} is var, *"devam"* yaz daha fazla gosteririm.`;
         }
       }
 
@@ -721,7 +797,7 @@ export class LogisticsAgent {
           finalJobs = interCityResult.jobs;
           finalTotalCount = interCityResult.totalCount;
           if (interCityResult.totalCount > interCityResult.jobs.length) {
-            response += `\n\nhint: ${city}'dan ${interCityResult.totalCount} is var, "devam" yaz daha fazla gosteririm.`;
+            response += `\n\nhint: ${city}'dan ${interCityResult.totalCount} is var, *"devam"* yaz daha fazla gosteririm.`;
           }
         } else {
           response = `${city} ici ve ${city}'dan cikan is yok su an abi.`;
@@ -729,7 +805,7 @@ export class LogisticsAgent {
       } else {
         response = this.formatJobsAsText(result.jobs, params);
         if (result.totalCount > result.jobs.length) {
-          response += `\n\nhint: ${city} icinde ${result.totalCount} is var, "devam" yaz daha fazla gosteririm.`;
+          response += `\n\nhint: ${city} icinde ${result.totalCount} is var, *"devam"* yaz daha fazla gosteririm.`;
         }
       }
 
@@ -749,6 +825,72 @@ export class LogisticsAgent {
       return {
         message: response,
         jobIds: finalJobs.map(j => j.id),
+        context: {} as ConversationContext,
+      };
+    }
+
+    // Handle multi-destination search (e.g., "Samsundan istanbul ankara izmir varmi")
+    // Search for jobs from origin to each destination and combine results
+    if (parsedLocations.destinations && parsedLocations.destinations.length >= 2 && parsedLocations.origin) {
+      const origin = parsedLocations.origin;
+      const destinations = parsedLocations.destinations;
+
+      console.log(`[Agent] Multi-destination search: ${origin} → [${destinations.join(', ')}]`);
+
+      // Search for each destination
+      const allJobs: JobResult[] = [];
+      const jobsByDestination: Map<string, JobResult[]> = new Map();
+
+      for (const dest of destinations) {
+        const params: SearchJobsParams = {
+          origin,
+          destination: dest,
+          limit: 5, // Limit per destination to avoid too many results
+        };
+        const result = await searchJobs(this.sql, params);
+        if (result.jobs.length > 0) {
+          jobsByDestination.set(dest, result.jobs);
+          allJobs.push(...result.jobs);
+        }
+      }
+
+      let response: string;
+      if (allJobs.length === 0) {
+        response = `${origin}'dan ${destinations.join(', ')} yonune is yok su an abi.`;
+      } else {
+        // Format results grouped by destination
+        const sections: string[] = [];
+        for (const dest of destinations) {
+          const jobs = jobsByDestination.get(dest);
+          if (jobs && jobs.length > 0) {
+            sections.push(`${origin} → ${dest}:\n${this.formatJobsAsText(jobs)}`);
+          }
+        }
+        response = sections.join('\n\n');
+
+        // Add hint about destinations with no jobs
+        const emptyDests = destinations.filter(d => !jobsByDestination.has(d) || jobsByDestination.get(d)!.length === 0);
+        if (emptyDests.length > 0) {
+          response += `\n\nnot: ${emptyDests.join(', ')} yonune is yok su an.`;
+        }
+      }
+
+      await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
+      await this.conversationStore.addMessage(
+        userId,
+        { role: 'assistant', content: response },
+        {
+          lastOrigin: origin,
+          lastDestination: undefined, // Multiple destinations, don't set single
+          lastTotalCount: allJobs.length,
+          lastOffset: 0,
+          lastShownCount: allJobs.length,
+        }
+      );
+
+      return {
+        message: response,
+        jobIds: allJobs.map(j => j.id),
         context: {} as ConversationContext,
       };
     }
@@ -974,6 +1116,10 @@ export class LogisticsAgent {
       if (parsedLocations?.destinationDistrict) {
         params.destinationDistrict = parsedLocations.destinationDistrict;
       }
+      // Use pre-parsed cargo type (parsiyel, palet, komple)
+      if (parsedLocations?.cargoType) {
+        params.cargoType = parsedLocations.cargoType;
+      }
 
       // If user only mentioned origin (no destination), CLEAR any destination GPT added
       // This prevents GPT from using old destinations from conversation history
@@ -1050,7 +1196,7 @@ export class LogisticsAgent {
 
       // Show hint with total unique count and pagination option
       if (result.totalCount > shownCount) {
-        directResponse += `\n\nhint: toplamda ${result.totalCount} is var, ${shownCount} tane gosteriyorum. "devam" yaz daha fazla gosteririm.`;
+        directResponse += `\n\nhint: toplamda ${result.totalCount} is var, ${shownCount} tane gosteriyorum. *"devam"* yaz daha fazla gosteririm.`;
       }
 
       // Return with directResponse - this bypasses GPT entirely for the response
@@ -1102,6 +1248,7 @@ export class LogisticsAgent {
       'lowbed', 'platform', 'sal',
       // Cargo/load keywords
       'yuk', 'is', 'ilan', 'sefer', 'mal', 'palet', 'ton', 'kilo',
+      'parca', 'parça', 'parsiyel', 'komple',
       // Action keywords
       'ariyorum', 'lazim', 'var mi', 'varmi', 'istiyorum', 'bakiyorum',
       // "All destinations" keywords

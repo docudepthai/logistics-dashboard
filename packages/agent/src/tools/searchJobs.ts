@@ -37,6 +37,8 @@ function getRawTextVariants(term: string): string[] {
 export interface SearchJobsParams {
   origin?: string;
   destination?: string;
+  originDistrict?: string;
+  destinationDistrict?: string;
   vehicleType?: string;
   bodyType?: string;
   cargoType?: string;
@@ -45,12 +47,15 @@ export interface SearchJobsParams {
   minWeight?: number;
   maxWeight?: number;
   limit?: number;
+  offset?: number;
 }
 
 export interface JobResult {
   id: string;
   originProvince: string | null;
+  originDistrict: string | null;
   destinationProvince: string | null;
+  destinationDistrict: string | null;
   vehicleType: string | null;
   bodyType: string | null;
   cargoType: string | null;
@@ -103,6 +108,19 @@ export async function searchJobs(
     // Search only main destination field - routes array causes false positives
     conditions.push(`LOWER(destination_province) LIKE LOWER($${paramIndex})`);
     values.push(`%${params.destination}%`);
+    paramIndex++;
+  }
+
+  // District filtering - more specific location search
+  if (params.originDistrict) {
+    conditions.push(`LOWER(origin_district) LIKE LOWER($${paramIndex})`);
+    values.push(`%${params.originDistrict}%`);
+    paramIndex++;
+  }
+
+  if (params.destinationDistrict) {
+    conditions.push(`LOWER(destination_district) LIKE LOWER($${paramIndex})`);
+    values.push(`%${params.destinationDistrict}%`);
     paramIndex++;
   }
 
@@ -163,6 +181,19 @@ export async function searchJobs(
     paramIndex++;
   }
 
+  // Weight filters (useful for kamyonet which has max ~3.5 ton)
+  if (params.maxWeight !== undefined) {
+    conditions.push(`(weight IS NULL OR weight <= $${paramIndex})`);
+    values.push(params.maxWeight);
+    paramIndex++;
+  }
+
+  if (params.minWeight !== undefined) {
+    conditions.push(`(weight IS NULL OR weight >= $${paramIndex})`);
+    values.push(params.minWeight);
+    paramIndex++;
+  }
+
   // Get unique count (deduplicated) - this is the true count of distinct jobs
   const countQuery = `
     SELECT COUNT(*) as count FROM (
@@ -179,13 +210,17 @@ export async function searchJobs(
   const totalCount = Number(countResult[0]?.count || 0);
 
   // Fetch many more to get accurate dedup count
-  values.push(100);
+  const fetchLimit = 100;
+  const offset = params.offset || 0;
+  values.push(fetchLimit + offset); // Fetch more to account for offset
 
   const query = `
     SELECT
       id,
       origin_province as "originProvince",
+      origin_district as "originDistrict",
       destination_province as "destinationProvince",
+      destination_district as "destinationDistrict",
       vehicle_type as "vehicleType",
       body_type as "bodyType",
       cargo_type as "cargoType",
@@ -210,8 +245,11 @@ export async function searchJobs(
   // Deduplicate only if ALL fields are identical (true duplicates/spam)
   const deduped = deduplicateJobs(allJobs);
 
+  // Apply offset after deduplication
+  const offsetDeduped = deduped.slice(offset);
+
   return {
-    jobs: deduped.slice(0, limit),
+    jobs: offsetDeduped.slice(0, limit),
     totalCount,
     dedupedCount: deduped.length,
   };
@@ -230,7 +268,9 @@ function deduplicateJobs(jobs: JobResult[]): JobResult[] {
     // Only dedupe if everything is exactly the same
     const key = [
       job.originProvince?.toLowerCase() || '',
+      job.originDistrict?.toLowerCase() || '',
       job.destinationProvince?.toLowerCase() || '',
+      job.destinationDistrict?.toLowerCase() || '',
       job.vehicleType?.toLowerCase() || '',
       job.bodyType?.toLowerCase() || '',
       job.cargoType?.toLowerCase() || '',
@@ -257,7 +297,9 @@ export async function getJobById(
     SELECT
       id,
       origin_province as "originProvince",
+      origin_district as "originDistrict",
       destination_province as "destinationProvince",
+      destination_district as "destinationDistrict",
       vehicle_type as "vehicleType",
       body_type as "bodyType",
       cargo_type as "cargoType",
@@ -325,17 +367,25 @@ export const searchJobsToolDefinition = {
   type: 'function' as const,
   function: {
     name: 'search_jobs',
-    description: 'Search for logistics jobs in the database. IMPORTANT: If user mentions ANY city name, even just one word like "istanbul" or "kocaeli", you MUST call this function with that city as the origin. Single city name = search jobs FROM that city.',
+    description: 'Search for logistics jobs in the database. IMPORTANT: If user mentions ANY city or district name, you MUST call this function. Single city name = search jobs FROM that city. District names (like Çorlu, Gebze, Tuzla) should use originDistrict or destinationDistrict parameters. CRITICAL: Do NOT interpret these common logistics words as locations - they are vehicle/logistics terms: araç, arac, kamyon, tır, tir, dorse, kasa, yük, yuk, palet. Example: "acik arac var mi" means "are there open trucks" NOT a search for Araç district.',
     parameters: {
       type: 'object',
       properties: {
         origin: {
           type: 'string',
-          description: 'Origin city/province name in Turkish (e.g., "Istanbul", "Izmir", "Ankara")',
+          description: 'Origin city/province name in Turkish (e.g., "Istanbul", "Izmir", "Ankara"). NOT for vehicle terms like "arac", "kamyon", "tir".',
         },
         destination: {
           type: 'string',
-          description: 'Destination city/province name in Turkish (e.g., "Istanbul", "Izmir", "Ankara")',
+          description: 'Destination city/province name in Turkish (e.g., "Istanbul", "Izmir", "Ankara"). NOT for vehicle terms.',
+        },
+        originDistrict: {
+          type: 'string',
+          description: 'Origin district/ilçe name in Turkish (e.g., "Çorlu", "Gebze", "Tuzla", "Pendik", "Esenyurt"). NOT for vehicle terms like "araç/arac".',
+        },
+        destinationDistrict: {
+          type: 'string',
+          description: 'Destination district/ilçe name in Turkish (e.g., "Çorlu", "Gebze", "Tuzla", "Pendik", "Esenyurt"). NOT for vehicle terms.',
         },
         vehicleType: {
           type: 'string',
@@ -347,7 +397,7 @@ export const searchJobsToolDefinition = {
         },
         cargoType: {
           type: 'string',
-          description: 'Type of cargo (e.g., "tekstil", "gida", "mobilya", "demir")',
+          description: 'Type of cargo. IMPORTANT: "parça yük", "parça", "parsiyel" → use "parsiyel". Other examples: "palet", "tekstil", "gida", "mobilya", "demir", "komple"',
         },
         isRefrigerated: {
           type: 'boolean',
