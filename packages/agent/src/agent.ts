@@ -173,6 +173,31 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
       }
     }
 
+    // BUGFIX #2: If stem doesn't resolve and longer suffix was tried, try shorter suffixes
+    // This handles cases like "hataya" where "ya" suffix is tried first → "hata" (invalid)
+    // But "a" suffix → "hatay" (valid province!)
+    // Same for origin: "manisadan" where "ndan" might be tried → "manisa" (but actually "dan" → "manisa" is correct)
+    if (!location && (isOrigin || isDestination)) {
+      const lower = cleanToken.toLowerCase();
+      // Origin suffixes sorted by length ascending (try shorter first this time)
+      const originSuffixes = ['dan', 'den', 'tan', 'ten', 'ndan', 'nden'].sort((a, b) => a.length - b.length);
+      // Destination suffixes sorted by length ascending
+      const destSuffixes = ['a', 'e', 'ya', 'ye', 'na', 'ne'].sort((a, b) => a.length - b.length);
+
+      const suffixesToTry = isOrigin ? originSuffixes : destSuffixes;
+      for (const suffix of suffixesToTry) {
+        if (lower.endsWith(suffix) && lower.length > suffix.length + 2) {
+          const tryStem = lower.slice(0, -suffix.length);
+          const tryLocation = resolveLocation(tryStem);
+          if (tryLocation) {
+            location = tryLocation;
+            // Keep the original direction (isOrigin/isDestination) from stripSuffix
+            break;
+          }
+        }
+      }
+    }
+
     if (location) {
       if (isOrigin && !result.origin) {
         result.origin = location.province;
@@ -1163,8 +1188,23 @@ export class LogisticsAgent {
         params.maxWeight = 3.5;
       }
 
-      const result = await searchJobs(this.sql, params);
+      let result = await searchJobs(this.sql, params);
       console.log(`[Agent] searchJobs result: ${result.jobs.length} jobs, total: ${result.totalCount}`, { params });
+
+      // Fallback for parsiyel: if no parsiyel jobs found, search without cargo filter
+      // and tell user to call and ask about parsiyel
+      let parsiyeFallback = false;
+      if (result.jobs.length === 0 && params.cargoType === 'parsiyel' && (params.origin || params.destination)) {
+        // Re-search without cargoType filter
+        const fallbackParams = { ...params, cargoType: undefined };
+        const fallbackResult = await searchJobs(this.sql, fallbackParams);
+        console.log(`[Agent] parsiyel fallback: ${fallbackResult.jobs.length} jobs without cargo filter`);
+
+        if (fallbackResult.jobs.length > 0) {
+          result = fallbackResult;
+          parsiyeFallback = true;
+        }
+      }
 
       // Update context - use empty string to clear values (DynamoDB doesn't accept undefined)
       contextUpdate.lastOrigin = params.origin || '';
@@ -1172,7 +1212,7 @@ export class LogisticsAgent {
       contextUpdate.lastVehicleType = params.vehicleType || '';
       contextUpdate.lastBodyType = params.bodyType || '';
       contextUpdate.lastIsRefrigerated = params.isRefrigerated ?? false; // Default to false, not undefined
-      contextUpdate.lastCargoType = params.cargoType || '';
+      contextUpdate.lastCargoType = parsiyeFallback ? '' : (params.cargoType || ''); // Don't save cargoType if we did fallback
 
       // Pagination context
       contextUpdate.lastTotalCount = result.totalCount;
@@ -1186,13 +1226,20 @@ export class LogisticsAgent {
 
       // Format results as text in CODE to prevent GPT hallucination
       // Pass params for specific "no results" messages
-      const formattedResults = this.formatJobsAsText(result.jobs, params);
+      const formattedResults = this.formatJobsAsText(result.jobs, parsiyeFallback ? { ...params, cargoType: undefined } : params);
 
       // Always show total count from database
       const shownCount = result.jobs.length;
 
       // Build the direct response text (what user sees)
-      let directResponse = formattedResults;
+      let directResponse = '';
+
+      // If parsiyel fallback was used, add a note
+      if (parsiyeFallback) {
+        directResponse = 'parsiyel olarak isaretlenmis is bulamadim abi, ama su isler var - numaralari arayip parsiyel var mi diye sorabilirsin:\n\n';
+      }
+
+      directResponse += formattedResults;
 
       // Show hint with total unique count and pagination option
       if (result.totalCount > shownCount) {
