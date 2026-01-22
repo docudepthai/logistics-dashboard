@@ -28,6 +28,40 @@ interface UsersData {
   stats: Stats;
 }
 
+interface EngagementData {
+  active24h: number;
+  active7d: number;
+  active30d: number;
+  totalMessages: number;
+  avgMessagesPerUser: number;
+  usersWhoSearched: number;
+  searchRate: number;
+  usersWithMultipleDays: number;
+  returnRate: number;
+}
+
+interface FunnelStep {
+  step: string;
+  count: number;
+  percentage: number;
+  description: string;
+}
+
+interface ConversionData {
+  totalUsers: number;
+  activeTrialUsers: number;
+  expiredUsers: number;
+  premiumUsers: number;
+  trialToPremiumRate: number;
+  trialToExpiredRate: number;
+  funnel: FunnelStep[];
+}
+
+interface BehaviorData {
+  engagement: EngagementData;
+  conversion: ConversionData;
+}
+
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
   return date.toLocaleDateString('tr-TR', {
@@ -69,16 +103,27 @@ function getStatusBadge(user: User): { text: string; bgColor: string; textColor:
 
 export default function UsersPage() {
   const [data, setData] = useState<UsersData | null>(null);
+  const [behaviorData, setBehaviorData] = useState<BehaviorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchData = async () => {
       try {
-        const res = await fetch('/api/users');
-        if (!res.ok) throw new Error('Failed to fetch users');
-        const json = await res.json();
-        setData(json);
+        const [usersRes, behaviorRes] = await Promise.all([
+          fetch('/api/users'),
+          fetch('/api/user-behavior'),
+        ]);
+
+        if (!usersRes.ok) throw new Error('Failed to fetch users');
+        const usersJson = await usersRes.json();
+        setData(usersJson);
+
+        if (behaviorRes.ok) {
+          const behaviorJson = await behaviorRes.json();
+          setBehaviorData(behaviorJson);
+        }
+
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -87,8 +132,8 @@ export default function UsersPage() {
       }
     };
 
-    fetchUsers();
-    const interval = setInterval(fetchUsers, 30000); // Refresh every 30s
+    fetchData();
+    const interval = setInterval(fetchData, 30000); // Refresh every 30s
     return () => clearInterval(interval);
   }, []);
 
@@ -130,6 +175,105 @@ export default function UsersPage() {
                   <div className="text-3xl font-semibold text-emerald-400 mt-1">{data.stats.premium}</div>
                 </div>
               </div>
+
+              {/* Engagement Metrics */}
+              {behaviorData && (
+                <div className="mb-8">
+                  <h2 className="text-lg font-medium text-white mb-4">Engagement Metrics</h2>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
+                      <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Active (24h)</div>
+                      <div className="text-2xl font-semibold text-cyan-400 mt-1">{behaviorData.engagement.active24h}</div>
+                      <div className="text-zinc-600 text-xs mt-1">users active today</div>
+                    </div>
+                    <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
+                      <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Active (7d)</div>
+                      <div className="text-2xl font-semibold text-cyan-400 mt-1">{behaviorData.engagement.active7d}</div>
+                      <div className="text-zinc-600 text-xs mt-1">users this week</div>
+                    </div>
+                    <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
+                      <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Avg Messages</div>
+                      <div className="text-2xl font-semibold text-purple-400 mt-1">{behaviorData.engagement.avgMessagesPerUser}</div>
+                      <div className="text-zinc-600 text-xs mt-1">per user</div>
+                    </div>
+                    <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
+                      <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Return Rate</div>
+                      <div className="text-2xl font-semibold text-amber-400 mt-1">{behaviorData.engagement.returnRate}%</div>
+                      <div className="text-zinc-600 text-xs mt-1">came back again</div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Conversion Funnel */}
+              {behaviorData && (
+                <div className="mb-8">
+                  <h2 className="text-lg font-medium text-white mb-4">Conversion Funnel</h2>
+                  <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+                    <div className="space-y-4">
+                      {behaviorData.conversion.funnel.map((step, index) => {
+                        const isLast = index === behaviorData.conversion.funnel.length - 1;
+                        const prevStep = index > 0 ? behaviorData.conversion.funnel[index - 1] : null;
+                        const dropoff = prevStep ? prevStep.count - step.count : 0;
+                        const dropoffPct = prevStep && prevStep.count > 0 ? Math.round((dropoff / prevStep.count) * 100) : 0;
+
+                        return (
+                          <div key={step.step}>
+                            <div className="flex items-center justify-between mb-2">
+                              <div className="flex items-center space-x-3">
+                                <span className="text-zinc-500 font-mono text-xs w-4">{index + 1}</span>
+                                <span className="text-white text-sm font-medium">{step.step}</span>
+                                <span className="text-zinc-600 text-xs">{step.description}</span>
+                              </div>
+                              <div className="flex items-center space-x-4">
+                                <span className="text-white font-mono text-sm">{step.count}</span>
+                                <span className={`text-xs font-mono ${step.percentage >= 50 ? 'text-emerald-400' : step.percentage >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
+                                  {step.percentage}%
+                                </span>
+                              </div>
+                            </div>
+                            <div className="ml-7 w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
+                              <div
+                                className={`h-full rounded-full transition-all duration-500 ${
+                                  step.percentage >= 50 ? 'bg-emerald-500' : step.percentage >= 20 ? 'bg-amber-500' : 'bg-red-500'
+                                }`}
+                                style={{ width: `${step.percentage}%` }}
+                              />
+                            </div>
+                            {!isLast && dropoff > 0 && (
+                              <div className="ml-7 mt-1 text-xs text-zinc-600">
+                                -{dropoff} ({dropoffPct}% dropoff)
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Summary Stats */}
+                    <div className="mt-6 pt-4 border-t border-zinc-800/50 grid grid-cols-3 gap-4">
+                      <div className="text-center">
+                        <div className="text-zinc-500 text-xs uppercase tracking-wider">Trial → Premium</div>
+                        <div className="text-xl font-semibold text-emerald-400 mt-1">
+                          {behaviorData.conversion.trialToPremiumRate}%
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-zinc-500 text-xs uppercase tracking-wider">Trial → Expired</div>
+                        <div className="text-xl font-semibold text-red-400 mt-1">
+                          {behaviorData.conversion.trialToExpiredRate}%
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="text-zinc-500 text-xs uppercase tracking-wider">Search Rate</div>
+                        <div className="text-xl font-semibold text-purple-400 mt-1">
+                          {behaviorData.engagement.searchRate}%
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Users Table */}
               <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
