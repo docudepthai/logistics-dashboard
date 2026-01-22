@@ -68,13 +68,23 @@ export async function GET() {
 
 // POST - Add to call list (upsert)
 export async function POST(request: NextRequest) {
+  // Debug logging
+  console.log('POST /api/call-list called');
+  console.log('ENV check - REGION:', process.env.REGION || 'not set');
+  console.log('ENV check - TABLE:', process.env.CONVERSATIONS_TABLE || 'not set');
+  console.log('ENV check - KEY exists:', !!process.env.MY_AWS_ACCESS_KEY_ID);
+  console.log('ENV check - SECRET exists:', !!process.env.MY_AWS_SECRET_ACCESS_KEY);
+
   try {
     const body = await request.json();
+    console.log('Request body:', JSON.stringify(body));
     const { phoneNumber, reason, notes, autoAdded } = body;
 
     if (!phoneNumber) {
       return NextResponse.json({ error: 'Phone number required' }, { status: 400 });
     }
+
+    console.log('Attempting PutCommand for phone:', phoneNumber);
 
     // Simple upsert - just put the item (will overwrite if exists)
     await docClient.send(
@@ -93,9 +103,11 @@ export async function POST(request: NextRequest) {
       })
     );
 
+    console.log('PutCommand succeeded for phone:', phoneNumber);
     return NextResponse.json({ success: true, phoneNumber });
   } catch (error) {
     console.error('Error adding to call list:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'no stack');
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
       { error: 'Failed to add to call list', details: errorMessage },
