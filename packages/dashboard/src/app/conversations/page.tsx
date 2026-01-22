@@ -50,11 +50,9 @@ export default function ConversationsPage() {
           fetch('/api/call-list'),
         ]);
 
-        let convos: Conversation[] = [];
         if (convRes.ok) {
           const data = await convRes.json();
-          convos = data.conversations || [];
-          setConversations(convos);
+          setConversations(data.conversations || []);
         }
 
         const map = new Map<string, CallListItem>();
@@ -64,36 +62,6 @@ export default function ConversationsPage() {
             map.set(item.phoneNumber, item);
           }
           setCallList(map);
-        }
-
-        // Auto-add users who didn't search (no context) to call list with "Kullanmadı"
-        const usersToAdd = convos.filter(c =>
-          !map.has(c.userId) &&
-          !c.context?.lastOrigin &&
-          !c.context?.lastDestination
-        );
-
-        for (const user of usersToAdd) {
-          try {
-            const res = await fetch('/api/call-list', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                phoneNumber: user.userId,
-                reason: 'Kullanmadı',
-                autoAdded: true
-              }),
-            });
-            if (res.ok) {
-              map.set(user.userId, { phoneNumber: user.userId, reason: 'Kullanmadı' });
-            }
-          } catch (err) {
-            console.error('Failed to auto-add user:', err);
-          }
-        }
-
-        if (usersToAdd.length > 0) {
-          setCallList(new Map(map));
         }
       } finally {
         setLoading(false);

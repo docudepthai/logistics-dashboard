@@ -58,8 +58,9 @@ export async function GET() {
     return NextResponse.json({ items });
   } catch (error) {
     console.error('Error fetching call list:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to fetch call list' },
+      { error: 'Failed to fetch call list', details: errorMessage },
       { status: 500 }
     );
   }
@@ -123,8 +124,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: true, phoneNumber });
   } catch (error) {
     console.error('Error adding to call list:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return NextResponse.json(
-      { error: 'Failed to add to call list' },
+      { error: 'Failed to add to call list', details: errorMessage },
       { status: 500 }
     );
   }
