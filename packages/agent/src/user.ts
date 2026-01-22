@@ -78,9 +78,7 @@ export class UserStore {
    */
   async createUser(phoneNumber: string): Promise<User> {
     const now = new Date();
-    // TODO: For testing, 1 minute trial. Change back to days for production!
-    // const expiresAt = new Date(now.getTime() + this.freeTierDays * 24 * 60 * 60 * 1000);
-    const expiresAt = new Date(now.getTime() + 1 * 60 * 1000); // 1 minute for testing
+    const expiresAt = new Date(now.getTime() + this.freeTierDays * 24 * 60 * 60 * 1000); // 7 days trial
 
     const user: User = {
       phoneNumber,
@@ -139,22 +137,35 @@ export class UserStore {
 
   /**
    * Mark welcome message as sent for a user.
+   * Uses conditional update to prevent race conditions (only updates if not already sent).
+   * Returns true if update succeeded (welcome not yet sent), false if already sent.
    */
-  async markWelcomeMessageSent(phoneNumber: string): Promise<void> {
-    await this.client.send(
-      new UpdateCommand({
-        TableName: this.tableName,
-        Key: {
-          pk: `USER#${phoneNumber}`,
-          sk: 'PROFILE',
-        },
-        UpdateExpression: 'SET welcomeMessageSent = :sent, updatedAt = :now',
-        ExpressionAttributeValues: {
-          ':sent': true,
-          ':now': new Date().toISOString(),
-        },
-      })
-    );
+  async markWelcomeMessageSent(phoneNumber: string): Promise<boolean> {
+    try {
+      await this.client.send(
+        new UpdateCommand({
+          TableName: this.tableName,
+          Key: {
+            pk: `USER#${phoneNumber}`,
+            sk: 'PROFILE',
+          },
+          UpdateExpression: 'SET welcomeMessageSent = :sent, updatedAt = :now',
+          ConditionExpression: 'attribute_not_exists(welcomeMessageSent) OR welcomeMessageSent = :false',
+          ExpressionAttributeValues: {
+            ':sent': true,
+            ':false': false,
+            ':now': new Date().toISOString(),
+          },
+        })
+      );
+      return true; // Successfully marked - welcome should be sent
+    } catch (error: unknown) {
+      // ConditionalCheckFailedException means welcome was already sent
+      if (error && typeof error === 'object' && 'name' in error && error.name === 'ConditionalCheckFailedException') {
+        return false; // Already sent by another request
+      }
+      throw error; // Re-throw other errors
+    }
   }
 
   /**

@@ -1,10 +1,26 @@
+// Build: 2026-01-21T15:55 - Weight format fix
 import type { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import postgres from 'postgres';
 import { createHmac } from 'crypto';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, GetCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, GetCommand, PutCommand, ScanCommand } from '@aws-sdk/lib-dynamodb';
 import { LogisticsAgent, ConversationStore, UserStore } from '@turkish-logistics/agent';
 import { maskPhoneNumbersInText } from '@turkish-logistics/shared/utils';
+
+// Admin phone numbers to notify when new users join
+const ADMIN_PHONES = ['18575401309', '905332089867'];
+
+// Conversation store instance (for saving welcome messages)
+let conversationStore: ConversationStore | null = null;
+
+function getConversationStore(): ConversationStore {
+  if (!conversationStore) {
+    conversationStore = new ConversationStore({
+      tableName: process.env.CONVERSATIONS_TABLE,
+    });
+  }
+  return conversationStore;
+}
 
 // WhatsApp signature validation
 function verifyWhatsAppSignature(event: APIGatewayProxyEvent): boolean {
@@ -47,6 +63,26 @@ const dynamoClient = new DynamoDBClient({});
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const DEDUP_TABLE = process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
 const DEDUP_TTL_SECONDS = 30 * 60; // 30 minutes
+
+// Check if user has a pending payment
+async function hasPendingPayment(phoneNumber: string): Promise<boolean> {
+  try {
+    const result = await docClient.send(new ScanCommand({
+      TableName: DEDUP_TABLE,
+      FilterExpression: 'begins_with(pk, :pk) AND phoneNumber = :phone AND #s = :status',
+      ExpressionAttributeNames: { '#s': 'status' },
+      ExpressionAttributeValues: {
+        ':pk': 'PAYMENT#',
+        ':phone': phoneNumber,
+        ':status': 'pending',
+      },
+    }));
+    return (result.Items?.length || 0) > 0;
+  } catch (error) {
+    console.error('Error checking pending payment:', error);
+    return false;
+  }
+}
 
 async function isDuplicateMessage(messageId: string): Promise<boolean> {
   try {
@@ -219,13 +255,11 @@ async function sendWelcomeMessage(to: string): Promise<void> {
   }
 
   // Send welcome text
-  const welcomeText = `Merhaba! Turkiye'nin en buyuk lojistik yuk bulma platformuna hos geldiniz.
+  const welcomeText = `Merhaba! Patron'a hoşgeldiniz.
 
-🎁 UCRETSIZ DENEME: Simdi tum ozellikleri ucretsiz deneyebilirsiniz!
+🎁 1 HAFTA ÜCRETSİZ DENEME: Tüm özellikleri 1 hafta boyunca ücretsiz kullanabilirsiniz!
 
-💰 Deneme suresi bittikten sonra telefon numaralarini gormek icin aylik 1000 TL uyelik ucreti alinir. Uyelik almadan da yuk arayabilirsiniz, sadece numaralar gizli kalir.
-
-📍 Nasil kullanilir? Sehir adi yazarak yuk arayabilirsiniz. Ornegin: "istanbul ankara" veya "bursa"`;
+📍 Nasıl kullanılır? Şehir adı yazarak yük arayabilirsiniz. Örneğin: *"istanbul ankara"* veya *"bursa"*`;
 
   await sendWhatsAppMessage(to, welcomeText);
 }
@@ -425,9 +459,38 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
     // Send welcome message to new users
     if (isNewUser && !user.welcomeMessageSent) {
       try {
-        await sendWelcomeMessage(message.from);
-        await store.markWelcomeMessageSent(message.from);
-        console.log(`Sent welcome message to new user: ${message.from}`);
+        // Use conditional update to prevent race condition - only one request will succeed
+        const shouldSendWelcome = await store.markWelcomeMessageSent(message.from);
+
+        if (!shouldSendWelcome) {
+          console.log(`Welcome message already sent to ${message.from} by another request`);
+        } else {
+          // Save user's first message to conversation store
+          const convStore = getConversationStore();
+          await convStore.addMessage(message.from, { role: 'user', content: message.text });
+
+          await sendWelcomeMessage(message.from);
+          console.log(`Sent welcome message to new user: ${message.from}`);
+
+          // Save welcome message to conversation store so it shows in dashboard
+          const welcomeText = `Merhaba! Patron'a hoşgeldiniz.
+
+🎁 1 HAFTA ÜCRETSİZ DENEME: Tüm özellikleri 1 hafta boyunca ücretsiz kullanabilirsiniz!
+
+📍 Nasıl kullanılır? Şehir adı yazarak yük arayabilirsiniz. Örneğin: *"istanbul ankara"* veya *"bursa"*`;
+          await convStore.addMessage(message.from, { role: 'assistant', content: welcomeText });
+
+          // Notify admins about new user
+          for (const adminPhone of ADMIN_PHONES) {
+            try {
+              await sendWhatsAppMessage(adminPhone, `🆕 Yeni kullanıcı: +${message.from}\nİlk mesaj: ${message.text.substring(0, 100)}`);
+              console.log(`Notified admin ${adminPhone} about new user ${message.from}`);
+            } catch (adminError) {
+              console.error(`Failed to notify admin ${adminPhone}:`, adminError);
+              // Don't fail if admin notification fails
+            }
+          }
+        }
       } catch (error) {
         console.error('Failed to send welcome message:', error);
         // Don't fail the request if welcome message fails
@@ -436,6 +499,15 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     // Check if user can view phone numbers
     const canViewPhones = store.isFreeTierActive(user);
+
+    // Check if user has a pending payment - if so, tell them to wait
+    if (!canViewPhones) {
+      const pendingPayment = await hasPendingPayment(message.from);
+      if (pendingPayment) {
+        await sendWhatsAppMessage(message.from, 'Odemeniz isleniyor, lutfen bekleyin. Odeme tamamlandiginda telefon numaralarini gorebileceksiniz.');
+        return response(200, { status: 'payment_pending' });
+      }
+    }
 
     // Only send "bakiyorum" if it looks like a job search (contains city names)
     if (isJobSearchQuery(message.text)) {
@@ -455,7 +527,7 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
       // Generate payment link for this user
       const paymentBaseUrl = process.env.PAYMENT_URL || 'https://t50lrx3amk.execute-api.eu-central-1.amazonaws.com/prod/payment';
       const paymentLink = `${paymentBaseUrl}?phone=${message.from}`;
-      responseText += `\n\n🔒 Deneme sureniz doldu! Telefon numaralarini gormek icin aylik 1000 TL uyelik alin:\n${paymentLink}`;
+      responseText += `\n\n🔒 Deneme süreniz doldu! Telefon numaralarını görmek için aylık 1000 TL üyelik alın:\n${paymentLink}\n\nÖdeme yaparak kullanım koşullarını kabul etmiş olursunuz:\nhttps://patron.ankago.com/kullanim-kosullari`;
       console.log(`Masked phone numbers for expired user: ${message.from}`);
     }
 

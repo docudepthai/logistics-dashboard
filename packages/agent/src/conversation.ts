@@ -21,6 +21,12 @@ export interface ConversationContext {
   lastCargoType?: string;
   lastJobIds?: string[];
   lastSearchFilters?: Record<string, unknown>;
+  // Pagination support
+  lastOffset?: number;
+  lastTotalCount?: number;
+  lastShownCount?: number;
+  // Foul language warning
+  swearWarned?: boolean;
 }
 
 export interface Conversation {
@@ -45,9 +51,11 @@ export class ConversationStore {
       region: options.region || process.env.AWS_REGION || 'eu-central-1',
     });
 
-    this.client = DynamoDBDocumentClient.from(dynamoClient);
+    this.client = DynamoDBDocumentClient.from(dynamoClient, {
+      marshallOptions: { removeUndefinedValues: true },
+    });
     this.tableName = options.tableName || process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
-    this.maxMessages = options.maxMessages || 50; // Keep last 50 messages
+    this.maxMessages = options.maxMessages || 200; // Keep last 200 messages
   }
 
   async getConversation(userId: string): Promise<Conversation | null> {
