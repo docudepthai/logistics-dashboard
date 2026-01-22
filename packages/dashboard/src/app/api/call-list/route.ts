@@ -24,20 +24,97 @@ export interface CallListItem {
   autoAdded: boolean; // true if auto-added because user didn't search
 }
 
-// GET - Get all call list items
+// Helper to check if user has searched (has origin or destination in context)
+function hasSearched(context: Record<string, unknown> | undefined): boolean {
+  if (!context) return false;
+  return !!(context.lastOrigin || context.lastDestination);
+}
+
+// GET - Get all call list items (also auto-adds users who haven't searched)
 export async function GET() {
   try {
-    const result = await docClient.send(
-      new ScanCommand({
-        TableName: CONVERSATIONS_TABLE,
-        FilterExpression: 'sk = :callList',
-        ExpressionAttributeValues: {
-          ':callList': 'CALL_LIST',
-        },
-      })
+    // Fetch both call list items and conversations in parallel
+    const [callListResult, conversationsResult] = await Promise.all([
+      docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'sk = :callList',
+          ExpressionAttributeValues: {
+            ':callList': 'CALL_LIST',
+          },
+        })
+      ),
+      docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'sk = :conversation',
+          ExpressionAttributeValues: {
+            ':conversation': 'CONVERSATION',
+          },
+          ProjectionExpression: 'pk, #ctx',
+          ExpressionAttributeNames: {
+            '#ctx': 'context',
+          },
+        })
+      ),
+    ]);
+
+    // Get existing call list phone numbers
+    const existingPhones = new Set(
+      (callListResult.Items || []).map(item => item.phoneNumber as string)
     );
 
-    const items: CallListItem[] = (result.Items || []).map(item => ({
+    // Find users who haven't searched and aren't in call list
+    const usersToAdd = (conversationsResult.Items || [])
+      .filter(item => {
+        const phone = (item.pk as string)?.replace('USER#', '') || '';
+        // Must be a valid phone number (10+ digits)
+        if (!/^[+]?\d{10,}$/.test(phone)) return false;
+        // Not already in call list
+        if (existingPhones.has(phone)) return false;
+        // Hasn't searched
+        return !hasSearched(item.context as Record<string, unknown>);
+      })
+      .map(item => (item.pk as string).replace('USER#', ''));
+
+    // Auto-add users who haven't searched (in background, don't wait)
+    if (usersToAdd.length > 0) {
+      const addPromises = usersToAdd.map(phone =>
+        docClient.send(
+          new PutCommand({
+            TableName: CONVERSATIONS_TABLE,
+            Item: {
+              pk: `USER#${phone}`,
+              sk: 'CALL_LIST',
+              phoneNumber: phone,
+              reason: 'Kullanmadı',
+              notes: '',
+              calledAt: null,
+              addedAt: new Date().toISOString(),
+              autoAdded: true,
+            },
+            ConditionExpression: 'attribute_not_exists(pk)', // Only add if not exists
+          })
+        ).catch(() => {}) // Ignore errors (e.g., if already exists)
+      );
+      // Wait for all to complete
+      await Promise.all(addPromises);
+    }
+
+    // Re-fetch call list after auto-adding
+    const finalResult = usersToAdd.length > 0
+      ? await docClient.send(
+          new ScanCommand({
+            TableName: CONVERSATIONS_TABLE,
+            FilterExpression: 'sk = :callList',
+            ExpressionAttributeValues: {
+              ':callList': 'CALL_LIST',
+            },
+          })
+        )
+      : callListResult;
+
+    const items: CallListItem[] = (finalResult.Items || []).map(item => ({
       phoneNumber: item.phoneNumber || '',
       reason: item.reason || '',
       notes: item.notes || '',
@@ -55,7 +132,7 @@ export async function GET() {
       return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     });
 
-    return NextResponse.json({ items });
+    return NextResponse.json({ items, autoAdded: usersToAdd.length });
   } catch (error) {
     console.error('Error fetching call list:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
