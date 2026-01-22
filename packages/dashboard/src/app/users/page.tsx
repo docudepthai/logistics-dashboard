@@ -28,6 +28,11 @@ interface UsersData {
   stats: Stats;
 }
 
+interface UserNotSearched {
+  phone: string;
+  calledAt: string | null;
+}
+
 interface EngagementData {
   active24h: number;
   active7d: number;
@@ -35,7 +40,7 @@ interface EngagementData {
   totalMessages: number;
   avgMessagesPerUser: number;
   usersWhoSearched: number;
-  usersWhoDidntSearch: string[];
+  usersWhoDidntSearch: UserNotSearched[];
   searchRate: number;
   usersWithMultipleDays: number;
   returnRate: number;
@@ -108,6 +113,40 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [expandedFunnelStep, setExpandedFunnelStep] = useState<string | null>(null);
+  const [calledUsers, setCalledUsers] = useState<Record<string, boolean>>({});
+  const [updatingCalled, setUpdatingCalled] = useState<string | null>(null);
+
+  // Initialize called users from behavior data
+  useEffect(() => {
+    if (behaviorData?.engagement?.usersWhoDidntSearch) {
+      const initialCalled: Record<string, boolean> = {};
+      for (const user of behaviorData.engagement.usersWhoDidntSearch) {
+        initialCalled[user.phone] = !!user.calledAt;
+      }
+      setCalledUsers(initialCalled);
+    }
+  }, [behaviorData]);
+
+  const toggleCalled = async (phone: string) => {
+    const newCalledStatus = !calledUsers[phone];
+    setUpdatingCalled(phone);
+
+    try {
+      const res = await fetch('/api/user-called', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: phone, called: newCalledStatus }),
+      });
+
+      if (res.ok) {
+        setCalledUsers(prev => ({ ...prev, [phone]: newCalledStatus }));
+      }
+    } catch (err) {
+      console.error('Failed to update called status:', err);
+    } finally {
+      setUpdatingCalled(null);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -264,12 +303,36 @@ export default function UsersPage() {
                                 )}
                                 {isExpanded && hasDropoffUsers && (
                                   <div className="mt-2 p-3 bg-zinc-800/50 rounded-lg border border-zinc-700/50">
-                                    <div className="text-xs text-zinc-400 mb-2">Users who haven't searched yet:</div>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-48 overflow-y-auto">
-                                      {behaviorData.engagement.usersWhoDidntSearch.map((phone) => (
-                                        <div key={phone} className="font-mono text-xs text-zinc-300 bg-zinc-900/50 px-2 py-1 rounded">
-                                          +{phone}
-                                        </div>
+                                    <div className="flex items-center justify-between mb-2">
+                                      <div className="text-xs text-zinc-400">Users who haven't searched yet:</div>
+                                      <div className="text-xs text-zinc-500">
+                                        Called: {Object.values(calledUsers).filter(Boolean).length} / {behaviorData.engagement.usersWhoDidntSearch.length}
+                                      </div>
+                                    </div>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-64 overflow-y-auto">
+                                      {behaviorData.engagement.usersWhoDidntSearch.map((user) => (
+                                        <label
+                                          key={user.phone}
+                                          className={`flex items-center space-x-2 font-mono text-xs px-2 py-1.5 rounded cursor-pointer transition-colors ${
+                                            calledUsers[user.phone]
+                                              ? 'bg-emerald-900/30 text-emerald-300 border border-emerald-700/50'
+                                              : 'bg-zinc-900/50 text-zinc-300 hover:bg-zinc-800/50'
+                                          }`}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            checked={calledUsers[user.phone] || false}
+                                            onChange={() => toggleCalled(user.phone)}
+                                            disabled={updatingCalled === user.phone}
+                                            className="w-3.5 h-3.5 rounded border-zinc-600 bg-zinc-800 text-emerald-500 focus:ring-emerald-500 focus:ring-offset-0"
+                                          />
+                                          <span className={calledUsers[user.phone] ? 'line-through opacity-60' : ''}>
+                                            +{user.phone}
+                                          </span>
+                                          {updatingCalled === user.phone && (
+                                            <span className="w-3 h-3 border border-zinc-500 border-t-white rounded-full animate-spin" />
+                                          )}
+                                        </label>
                                       ))}
                                     </div>
                                   </div>

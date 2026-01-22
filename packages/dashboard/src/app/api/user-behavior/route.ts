@@ -28,6 +28,7 @@ interface UserProfile {
   freeTierExpiresAt: string;
   membershipStatus: 'free_trial' | 'expired' | 'premium';
   paidUntil?: string;
+  calledAt?: string;
 }
 
 interface ConversationData {
@@ -68,6 +69,7 @@ export async function GET() {
           freeTierExpiresAt: item.freeTierExpiresAt,
           membershipStatus: item.membershipStatus,
           paidUntil: item.paidUntil,
+          calledAt: item.calledAt,
         });
       } else if (item.sk === 'CONVERSATION') {
         const userId = (item.pk as string)?.replace('USER#', '') || '';
@@ -100,7 +102,18 @@ export async function GET() {
     const conversationsWithSearch = conversations.filter(c => c.context.lastOrigin || c.context.lastDestination);
     const conversationsWithoutSearch = conversations.filter(c => !c.context.lastOrigin && !c.context.lastDestination);
     const usersWhoSearched = conversationsWithSearch.length;
-    const usersWhoDidntSearch = conversationsWithoutSearch.map(c => c.userId);
+
+    // Build a map of phone -> calledAt from profiles
+    const profileCalledMap = new Map<string, string | undefined>();
+    for (const profile of profiles) {
+      profileCalledMap.set(profile.phoneNumber, profile.calledAt);
+    }
+
+    // Return users with their called status
+    const usersWhoDidntSearch = conversationsWithoutSearch.map(c => ({
+      phone: c.userId,
+      calledAt: profileCalledMap.get(c.userId) || null,
+    }));
     const searchRate = conversations.length > 0
       ? Math.round((usersWhoSearched / conversations.length) * 100)
       : 0;
