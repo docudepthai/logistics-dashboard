@@ -56,18 +56,29 @@ function getDaysRemaining(user: User): number | null {
 
 export async function GET() {
   try {
-    // Scan for all user profiles
-    const result = await docClient.send(
-      new ScanCommand({
-        TableName: CONVERSATIONS_TABLE,
-        FilterExpression: 'sk = :sk',
-        ExpressionAttributeValues: {
-          ':sk': 'PROFILE',
-        },
-      })
-    );
+    // Scan for all user profiles with pagination
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allItems: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let lastEvaluatedKey: Record<string, any> | undefined;
 
-    const users: (User & { canViewPhones: boolean; daysRemaining: number | null })[] = (result.Items || []).map((item) => {
+    do {
+      const result = await docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'sk = :sk',
+          ExpressionAttributeValues: {
+            ':sk': 'PROFILE',
+          },
+          ExclusiveStartKey: lastEvaluatedKey,
+        })
+      );
+
+      allItems.push(...(result.Items || []));
+      lastEvaluatedKey = result.LastEvaluatedKey;
+    } while (lastEvaluatedKey);
+
+    const users: (User & { canViewPhones: boolean; daysRemaining: number | null })[] = allItems.map((item) => {
       const user: User = {
         phoneNumber: item.phoneNumber,
         firstContactAt: item.firstContactAt,
