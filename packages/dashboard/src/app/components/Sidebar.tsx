@@ -16,6 +16,7 @@ const navigation = [
     items: [
       { name: 'Conversations', href: '/conversations', icon: 'chat' },
       { name: 'Users', href: '/users', icon: 'users' },
+      { name: 'User Analytics', href: '/user-analytics', icon: 'analytics' },
       { name: 'CRM', href: '/crm', icon: 'phone' },
     ],
   },
@@ -38,6 +39,11 @@ const icons: Record<string, React.ReactNode> = {
   chart: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13h4v8H3v-8zm7-5h4v13h-4V8zm7-5h4v18h-4V3z" />
+    </svg>
+  ),
+  analytics: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
     </svg>
   ),
   heart: (
