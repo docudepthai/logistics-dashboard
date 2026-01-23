@@ -23,6 +23,14 @@ interface NudgeEligibleUser {
   nudgeSentAt?: string;
 }
 
+interface NudgeSettings {
+  mode: 'automatic' | 'manual';
+  triggerHours: number;
+  messageTemplate: string;
+  lastUpdated: string | null;
+  updatedBy: string | null;
+}
+
 const CALL_REASONS = [
   'İş fonksiyonu kullanılmamış',
   'Sistem arızası oluşmuş ve düzeltildi',
@@ -52,6 +60,13 @@ function formatPhoneNumber(phone: string): string {
   return `+${phone}`;
 }
 
+function formatHoursRemaining(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  if (h === 0) return `${m}dk`;
+  return `${h}s ${m}dk`;
+}
+
 export default function CRMPage() {
   const [items, setItems] = useState<CallListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -69,9 +84,22 @@ export default function CRMPage() {
   const [markingNudge, setMarkingNudge] = useState<string | null>(null);
   const [showNudged, setShowNudged] = useState(false);
 
+  // Nudge settings modal state
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [nudgeSettings, setNudgeSettings] = useState<NudgeSettings>({
+    mode: 'manual',
+    triggerHours: 3,
+    messageTemplate: '',
+    lastUpdated: null,
+    updatedBy: null,
+  });
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [sendingNudge, setSendingNudge] = useState<string | null>(null);
+
   useEffect(() => {
     fetchCallList();
     fetchNudgeEligible();
+    fetchNudgeSettings();
   }, []);
 
   const fetchCallList = async () => {
@@ -126,6 +154,67 @@ export default function CRMPage() {
       console.error('Failed to mark nudge:', err);
     } finally {
       setMarkingNudge(null);
+    }
+  };
+
+  const fetchNudgeSettings = async () => {
+    try {
+      const res = await fetch('/api/nudge-settings');
+      if (res.ok) {
+        const data = await res.json();
+        setNudgeSettings(data);
+      }
+    } catch (err) {
+      console.error('Failed to fetch nudge settings:', err);
+    }
+  };
+
+  const saveNudgeSettings = async (newSettings: Partial<NudgeSettings>) => {
+    setSavingSettings(true);
+    try {
+      const res = await fetch('/api/nudge-settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newSettings),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setNudgeSettings(data);
+      }
+    } catch (err) {
+      console.error('Failed to save nudge settings:', err);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
+  const sendNudgeMessage = async (phoneNumber: string) => {
+    setSendingNudge(phoneNumber);
+    try {
+      const res = await fetch('/api/send-nudge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber }),
+      });
+      if (res.ok) {
+        setNudgeUsers(prev => prev.map(u =>
+          u.phoneNumber === phoneNumber
+            ? { ...u, nudgeSent: true, nudgeSentAt: new Date().toISOString() }
+            : u
+        ));
+        setNudgeStats(prev => ({
+          ...prev,
+          nudgeSent: prev.nudgeSent + 1,
+          pending: prev.pending - 1,
+        }));
+      } else {
+        alert('Mesaj gönderilemedi');
+      }
+    } catch (err) {
+      console.error('Failed to send nudge:', err);
+      alert('Mesaj gönderilemedi');
+    } finally {
+      setSendingNudge(null);
     }
   };
 
@@ -239,53 +328,27 @@ export default function CRMPage() {
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-medium text-white">24 Saat Mesaj Penceresi</h2>
-            <p className="text-zinc-500 text-xs mt-0.5">Henüz arama yapmamış ve hala mesaj gönderilebilir kullanıcılar</p>
+            <p className="text-zinc-500 text-xs mt-0.5">
+              Henüz arama yapmamış ve hala mesaj gönderilebilir kullanıcılar
+              <span className="mx-2">·</span>
+              <span className={nudgeSettings.mode === 'automatic' ? 'text-emerald-400' : 'text-amber-400'}>
+                {nudgeSettings.mode === 'automatic' ? 'Otomatik' : 'Manuel'}
+              </span>
+              <span className="text-zinc-600"> ({nudgeSettings.triggerHours}s kala)</span>
+            </p>
           </div>
           <div className="flex items-center space-x-4">
-            <div className="flex items-center space-x-2 text-sm">
-              <span className="text-red-400">{nudgeStats.urgent}</span>
-              <span className="text-zinc-600">acil</span>
-              <span className="text-zinc-600">·</span>
-              <span className="text-amber-400">{nudgeStats.pending}</span>
-              <span className="text-zinc-600">bekliyor</span>
-              <span className="text-zinc-600">·</span>
-              <span className="text-emerald-400">{nudgeStats.nudgeSent}</span>
-              <span className="text-zinc-600">gönderildi</span>
-            </div>
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              className="px-3 py-1.5 text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-colors flex items-center space-x-2"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>Ayarlar</span>
+            </button>
           </div>
-        </div>
-
-        {/* 24h Stats */}
-        <div className="grid grid-cols-4 gap-4">
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-3">
-            <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
-            <div className="text-xl font-semibold text-white mt-1">{nudgeStats.total}</div>
-          </div>
-          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-            <div className="text-red-400/70 text-xs font-medium uppercase tracking-wider">Acil (&lt;6s)</div>
-            <div className="text-xl font-semibold text-red-400 mt-1">{nudgeStats.urgent}</div>
-          </div>
-          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
-            <div className="text-amber-400/70 text-xs font-medium uppercase tracking-wider">Bekliyor</div>
-            <div className="text-xl font-semibold text-amber-400 mt-1">{nudgeStats.pending}</div>
-          </div>
-          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
-            <div className="text-emerald-400/70 text-xs font-medium uppercase tracking-wider">Gönderildi</div>
-            <div className="text-xl font-semibold text-emerald-400 mt-1">{nudgeStats.nudgeSent}</div>
-          </div>
-        </div>
-
-        {/* Filter Toggle */}
-        <div className="flex items-center space-x-4">
-          <label className="flex items-center space-x-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={showNudged}
-              onChange={(e) => setShowNudged(e.target.checked)}
-              className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500"
-            />
-            <span className="text-sm text-zinc-400">Mesaj gönderilenleri de göster</span>
-          </label>
         </div>
 
         {/* 24h Window Users Table */}
@@ -331,7 +394,7 @@ export default function CRMPage() {
                           user.hoursRemaining < 12 ? 'text-amber-400' :
                           'text-emerald-400'
                         }`}>
-                          {user.hoursRemaining.toFixed(1)}s
+                          {formatHoursRemaining(user.hoursRemaining)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-zinc-400 text-sm">{user.messageCount}</td>
@@ -351,23 +414,23 @@ export default function CRMPage() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center space-x-2">
+                          {!user.nudgeSent && (
+                            <button
+                              onClick={() => sendNudgeMessage(user.phoneNumber)}
+                              disabled={sendingNudge === user.phoneNumber}
+                              className="text-xs px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors disabled:opacity-50"
+                            >
+                              {sendingNudge === user.phoneNumber ? 'Gönderiliyor...' : 'Şablon Gönder'}
+                            </button>
+                          )}
                           <a
                             href={`https://wa.me/${user.phoneNumber}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors"
+                            className="text-xs px-2 py-1 bg-zinc-700/50 text-zinc-400 hover:bg-zinc-700 rounded transition-colors"
                           >
-                            Mesaj Gönder
+                            WA Aç
                           </a>
-                          {!user.nudgeSent && (
-                            <button
-                              onClick={() => markAsNudged(user.phoneNumber)}
-                              disabled={markingNudge === user.phoneNumber}
-                              className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded transition-colors disabled:opacity-50"
-                            >
-                              {markingNudge === user.phoneNumber ? '...' : 'Tamamlandı'}
-                            </button>
-                          )}
                         </div>
                       </td>
                     </tr>
@@ -590,6 +653,109 @@ export default function CRMPage() {
           </div>
         )}
       </div>
+
+      {/* Settings Modal */}
+      {showSettingsModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-lg mx-4 overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+              <h3 className="text-lg font-medium text-white">24 Saat Penceresi Ayarları</h3>
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="text-zinc-500 hover:text-white transition-colors"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="px-6 py-5 space-y-6">
+              {/* Mode Selection */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-3">Mesaj Gönderme Modu</label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => saveNudgeSettings({ mode: 'manual' })}
+                    disabled={savingSettings}
+                    className={`p-4 rounded-lg border transition-all ${
+                      nudgeSettings.mode === 'manual'
+                        ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
+                        : 'bg-zinc-800/50 border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                    }`}
+                  >
+                    <div className="text-lg font-medium mb-1">Manuel</div>
+                    <div className="text-xs opacity-70">Mesajları kendiniz gönderin</div>
+                  </button>
+                  <button
+                    onClick={() => saveNudgeSettings({ mode: 'automatic' })}
+                    disabled={savingSettings}
+                    className={`p-4 rounded-lg border transition-all ${
+                      nudgeSettings.mode === 'automatic'
+                        ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                        : 'bg-zinc-800/50 border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                    }`}
+                  >
+                    <div className="text-lg font-medium mb-1">Otomatik</div>
+                    <div className="text-xs opacity-70">Sistem otomatik gönderir</div>
+                  </button>
+                </div>
+              </div>
+
+              {/* Trigger Time */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-3">
+                  Mesaj Gönderim Zamanı
+                  <span className="text-zinc-600 font-normal ml-2">(24 saat dolmadan kaç saat önce)</span>
+                </label>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="range"
+                    min="1"
+                    max="12"
+                    value={nudgeSettings.triggerHours}
+                    onChange={(e) => saveNudgeSettings({ triggerHours: parseInt(e.target.value) })}
+                    className="flex-1 h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                  />
+                  <span className="text-white font-medium w-16 text-right">{nudgeSettings.triggerHours} saat</span>
+                </div>
+                <div className="flex justify-between text-xs text-zinc-600 mt-1">
+                  <span>1 saat</span>
+                  <span>12 saat</span>
+                </div>
+              </div>
+
+              {/* Message Template (Read-only) */}
+              <div>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Mesaj Şablonu</label>
+                <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300">
+                  {nudgeSettings.messageTemplate || 'Şablon yükleniyor...'}
+                </div>
+                <p className="text-xs text-zinc-600 mt-2">Şablon şu an değiştirilemez</p>
+              </div>
+
+              {/* Last Updated */}
+              {nudgeSettings.lastUpdated && (
+                <div className="text-xs text-zinc-600">
+                  Son güncelleme: {formatDate(nudgeSettings.lastUpdated)}
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 border-t border-zinc-800 flex justify-end">
+              <button
+                onClick={() => setShowSettingsModal(false)}
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
