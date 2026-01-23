@@ -1,5 +1,8 @@
 import postgres from 'postgres';
 
+// Priority group - jobs from this group appear first in search results
+const PRIORITY_GROUP_JID = '120363405894388243@g.us'; // patron is paylasimi
+
 /**
  * Get raw text search variants for a term.
  * Maps structured field values to patterns that appear in raw WhatsApp messages.
@@ -210,9 +213,15 @@ export async function searchJobs(
   const totalCount = Number(countResult[0]?.count || 0);
 
   // Fetch many more to get accurate dedup count
-  const fetchLimit = 100;
+  // Need to fetch enough raw rows to cover the offset after deduplication
+  // Duplicates can be 2-3x the unique count, so we fetch offset*3 + base buffer
   const offset = params.offset || 0;
-  values.push(fetchLimit + offset); // Fetch more to account for offset
+  const fetchLimit = Math.max(200, offset * 3 + 150);
+  values.push(fetchLimit);
+
+  // Add priority group JID as a parameter for the ORDER BY
+  values.push(PRIORITY_GROUP_JID);
+  const priorityParamIndex = paramIndex + 1;
 
   const query = `
     SELECT
@@ -235,7 +244,9 @@ export async function searchJobs(
       created_at as "createdAt"
     FROM jobs
     WHERE ${conditions.join(' AND ')}
-    ORDER BY created_at DESC
+    ORDER BY
+      CASE WHEN source_group_jid = $${priorityParamIndex} THEN 0 ELSE 1 END,
+      created_at DESC
     LIMIT $${paramIndex}
   `;
 
