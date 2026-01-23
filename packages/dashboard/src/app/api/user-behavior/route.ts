@@ -129,7 +129,7 @@ export async function GET() {
     let organicPremium = 0;
     let organicTotal = 0;
 
-    for (const [userId, source] of userSourceMap) {
+    for (const [userId, source] of Array.from(userSourceMap.entries())) {
       const status = profileStatusMap.get(userId);
       if (status) {
         if (source === 'instagram') {
