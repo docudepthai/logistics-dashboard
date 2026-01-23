@@ -1760,6 +1760,8 @@ export class LogisticsAgent {
       'ariyorum', 'lazim', 'var mi', 'varmi', 'istiyorum', 'bakiyorum',
       // "All destinations" keywords
       'her yere', 'tum iller', 'turkiye geneli', 'heryere', 'her yer',
+      // Region keywords
+      'bolge', 'bolgesi', 'bolgeden', 'bolgesine', 'bolgesinden',
     ];
 
     // Use shared normalizeToAscii for consistent Turkish character handling
@@ -1767,6 +1769,11 @@ export class LogisticsAgent {
 
     // Check for logistics keywords first (fast)
     if (logisticsKeywords.some(keyword => normalized.includes(keyword))) {
+      return true;
+    }
+
+    // Check for regions
+    if (detectRegion(normalized)) {
       return true;
     }
 
@@ -1804,6 +1811,16 @@ export class LogisticsAgent {
       // Check if it's a district (O(1) lookup via Set) - 1100+ districts
       if (DISTRICT_NAMES.has(stem)) {
         return true;
+      }
+
+      // BUGFIX: If stem doesn't match but original token does, check original
+      // This handles cases like "ankara" where "a" is stripped as suffix → "ankar" (invalid)
+      // But "ankara" itself is a valid province!
+      if (stem !== cleanToken.toLowerCase()) {
+        const original = cleanToken.toLowerCase();
+        if (PROVINCE_NAMES.has(original) || getProvinceByName(original) || DISTRICT_NAMES.has(original)) {
+          return true;
+        }
       }
     }
 
