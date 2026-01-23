@@ -161,6 +161,46 @@ async function checkKamyoon(): Promise<ServiceHealth> {
   }
 }
 
+async function checkOpenAI(): Promise<ServiceHealth> {
+  const start = Date.now();
+  try {
+    const response = await fetch('https://status.openai.com/api/v2/status.json', {
+      next: { revalidate: 60 }, // Cache for 1 minute
+    });
+
+    if (!response.ok) {
+      return {
+        name: 'OpenAI API',
+        status: 'degraded',
+        lastCheck: new Date().toISOString(),
+        details: 'Could not fetch status',
+      };
+    }
+
+    const data = await response.json();
+    const indicator = data.status?.indicator; // none, minor, major, critical
+
+    let status: 'operational' | 'degraded' | 'down' = 'operational';
+    if (indicator === 'minor') status = 'degraded';
+    else if (indicator === 'major' || indicator === 'critical') status = 'down';
+
+    return {
+      name: 'OpenAI API',
+      status,
+      latency: Date.now() - start,
+      lastCheck: new Date().toISOString(),
+      details: data.status?.description || 'Status unknown',
+    };
+  } catch (error) {
+    return {
+      name: 'OpenAI API',
+      status: 'degraded',
+      lastCheck: new Date().toISOString(),
+      details: error instanceof Error ? error.message : 'Check failed',
+    };
+  }
+}
+
 async function getProcessingStats(): Promise<{
   parserSuccessRate: number;
   avgProcessingTime: number;
@@ -232,27 +272,29 @@ async function getRecentActivity(): Promise<{
 
 export async function GET() {
   try {
-    const [database, evolution, evolution2, kamyoon, processingStats, recentActivity] = await Promise.all([
+    const [database, evolution, evolution2, kamyoon, openai, processingStats, recentActivity] = await Promise.all([
       checkDatabase(),
       checkEvolutionAPI(),
       checkEvolutionAPI2(),
       checkKamyoon(),
+      checkOpenAI(),
       getProcessingStats(),
       getRecentActivity(),
     ]);
 
-    // Calculate overall status
-    const services = [database, evolution, evolution2, kamyoon];
-    const overallStatus = services.every(s => s.status === 'operational')
+    // Calculate overall status (OpenAI excluded from critical path)
+    const coreServices = [database, evolution, evolution2, kamyoon];
+    const services = [...coreServices, openai];
+    const overallStatus = coreServices.every(s => s.status === 'operational')
       ? 'operational'
-      : services.some(s => s.status === 'down')
+      : coreServices.some(s => s.status === 'down')
         ? 'down'
         : 'degraded';
 
     return NextResponse.json({
       status: overallStatus,
       timestamp: new Date().toISOString(),
-      services: [database, evolution, evolution2, kamyoon],
+      services,
       processing: processingStats,
       recentActivity,
     });

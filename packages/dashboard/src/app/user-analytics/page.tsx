@@ -2,6 +2,18 @@
 
 import { useEffect, useState } from 'react';
 
+interface SourceData {
+  count: number;
+  percentage: number;
+  premiumCount: number;
+  conversionRate: number;
+}
+
+interface TrafficSourcesData {
+  instagram: SourceData;
+  organic: SourceData;
+}
+
 interface EngagementData {
   active24h: number;
   active7d: number;
@@ -31,9 +43,20 @@ interface ConversionData {
   funnel: FunnelStep[];
 }
 
+interface SearchAnalysisData {
+  topOrigins: { name: string; count: number }[];
+  topDestinations: { name: string; count: number }[];
+  topRoutes: { route: string; count: number }[];
+  totalSearches: number;
+  uniqueOrigins: number;
+  uniqueDestinations: number;
+}
+
 interface BehaviorData {
   engagement: EngagementData;
   conversion: ConversionData;
+  trafficSources: TrafficSourcesData;
+  searchAnalysis: SearchAnalysisData;
 }
 
 interface UserStats {
@@ -96,7 +119,7 @@ export default function UserAnalyticsPage() {
 
   if (!behaviorData) return null;
 
-  const { engagement, conversion } = behaviorData;
+  const { engagement, conversion, trafficSources, searchAnalysis } = behaviorData;
 
   return (
     <div className="space-y-6">
@@ -104,6 +127,226 @@ export default function UserAnalyticsPage() {
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">User Analytics</h1>
         <p className="text-zinc-500 text-sm mt-1">Engagement metrics, retention, and conversion analysis</p>
+      </div>
+
+      {/* Traffic Sources */}
+      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <h2 className="text-sm font-medium text-white mb-6">Traffic Sources</h2>
+        <div className="grid grid-cols-3 gap-6">
+          {/* Instagram */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-white font-medium">Instagram</div>
+                <div className="text-zinc-500 text-xs">From ads</div>
+              </div>
+            </div>
+            <div className="flex items-end justify-between">
+              <div>
+                <div className="text-3xl font-bold text-white">{trafficSources.instagram.count}</div>
+                <div className="text-zinc-500 text-sm">{trafficSources.instagram.percentage}% of users</div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-semibold text-purple-400">{trafficSources.instagram.conversionRate}%</div>
+                <div className="text-zinc-600 text-xs">conversion</div>
+              </div>
+            </div>
+            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+                style={{ width: `${trafficSources.instagram.percentage}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Organic */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-white font-medium">Organic</div>
+                <div className="text-zinc-500 text-xs">Direct / referral</div>
+              </div>
+            </div>
+            <div className="flex items-end justify-between">
+              <div>
+                <div className="text-3xl font-bold text-white">{trafficSources.organic.count}</div>
+                <div className="text-zinc-500 text-sm">{trafficSources.organic.percentage}% of users</div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-semibold text-emerald-400">{trafficSources.organic.conversionRate}%</div>
+                <div className="text-zinc-600 text-xs">conversion</div>
+              </div>
+            </div>
+            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-emerald-500 rounded-full"
+                style={{ width: `${trafficSources.organic.percentage}%` }}
+              />
+            </div>
+          </div>
+
+          {/* Comparison */}
+          <div className="bg-zinc-800/50 rounded-lg p-4 space-y-4">
+            <div className="text-sm font-medium text-white">Conversion Comparison</div>
+            <div className="space-y-3">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-zinc-400 text-sm">Instagram</span>
+                  <span className="text-purple-400 font-mono">{trafficSources.instagram.conversionRate}%</span>
+                </div>
+                <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-purple-500 rounded-full"
+                    style={{ width: `${Math.min(trafficSources.instagram.conversionRate * 5, 100)}%` }}
+                  />
+                </div>
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-zinc-400 text-sm">Organic</span>
+                  <span className="text-emerald-400 font-mono">{trafficSources.organic.conversionRate}%</span>
+                </div>
+                <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-emerald-500 rounded-full"
+                    style={{ width: `${Math.min(trafficSources.organic.conversionRate * 5, 100)}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="pt-2 border-t border-zinc-700">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-500">Premium from IG</span>
+                <span className="text-white font-mono">{trafficSources.instagram.premiumCount}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs mt-1">
+                <span className="text-zinc-500">Premium from Organic</span>
+                <span className="text-white font-mono">{trafficSources.organic.premiumCount}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Search Analysis */}
+      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-sm font-medium text-white">Search Analysis</h2>
+          <div className="flex items-center space-x-4 text-xs text-zinc-500">
+            <span>{searchAnalysis.totalSearches} users searched</span>
+            <span>•</span>
+            <span>{searchAnalysis.uniqueOrigins} unique origins</span>
+            <span>•</span>
+            <span>{searchAnalysis.uniqueDestinations} unique destinations</span>
+          </div>
+        </div>
+        <div className="grid grid-cols-3 gap-6">
+          {/* Top Origins */}
+          <div>
+            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Top Origins (From)</h3>
+            <div className="space-y-2">
+              {searchAnalysis.topOrigins.length === 0 ? (
+                <div className="text-zinc-600 text-sm">No data yet</div>
+              ) : (
+                searchAnalysis.topOrigins.slice(0, 7).map((item, index) => {
+                  const maxCount = searchAnalysis.topOrigins[0]?.count || 1;
+                  const percentage = (item.count / maxCount) * 100;
+                  return (
+                    <div key={item.name} className="flex items-center space-x-3">
+                      <span className="text-zinc-600 text-xs font-mono w-4">{index + 1}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-white text-sm">{item.name}</span>
+                          <span className="text-zinc-400 font-mono text-xs">{item.count}</span>
+                        </div>
+                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-cyan-500 rounded-full"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Top Destinations */}
+          <div>
+            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Top Destinations (To)</h3>
+            <div className="space-y-2">
+              {searchAnalysis.topDestinations.length === 0 ? (
+                <div className="text-zinc-600 text-sm">No data yet</div>
+              ) : (
+                searchAnalysis.topDestinations.slice(0, 7).map((item, index) => {
+                  const maxCount = searchAnalysis.topDestinations[0]?.count || 1;
+                  const percentage = (item.count / maxCount) * 100;
+                  return (
+                    <div key={item.name} className="flex items-center space-x-3">
+                      <span className="text-zinc-600 text-xs font-mono w-4">{index + 1}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-white text-sm">{item.name}</span>
+                          <span className="text-zinc-400 font-mono text-xs">{item.count}</span>
+                        </div>
+                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-orange-500 rounded-full"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+
+          {/* Top Routes */}
+          <div>
+            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Top Routes</h3>
+            <div className="space-y-2">
+              {searchAnalysis.topRoutes.length === 0 ? (
+                <div className="text-zinc-600 text-sm">No data yet</div>
+              ) : (
+                searchAnalysis.topRoutes.slice(0, 7).map((item, index) => {
+                  const maxCount = searchAnalysis.topRoutes[0]?.count || 1;
+                  const percentage = (item.count / maxCount) * 100;
+                  return (
+                    <div key={item.route} className="flex items-center space-x-3">
+                      <span className="text-zinc-600 text-xs font-mono w-4">{index + 1}</span>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-white text-sm truncate" title={item.route}>{item.route}</span>
+                          <span className="text-zinc-400 font-mono text-xs ml-2">{item.count}</span>
+                        </div>
+                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-cyan-500 to-orange-500 rounded-full"
+                            style={{ width: `${percentage}%` }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* User Distribution */}

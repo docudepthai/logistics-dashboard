@@ -94,6 +94,69 @@ export async function GET() {
       }
     }
 
+    // ===== TRAFFIC SOURCES =====
+
+    // Instagram ad CTA message pattern
+    const instagramPattern = /bunun hakkında daha faz(l)?a bilgi/i;
+
+    // Detect source for each conversation based on first user message
+    const userSourceMap = new Map<string, 'instagram' | 'organic'>();
+
+    for (const conv of conversations) {
+      // Find the first user message
+      const firstUserMessage = conv.messages.find(m => m.role === 'user');
+      if (firstUserMessage) {
+        const isInstagram = instagramPattern.test(firstUserMessage.content);
+        userSourceMap.set(conv.userId, isInstagram ? 'instagram' : 'organic');
+      } else {
+        userSourceMap.set(conv.userId, 'organic');
+      }
+    }
+
+    // Count by source
+    const instagramUsers = Array.from(userSourceMap.values()).filter(s => s === 'instagram').length;
+    const organicUsers = Array.from(userSourceMap.values()).filter(s => s === 'organic').length;
+
+    // Build profile status map
+    const profileStatusMap = new Map<string, string>();
+    for (const profile of profiles) {
+      profileStatusMap.set(profile.phoneNumber, profile.membershipStatus);
+    }
+
+    // Calculate conversions by source
+    let instagramPremium = 0;
+    let instagramTotal = 0;
+    let organicPremium = 0;
+    let organicTotal = 0;
+
+    for (const [userId, source] of userSourceMap) {
+      const status = profileStatusMap.get(userId);
+      if (status) {
+        if (source === 'instagram') {
+          instagramTotal++;
+          if (status === 'premium') instagramPremium++;
+        } else {
+          organicTotal++;
+          if (status === 'premium') organicPremium++;
+        }
+      }
+    }
+
+    const trafficSources = {
+      instagram: {
+        count: instagramUsers,
+        percentage: conversations.length > 0 ? Math.round((instagramUsers / conversations.length) * 100) : 0,
+        premiumCount: instagramPremium,
+        conversionRate: instagramTotal > 0 ? Math.round((instagramPremium / instagramTotal) * 100) : 0,
+      },
+      organic: {
+        count: organicUsers,
+        percentage: conversations.length > 0 ? Math.round((organicUsers / conversations.length) * 100) : 0,
+        premiumCount: organicPremium,
+        conversionRate: organicTotal > 0 ? Math.round((organicPremium / organicTotal) * 100) : 0,
+      },
+    };
+
     // ===== ENGAGEMENT METRICS =====
 
     // Active users by time period
@@ -111,6 +174,54 @@ export async function GET() {
     const conversationsWithSearch = conversations.filter(c => c.context.lastOrigin || c.context.lastDestination);
     const conversationsWithoutSearch = conversations.filter(c => !c.context.lastOrigin && !c.context.lastDestination);
     const usersWhoSearched = conversationsWithSearch.length;
+
+    // ===== SEARCH ANALYSIS =====
+
+    // Count origins, destinations, and routes from user searches
+    const originCounts = new Map<string, number>();
+    const destinationCounts = new Map<string, number>();
+    const routeCounts = new Map<string, number>();
+
+    for (const conv of conversationsWithSearch) {
+      const origin = conv.context.lastOrigin;
+      const destination = conv.context.lastDestination;
+
+      if (origin) {
+        originCounts.set(origin, (originCounts.get(origin) || 0) + 1);
+      }
+      if (destination) {
+        destinationCounts.set(destination, (destinationCounts.get(destination) || 0) + 1);
+      }
+      if (origin && destination) {
+        const route = `${origin} → ${destination}`;
+        routeCounts.set(route, (routeCounts.get(route) || 0) + 1);
+      }
+    }
+
+    // Sort and get top 10
+    const topOrigins = Array.from(originCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([name, count]) => ({ name, count }));
+
+    const topDestinations = Array.from(destinationCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([name, count]) => ({ name, count }));
+
+    const topRoutes = Array.from(routeCounts.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10)
+      .map(([route, count]) => ({ route, count }));
+
+    const searchAnalysis = {
+      topOrigins,
+      topDestinations,
+      topRoutes,
+      totalSearches: conversationsWithSearch.length,
+      uniqueOrigins: originCounts.size,
+      uniqueDestinations: destinationCounts.size,
+    };
 
     // Build a map of phone -> calledAt from profiles
     const profileCalledMap = new Map<string, string | undefined>();
@@ -181,8 +292,8 @@ export async function GET() {
       {
         step: 'Return Visit',
         count: usersWithMultipleDays,
-        percentage: totalUsers > 0 ? Math.round((usersWithMultipleDays / totalUsers) * 100) : 0,
-        description: 'Users who came back on a different day'
+        percentage: returnRate,
+        description: `${eligibleForReturn.length} eligible users (signed up >1 day ago)`
       },
       {
         step: 'Converted to Premium',
@@ -215,7 +326,7 @@ export async function GET() {
       funnel,
     };
 
-    return NextResponse.json({ engagement, conversion });
+    return NextResponse.json({ engagement, conversion, trafficSources, searchAnalysis });
   } catch (error) {
     console.error('Error fetching user behavior:', error);
     return NextResponse.json(
