@@ -29,6 +29,11 @@ const navigation: NavGroup[] = [
       { name: 'Conversations', href: '/conversations', icon: 'chat' },
       { name: 'Users', href: '/users', icon: 'users' },
       { name: 'User Analytics', href: '/user-analytics', icon: 'analytics' },
+    ],
+  },
+  {
+    name: 'CRM',
+    items: [
       { name: 'Pasif Kullanicilar', href: '/crm/pasif-kullanicilar', icon: 'clock' },
       { name: 'Iletisim Listesi', href: '/crm/iletisim-listesi', icon: 'phone' },
     ],
