@@ -29,6 +29,7 @@ interface UserProfile {
   membershipStatus: 'free_trial' | 'expired' | 'premium';
   paidUntil?: string;
   calledAt?: string;
+  isFromAtakan?: boolean;
 }
 
 interface ConversationData {
@@ -79,6 +80,7 @@ export async function GET() {
           membershipStatus: item.membershipStatus,
           paidUntil: item.paidUntil,
           calledAt: item.calledAt,
+          isFromAtakan: item.isFromAtakan,
         });
       } else if (item.sk === 'CONVERSATION') {
         const userId = (item.pk as string)?.replace('USER#', '') || '';
@@ -99,10 +101,24 @@ export async function GET() {
     // Instagram ad CTA message pattern
     const instagramPattern = /bunun hakkında daha faz(l)?a bilgi/i;
 
-    // Detect source for each conversation based on first user message
-    const userSourceMap = new Map<string, 'instagram' | 'organic'>();
+    // Build profile maps for source detection
+    const profileStatusMap = new Map<string, string>();
+    const profileIsFromAtakanMap = new Map<string, boolean>();
+    for (const profile of profiles) {
+      profileStatusMap.set(profile.phoneNumber, profile.membershipStatus);
+      profileIsFromAtakanMap.set(profile.phoneNumber, profile.isFromAtakan || false);
+    }
+
+    // Detect source for each conversation based on first user message and profile flags
+    const userSourceMap = new Map<string, 'instagram' | 'organic' | 'atakan'>();
 
     for (const conv of conversations) {
+      // Check if user is from Atakan referral (NAZPX code)
+      if (profileIsFromAtakanMap.get(conv.userId)) {
+        userSourceMap.set(conv.userId, 'atakan');
+        continue;
+      }
+
       // Find the first user message
       const firstUserMessage = conv.messages.find(m => m.role === 'user');
       if (firstUserMessage) {
@@ -116,18 +132,15 @@ export async function GET() {
     // Count by source
     const instagramUsers = Array.from(userSourceMap.values()).filter(s => s === 'instagram').length;
     const organicUsers = Array.from(userSourceMap.values()).filter(s => s === 'organic').length;
-
-    // Build profile status map
-    const profileStatusMap = new Map<string, string>();
-    for (const profile of profiles) {
-      profileStatusMap.set(profile.phoneNumber, profile.membershipStatus);
-    }
+    const atakanUsers = Array.from(userSourceMap.values()).filter(s => s === 'atakan').length;
 
     // Calculate conversions by source
     let instagramPremium = 0;
     let instagramTotal = 0;
     let organicPremium = 0;
     let organicTotal = 0;
+    let atakanPremium = 0;
+    let atakanTotal = 0;
 
     for (const [userId, source] of Array.from(userSourceMap.entries())) {
       const status = profileStatusMap.get(userId);
@@ -135,6 +148,9 @@ export async function GET() {
         if (source === 'instagram') {
           instagramTotal++;
           if (status === 'premium') instagramPremium++;
+        } else if (source === 'atakan') {
+          atakanTotal++;
+          if (status === 'premium') atakanPremium++;
         } else {
           organicTotal++;
           if (status === 'premium') organicPremium++;
@@ -154,6 +170,12 @@ export async function GET() {
         percentage: conversations.length > 0 ? Math.round((organicUsers / conversations.length) * 100) : 0,
         premiumCount: organicPremium,
         conversionRate: organicTotal > 0 ? Math.round((organicPremium / organicTotal) * 100) : 0,
+      },
+      atakan: {
+        count: atakanUsers,
+        percentage: conversations.length > 0 ? Math.round((atakanUsers / conversations.length) * 100) : 0,
+        premiumCount: atakanPremium,
+        conversionRate: atakanTotal > 0 ? Math.round((atakanPremium / atakanTotal) * 100) : 0,
       },
     };
 

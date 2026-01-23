@@ -240,7 +240,7 @@ async function sendWhatsAppVideoMessage(to: string, mediaIdOrUrl: string, captio
 }
 
 // Send welcome message sequence (video + text) to new users
-async function sendWelcomeMessage(to: string): Promise<void> {
+async function sendWelcomeMessage(to: string, isFromAtakan?: boolean): Promise<string> {
   // Support both media ID and URL via environment variables
   const welcomeVideoSource = process.env.WELCOME_VIDEO_URL || process.env.WELCOME_VIDEO_MEDIA_ID;
 
@@ -254,14 +254,19 @@ async function sendWelcomeMessage(to: string): Promise<void> {
     }
   }
 
+  // Trial duration depends on referral status
+  const trialText = isFromAtakan ? '1 HAFTA' : '5 GÜN';
+  const trialDuration = isFromAtakan ? '1 hafta' : '5 gün';
+
   // Send welcome text
   const welcomeText = `Merhaba! Patron'a hoşgeldiniz.
 
-🎁 1 HAFTA ÜCRETSİZ DENEME: Tüm özellikleri 1 hafta boyunca ücretsiz kullanabilirsiniz!
+🎁 ${trialText} ÜCRETSİZ DENEME: Tüm özellikleri ${trialDuration} boyunca ücretsiz kullanabilirsiniz!
 
 📍 Nasıl kullanılır? Şehir adı yazarak yük arayabilirsiniz. Örneğin: *"istanbul ankara"* veya *"bursa"*`;
 
   await sendWhatsAppMessage(to, welcomeText);
+  return welcomeText;
 }
 
 function response(statusCode: number, body: unknown): APIGatewayProxyResult {
@@ -453,8 +458,13 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
 
     // === USER MANAGEMENT ===
     const store = getUserStore();
-    const { user, isNewUser } = await store.getOrCreateUser(message.from);
-    console.log(`User ${message.from}: isNewUser=${isNewUser}, status=${user.membershipStatus}`);
+
+    // Check for NAZPX referral code in first message
+    const isFromAtakan = message.text.toUpperCase().includes('NAZPX');
+    const referralOptions = isFromAtakan ? { isFromAtakan: true, referralCode: 'NAZPX' } : undefined;
+
+    const { user, isNewUser } = await store.getOrCreateUser(message.from, referralOptions);
+    console.log(`User ${message.from}: isNewUser=${isNewUser}, status=${user.membershipStatus}, isFromAtakan=${user.isFromAtakan}`);
 
     // Send welcome message to new users
     if (isNewUser && !user.welcomeMessageSent) {
@@ -469,16 +479,11 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
           const convStore = getConversationStore();
           await convStore.addMessage(message.from, { role: 'user', content: message.text });
 
-          // Then send and save welcome message
-          await sendWelcomeMessage(message.from);
-          console.log(`Sent welcome message to new user: ${message.from}`);
+          // Then send and save welcome message (returns the welcome text for saving)
+          const welcomeText = await sendWelcomeMessage(message.from, user.isFromAtakan);
+          console.log(`Sent welcome message to new user: ${message.from}, isFromAtakan: ${user.isFromAtakan}`);
 
           // Save welcome message to conversation store so it shows in dashboard
-          const welcomeText = `Merhaba! Patron'a hoşgeldiniz.
-
-🎁 1 HAFTA ÜCRETSİZ DENEME: Tüm özellikleri 1 hafta boyunca ücretsiz kullanabilirsiniz!
-
-📍 Nasıl kullanılır? Şehir adı yazarak yük arayabilirsiniz. Örneğin: *"istanbul ankara"* veya *"bursa"*`;
           await convStore.addMessage(message.from, { role: 'assistant', content: welcomeText });
 
           // Notify admins about new user

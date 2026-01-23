@@ -16,6 +16,9 @@ export interface User {
   welcomeMessageSent: boolean;
   createdAt: string;
   updatedAt: string;
+  // Referral tracking
+  isFromAtakan?: boolean;
+  referralCode?: string;
   // Future payment fields
   paidUntil?: string;
   paymentId?: string;
@@ -37,9 +40,7 @@ export class UserStore {
 
     this.client = DynamoDBDocumentClient.from(dynamoClient);
     this.tableName = options.tableName || process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
-    this.freeTierDays = options.freeTierDays || 7;
-    // TODO: For testing, override to 1 minute. Change back to days for production!
-    // this.freeTierDays = 7;
+    this.freeTierDays = options.freeTierDays || 5; // Default 5 days, referrals get 7 days
   }
 
   /**
@@ -68,6 +69,8 @@ export class UserStore {
       welcomeMessageSent: result.Item.welcomeMessageSent,
       createdAt: result.Item.createdAt,
       updatedAt: result.Item.updatedAt,
+      isFromAtakan: result.Item.isFromAtakan,
+      referralCode: result.Item.referralCode,
       paidUntil: result.Item.paidUntil,
       paymentId: result.Item.paymentId,
     };
@@ -75,10 +78,14 @@ export class UserStore {
 
   /**
    * Create a new user with free trial.
+   * @param phoneNumber - User's phone number
+   * @param options - Optional settings for referral tracking
    */
-  async createUser(phoneNumber: string): Promise<User> {
+  async createUser(phoneNumber: string, options?: { isFromAtakan?: boolean; referralCode?: string }): Promise<User> {
     const now = new Date();
-    const expiresAt = new Date(now.getTime() + this.freeTierDays * 24 * 60 * 60 * 1000); // 7 days trial
+    // Referral users (NAZPX) get 7 days, regular users get default (5 days)
+    const trialDays = options?.isFromAtakan ? 7 : this.freeTierDays;
+    const expiresAt = new Date(now.getTime() + trialDays * 24 * 60 * 60 * 1000);
 
     const user: User = {
       phoneNumber,
@@ -88,6 +95,8 @@ export class UserStore {
       welcomeMessageSent: false,
       createdAt: now.toISOString(),
       updatedAt: now.toISOString(),
+      isFromAtakan: options?.isFromAtakan,
+      referralCode: options?.referralCode,
     };
 
     await this.client.send(
@@ -109,8 +118,10 @@ export class UserStore {
   /**
    * Get existing user or create new one with free trial.
    * Returns the user and whether they are new.
+   * @param phoneNumber - User's phone number
+   * @param options - Optional settings for referral tracking (only used for new users)
    */
-  async getOrCreateUser(phoneNumber: string): Promise<{ user: User; isNewUser: boolean }> {
+  async getOrCreateUser(phoneNumber: string, options?: { isFromAtakan?: boolean; referralCode?: string }): Promise<{ user: User; isNewUser: boolean }> {
     let user = await this.getUser(phoneNumber);
 
     if (user) {
@@ -123,7 +134,7 @@ export class UserStore {
     }
 
     try {
-      user = await this.createUser(phoneNumber);
+      user = await this.createUser(phoneNumber, options);
       return { user, isNewUser: true };
     } catch (error: unknown) {
       // Race condition - another request created the user

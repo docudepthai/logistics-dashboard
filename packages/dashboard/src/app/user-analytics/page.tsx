@@ -12,6 +12,7 @@ interface SourceData {
 interface TrafficSourcesData {
   instagram: SourceData;
   organic: SourceData;
+  atakan: SourceData;
 }
 
 interface EngagementData {
@@ -132,7 +133,7 @@ export default function UserAnalyticsPage() {
       {/* Traffic Sources */}
       <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-6">Traffic Sources</h2>
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-4 gap-6">
           {/* Instagram */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
@@ -195,16 +196,47 @@ export default function UserAnalyticsPage() {
             </div>
           </div>
 
+          {/* Atakan'dan gelen */}
+          <div className="space-y-4">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 bg-amber-500/20 rounded-lg flex items-center justify-center">
+                <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div>
+                <div className="text-white font-medium">Atakan</div>
+                <div className="text-zinc-500 text-xs">NAZPX referral</div>
+              </div>
+            </div>
+            <div className="flex items-end justify-between">
+              <div>
+                <div className="text-3xl font-bold text-white">{trafficSources.atakan.count}</div>
+                <div className="text-zinc-500 text-sm">{trafficSources.atakan.percentage}% of users</div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-semibold text-amber-400">{trafficSources.atakan.conversionRate}%</div>
+                <div className="text-zinc-600 text-xs">conversion</div>
+              </div>
+            </div>
+            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-amber-500 rounded-full"
+                style={{ width: `${trafficSources.atakan.percentage}%` }}
+              />
+            </div>
+          </div>
+
           {/* Comparison */}
-          <div className="bg-zinc-800/50 rounded-lg p-4 space-y-4">
+          <div className="bg-zinc-800/50 rounded-lg p-4 space-y-3">
             <div className="text-sm font-medium text-white">Conversion Comparison</div>
-            <div className="space-y-3">
+            <div className="space-y-2">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-zinc-400 text-sm">Instagram</span>
-                  <span className="text-purple-400 font-mono">{trafficSources.instagram.conversionRate}%</span>
+                  <span className="text-zinc-400 text-xs">Instagram</span>
+                  <span className="text-purple-400 font-mono text-xs">{trafficSources.instagram.conversionRate}%</span>
                 </div>
-                <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-purple-500 rounded-full"
                     style={{ width: `${Math.min(trafficSources.instagram.conversionRate * 5, 100)}%` }}
@@ -213,25 +245,41 @@ export default function UserAnalyticsPage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-zinc-400 text-sm">Organic</span>
-                  <span className="text-emerald-400 font-mono">{trafficSources.organic.conversionRate}%</span>
+                  <span className="text-zinc-400 text-xs">Organic</span>
+                  <span className="text-emerald-400 font-mono text-xs">{trafficSources.organic.conversionRate}%</span>
                 </div>
-                <div className="h-2 bg-zinc-700 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-500 rounded-full"
                     style={{ width: `${Math.min(trafficSources.organic.conversionRate * 5, 100)}%` }}
                   />
                 </div>
               </div>
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-zinc-400 text-xs">Atakan</span>
+                  <span className="text-amber-400 font-mono text-xs">{trafficSources.atakan.conversionRate}%</span>
+                </div>
+                <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-amber-500 rounded-full"
+                    style={{ width: `${Math.min(trafficSources.atakan.conversionRate * 5, 100)}%` }}
+                  />
+                </div>
+              </div>
             </div>
-            <div className="pt-2 border-t border-zinc-700">
+            <div className="pt-2 border-t border-zinc-700 space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-zinc-500">Premium from IG</span>
+                <span className="text-zinc-500">Premium IG</span>
                 <span className="text-white font-mono">{trafficSources.instagram.premiumCount}</span>
               </div>
-              <div className="flex items-center justify-between text-xs mt-1">
-                <span className="text-zinc-500">Premium from Organic</span>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-500">Premium Organic</span>
                 <span className="text-white font-mono">{trafficSources.organic.premiumCount}</span>
+              </div>
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-zinc-500">Premium Atakan</span>
+                <span className="text-white font-mono">{trafficSources.atakan.premiumCount}</span>
               </div>
             </div>
           </div>
