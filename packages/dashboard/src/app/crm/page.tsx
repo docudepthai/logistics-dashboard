@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 interface CallListItem {
   phoneNumber: string;
@@ -9,6 +10,17 @@ interface CallListItem {
   calledAt: string | null;
   addedAt: string;
   autoAdded: boolean;
+}
+
+interface NudgeEligibleUser {
+  phoneNumber: string;
+  firstContactAt: string;
+  lastMessageAt: string;
+  hoursRemaining: number;
+  messageCount: number;
+  firstMessage: string;
+  nudgeSent: boolean;
+  nudgeSentAt?: string;
 }
 
 const CALL_REASONS = [
@@ -50,8 +62,16 @@ export default function CRMPage() {
   const [tempNotes, setTempNotes] = useState<string>('');
   const [showContacted, setShowContacted] = useState(false);
 
+  // 24h Window state
+  const [nudgeUsers, setNudgeUsers] = useState<NudgeEligibleUser[]>([]);
+  const [nudgeStats, setNudgeStats] = useState({ total: 0, urgent: 0, nudgeSent: 0, pending: 0 });
+  const [nudgeLoading, setNudgeLoading] = useState(true);
+  const [markingNudge, setMarkingNudge] = useState<string | null>(null);
+  const [showNudged, setShowNudged] = useState(false);
+
   useEffect(() => {
     fetchCallList();
+    fetchNudgeEligible();
   }, []);
 
   const fetchCallList = async () => {
@@ -65,6 +85,47 @@ export default function CRMPage() {
       setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchNudgeEligible = async () => {
+    try {
+      const res = await fetch('/api/nudge-eligible');
+      if (!res.ok) throw new Error('Failed to fetch nudge eligible');
+      const data = await res.json();
+      setNudgeUsers(data.users || []);
+      setNudgeStats(data.stats || { total: 0, urgent: 0, nudgeSent: 0, pending: 0 });
+    } catch (err) {
+      console.error('Failed to fetch nudge eligible:', err);
+    } finally {
+      setNudgeLoading(false);
+    }
+  };
+
+  const markAsNudged = async (phoneNumber: string) => {
+    setMarkingNudge(phoneNumber);
+    try {
+      const res = await fetch('/api/nudge-eligible', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber }),
+      });
+      if (res.ok) {
+        setNudgeUsers(prev => prev.map(u =>
+          u.phoneNumber === phoneNumber
+            ? { ...u, nudgeSent: true, nudgeSentAt: new Date().toISOString() }
+            : u
+        ));
+        setNudgeStats(prev => ({
+          ...prev,
+          nudgeSent: prev.nudgeSent + 1,
+          pending: prev.pending - 1,
+        }));
+      }
+    } catch (err) {
+      console.error('Failed to mark nudge:', err);
+    } finally {
+      setMarkingNudge(null);
     }
   };
 
@@ -162,16 +223,176 @@ export default function CRMPage() {
   const contactedCount = items.filter(item => item.calledAt).length;
   const pendingCount = items.filter(item => !item.calledAt).length;
 
+  // 24h window filtered users
+  const filteredNudgeUsers = showNudged ? nudgeUsers : nudgeUsers.filter(u => !u.nudgeSent);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">CRM</h1>
         <p className="text-zinc-500 text-sm mt-1">İletişime geçilmesi gereken kullanıcılar</p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-3 gap-4">
+      {/* 24h Window Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-lg font-medium text-white">24 Saat Mesaj Penceresi</h2>
+            <p className="text-zinc-500 text-xs mt-0.5">Henüz arama yapmamış ve hala mesaj gönderilebilir kullanıcılar</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 text-sm">
+              <span className="text-red-400">{nudgeStats.urgent}</span>
+              <span className="text-zinc-600">acil</span>
+              <span className="text-zinc-600">·</span>
+              <span className="text-amber-400">{nudgeStats.pending}</span>
+              <span className="text-zinc-600">bekliyor</span>
+              <span className="text-zinc-600">·</span>
+              <span className="text-emerald-400">{nudgeStats.nudgeSent}</span>
+              <span className="text-zinc-600">gönderildi</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 24h Stats */}
+        <div className="grid grid-cols-4 gap-4">
+          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-3">
+            <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
+            <div className="text-xl font-semibold text-white mt-1">{nudgeStats.total}</div>
+          </div>
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+            <div className="text-red-400/70 text-xs font-medium uppercase tracking-wider">Acil (&lt;6s)</div>
+            <div className="text-xl font-semibold text-red-400 mt-1">{nudgeStats.urgent}</div>
+          </div>
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+            <div className="text-amber-400/70 text-xs font-medium uppercase tracking-wider">Bekliyor</div>
+            <div className="text-xl font-semibold text-amber-400 mt-1">{nudgeStats.pending}</div>
+          </div>
+          <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3">
+            <div className="text-emerald-400/70 text-xs font-medium uppercase tracking-wider">Gönderildi</div>
+            <div className="text-xl font-semibold text-emerald-400 mt-1">{nudgeStats.nudgeSent}</div>
+          </div>
+        </div>
+
+        {/* Filter Toggle */}
+        <div className="flex items-center space-x-4">
+          <label className="flex items-center space-x-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showNudged}
+              onChange={(e) => setShowNudged(e.target.checked)}
+              className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500"
+            />
+            <span className="text-sm text-zinc-400">Mesaj gönderilenleri de göster</span>
+          </label>
+        </div>
+
+        {/* 24h Window Users Table */}
+        {nudgeLoading ? (
+          <div className="flex items-center justify-center h-32">
+            <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+          </div>
+        ) : filteredNudgeUsers.length === 0 ? (
+          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6 text-center text-zinc-500">
+            {showNudged ? 'Henüz kullanıcı yok' : 'Mesaj gönderilecek kullanıcı yok'}
+          </div>
+        ) : (
+          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-zinc-800/50">
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Telefon</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Kalan Süre</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Mesaj Sayısı</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">İlk Mesaj</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Durum</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">İşlem</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredNudgeUsers.slice(0, 20).map((user) => (
+                    <tr
+                      key={user.phoneNumber}
+                      className={`border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors ${user.nudgeSent ? 'opacity-60' : ''}`}
+                    >
+                      <td className="px-4 py-3">
+                        <Link
+                          href={`/profile/${user.phoneNumber}`}
+                          className="font-mono text-sm text-white hover:text-blue-400 transition-colors"
+                        >
+                          {formatPhoneNumber(user.phoneNumber)}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className={`text-sm font-medium ${
+                          user.hoursRemaining < 6 ? 'text-red-400' :
+                          user.hoursRemaining < 12 ? 'text-amber-400' :
+                          'text-emerald-400'
+                        }`}>
+                          {user.hoursRemaining.toFixed(1)}s
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-zinc-400 text-sm">{user.messageCount}</td>
+                      <td className="px-4 py-3 text-zinc-400 text-sm truncate max-w-[200px]" title={user.firstMessage}>
+                        {user.firstMessage || '-'}
+                      </td>
+                      <td className="px-4 py-3">
+                        {user.nudgeSent ? (
+                          <span className="text-xs px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded">
+                            Gönderildi
+                          </span>
+                        ) : (
+                          <span className="text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded">
+                            Bekliyor
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center space-x-2">
+                          <a
+                            href={`https://wa.me/${user.phoneNumber}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors"
+                          >
+                            Mesaj Gönder
+                          </a>
+                          {!user.nudgeSent && (
+                            <button
+                              onClick={() => markAsNudged(user.phoneNumber)}
+                              disabled={markingNudge === user.phoneNumber}
+                              className="text-xs px-2 py-1 bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 rounded transition-colors disabled:opacity-50"
+                            >
+                              {markingNudge === user.phoneNumber ? '...' : 'Tamamlandı'}
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            {filteredNudgeUsers.length > 20 && (
+              <div className="px-4 py-2 border-t border-zinc-800/50 text-center text-zinc-500 text-sm">
+                +{filteredNudgeUsers.length - 20} daha...
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Divider */}
+      <div className="border-t border-zinc-800/50"></div>
+
+      {/* Call List Section */}
+      <div className="space-y-4">
+        <h2 className="text-lg font-medium text-white">İletişim Listesi</h2>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 gap-4">
           <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
             <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
             <div className="text-2xl font-semibold text-white mt-1">{items.length}</div>
@@ -251,9 +472,12 @@ export default function CRMPage() {
                         {/* Phone */}
                         <td className="px-4 py-3">
                           <div className="flex items-center space-x-2">
-                            <span className="font-mono text-sm text-white">
+                            <Link
+                              href={`/profile/${item.phoneNumber}`}
+                              className="font-mono text-sm text-white hover:text-blue-400 transition-colors"
+                            >
                               {formatPhoneNumber(item.phoneNumber)}
-                            </span>
+                            </Link>
                             {item.autoAdded && (
                               <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
                                 Oto
@@ -365,6 +589,7 @@ export default function CRMPage() {
             </div>
           </div>
         )}
+      </div>
     </div>
   );
 }

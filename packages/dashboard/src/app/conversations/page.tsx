@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -195,7 +196,13 @@ export default function ConversationsPage() {
                       <span className="text-zinc-400 font-mono text-sm">{convo.userId.slice(-2)}</span>
                     </div>
                     <div className="text-left">
-                      <p className="text-white font-mono text-sm">+{convo.userId}</p>
+                      <Link
+                        href={`/profile/${convo.userId}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-white font-mono text-sm hover:text-blue-400 transition-colors"
+                      >
+                        +{convo.userId}
+                      </Link>
                       <p className="text-zinc-500 text-xs">
                         {convo.messageCount} messages · {formatTimeAgo(convo.updatedAt)}
                       </p>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -198,7 +199,12 @@ export default function UsersPage() {
                   return (
                     <tr key={user.phoneNumber} className="border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors">
                       <td className="px-4 py-3">
-                        <span className="font-mono text-sm text-white">{formatPhoneNumber(user.phoneNumber)}</span>
+                        <Link
+                          href={`/profile/${user.phoneNumber}`}
+                          className="font-mono text-sm text-white hover:text-blue-400 transition-colors"
+                        >
+                          {formatPhoneNumber(user.phoneNumber)}
+                        </Link>
                       </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${badge.bgColor} ${badge.textColor}`}>

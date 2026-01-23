@@ -69,6 +69,7 @@ interface ParsedLocations {
 const VEHICLE_TERMS_NOT_LOCATIONS = new Set([
   'arac', 'araç',  // "araç" = vehicle, but also Araç district in Kastamonu
   'kamyon',        // truck
+  'kamyonet',      // small truck/van
   'tir', 'tır',    // TIR truck
   'dorse',         // trailer
   'kasa', 'kas',   // truck body/container - "kas" is stem after suffix strip (matches Kaş!)
@@ -79,6 +80,7 @@ const VEHICLE_TERMS_NOT_LOCATIONS = new Set([
   'tenteli', 'tente', 'tentel', // tarpaulin body type
   'damperli', 'damper', 'damperl', // dump truck
   'frigo', 'frigorifik', // refrigerated
+  'panelvan', 'panel',   // panel van vehicle type - NOT Van province!
 ]);
 
 /**
@@ -166,6 +168,12 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
   normalized = normalized.replace(/[\u0027\u2019\u2018\u0060]/g, "'");
   // Remove apostrophes between word and Turkish suffix: "istanbul'dan" → "istanbuldan"
   normalized = normalized.replace(/(\w+)'(dan|den|tan|ten|ndan|nden|a|e|ya|ye|na|ne)(?=\s|$)/gi, '$1$2');
+
+  // BUGFIX: Remove vehicle type phrases that contain city names to prevent false parsing
+  // "panel van" should not be parsed as Van province
+  // "ne zaman" should not be parsed (ne = question word, zaman = time)
+  normalized = normalized.replace(/\bpanel\s+van\b/gi, 'panelvan_vehicle');
+  normalized = normalized.replace(/\bne\s+zaman\b/gi, 'ne_zaman_question');
 
   // Preprocess: merge "city dan/den/a/e/ya/ye" patterns (space between city and suffix)
   // Examples: "istanbul dan" → "istanbuldan", "ankara ya" → "ankaraya"
@@ -261,8 +269,10 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
     // This handles cases like "hataya" where "ya" suffix is tried first → "hata" (invalid)
     // But "a" suffix → "hatay" (valid province!)
     // Same for origin: "manisadan" where "ndan" might be tried → "manisa" (but actually "dan" → "manisa" is correct)
+    // Also handles apostrophe cases: "Aydın'a" → "aydina" → try "a" suffix → "aydin" (valid!)
     if (!location && (isOrigin || isDestination)) {
-      const lower = cleanToken.toLowerCase();
+      // Remove apostrophes to match stripSuffix behavior
+      const lower = cleanToken.toLowerCase().replace(/[''`']/g, '');
       // Origin suffixes sorted by length ascending (try shorter first this time)
       const originSuffixes = ['dan', 'den', 'tan', 'ten', 'ndan', 'nden'].sort((a, b) => a.length - b.length);
       // Destination suffixes sorted by length ascending
@@ -1029,7 +1039,8 @@ export class LogisticsAgent {
 
     let assistantMessage = response.choices[0].message;
     const collectedJobIds: string[] = [];
-    let contextUpdate: Partial<ConversationContext> = {};
+    // BUGFIX: Initialize with existing conversation context so "varmi" uses previous search
+    let contextUpdate: Partial<ConversationContext> = conversation?.context ? { ...conversation.context } : {};
     let searchResultText: string | null = null; // Direct result to bypass GPT hallucination
 
     console.log(`[Agent] GPT response - tool_calls: ${assistantMessage.tool_calls?.length || 0}, content: ${assistantMessage.content?.substring(0, 100) || 'none'}`);

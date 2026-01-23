@@ -64,13 +64,13 @@ export default function TopBar() {
       <div className="flex-1" />
 
       {/* Motivational Quote - Centered */}
-      <div className="flex-1 flex justify-center">
+      <div className="flex-[2] flex justify-center px-4 overflow-hidden">
         <span
-          className={`text-zinc-500 text-sm italic transition-opacity duration-300 ${
+          className={`text-zinc-500 text-sm italic transition-opacity duration-300 whitespace-nowrap truncate max-w-full ${
             isVisible ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          {motivationalQuotes[quoteIndex]}
+          "{motivationalQuotes[quoteIndex]}"
         </span>
       </div>
 
