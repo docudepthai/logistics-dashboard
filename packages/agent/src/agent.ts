@@ -817,8 +817,13 @@ export class LogisticsAgent {
     ];
     const isPaginationRequest = paginationPatterns.some(p => normalizedMsg.includes(p));
 
-    // Handle "tüm iller" / "her yere" - show all destinations from origin
-    const allDestinationsPatterns = ['her yere', 'tum iller', 'turkiye geneli', 'heryere', 'her yer'];
+    // Handle "tüm iller" / "her yere" / "yön farketmez" - show all destinations from origin
+    const allDestinationsPatterns = [
+      'her yere', 'tum iller', 'turkiye geneli', 'heryere', 'her yer',
+      'yon farketmez', 'yon fark etmez', 'yonu farketmez', 'yonu fark etmez',
+      'nereye olursa', 'nereye olsa', 'herhangi yere', 'herhangi yer',
+      'farketmez', 'fark etmez', // generic "doesn't matter" - if origin is specified
+    ];
     const isAllDestinations = allDestinationsPatterns.some(p => normalizedMsg.includes(p));
 
     // Check if message is logistics-related (city name, vehicle type, or follow-up)
@@ -1760,6 +1765,8 @@ export class LogisticsAgent {
       'ariyorum', 'lazim', 'var mi', 'varmi', 'istiyorum', 'bakiyorum',
       // "All destinations" keywords
       'her yere', 'tum iller', 'turkiye geneli', 'heryere', 'her yer',
+      'yon farketmez', 'yon fark etmez', 'farketmez', 'fark etmez',
+      'nereye olursa', 'herhangi yere',
       // Region keywords
       'bolge', 'bolgesi', 'bolgeden', 'bolgesine', 'bolgesinden',
     ];
