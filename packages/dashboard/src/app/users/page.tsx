@@ -30,40 +30,6 @@ interface UsersData {
   stats: Stats;
 }
 
-interface EngagementData {
-  active24h: number;
-  active7d: number;
-  active30d: number;
-  totalMessages: number;
-  avgMessagesPerUser: number;
-  usersWhoSearched: number;
-  searchRate: number;
-  usersWithMultipleDays: number;
-  returnRate: number;
-}
-
-interface FunnelStep {
-  step: string;
-  count: number;
-  percentage: number;
-  description: string;
-}
-
-interface ConversionData {
-  totalUsers: number;
-  activeTrialUsers: number;
-  expiredUsers: number;
-  premiumUsers: number;
-  trialToPremiumRate: number;
-  trialToExpiredRate: number;
-  funnel: FunnelStep[];
-}
-
-interface BehaviorData {
-  engagement: EngagementData;
-  conversion: ConversionData;
-}
-
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
   return date.toLocaleDateString('tr-TR', {
@@ -94,7 +60,6 @@ function getStatusBadge(user: User): { text: string; bgColor: string; textColor:
 
 export default function UsersPage() {
   const [data, setData] = useState<UsersData | null>(null);
-  const [behaviorData, setBehaviorData] = useState<BehaviorData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -119,17 +84,9 @@ export default function UsersPage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [usersRes, behaviorRes] = await Promise.all([
-          fetch('/api/users'),
-          fetch('/api/user-behavior'),
-        ]);
-
-        if (!usersRes.ok) throw new Error('Failed to fetch users');
-        setData(await usersRes.json());
-
-        if (behaviorRes.ok) {
-          setBehaviorData(await behaviorRes.json());
-        }
+        const res = await fetch('/api/users');
+        if (!res.ok) throw new Error('Failed to fetch users');
+        setData(await res.json());
         setError(null);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Unknown error');
@@ -163,131 +120,39 @@ export default function UsersPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Users</h1>
-        <p className="text-zinc-500 text-sm mt-1">Manage user subscriptions and free trials</p>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-4 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Total Users</div>
-          <div className="text-3xl font-semibold text-white mt-1">{data.stats.total}</div>
-        </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Free Trial</div>
-          <div className="text-3xl font-semibold text-blue-400 mt-1">{data.stats.freeTrial}</div>
-        </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Expired</div>
-          <div className="text-3xl font-semibold text-red-400 mt-1">{data.stats.expired}</div>
-        </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Premium</div>
-          <div className="text-3xl font-semibold text-emerald-400 mt-1">{data.stats.premium}</div>
-        </div>
-      </div>
-
-      {/* Engagement Metrics */}
-      {behaviorData && (
+      {/* Header with Stats */}
+      <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-medium text-white mb-4">Engagement Metrics</h2>
-          <div className="grid grid-cols-4 gap-4">
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-              <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Active (24h)</div>
-              <div className="text-2xl font-semibold text-cyan-400 mt-1">{behaviorData.engagement.active24h}</div>
-              <div className="text-zinc-600 text-xs mt-1">users active today</div>
-            </div>
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-              <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Active (7d)</div>
-              <div className="text-2xl font-semibold text-cyan-400 mt-1">{behaviorData.engagement.active7d}</div>
-              <div className="text-zinc-600 text-xs mt-1">users this week</div>
-            </div>
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-              <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Avg Messages</div>
-              <div className="text-2xl font-semibold text-purple-400 mt-1">{behaviorData.engagement.avgMessagesPerUser}</div>
-              <div className="text-zinc-600 text-xs mt-1">per user</div>
-            </div>
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-              <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Return Rate</div>
-              <div className="text-2xl font-semibold text-amber-400 mt-1">{behaviorData.engagement.returnRate}%</div>
-              <div className="text-zinc-600 text-xs mt-1">came back again</div>
-            </div>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Users</h1>
+          <p className="text-zinc-500 text-sm mt-1">Manage user subscriptions and free trials</p>
+        </div>
+        <div className="flex items-center space-x-6">
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-white">{data.stats.total}</div>
+            <div className="text-zinc-500 text-xs">Total</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-blue-400">{data.stats.freeTrial}</div>
+            <div className="text-zinc-500 text-xs">Trial</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-emerald-400">{data.stats.premium}</div>
+            <div className="text-zinc-500 text-xs">Premium</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-semibold text-red-400">{data.stats.expired}</div>
+            <div className="text-zinc-500 text-xs">Expired</div>
           </div>
         </div>
-      )}
-
-      {/* Conversion Funnel */}
-      {behaviorData && (
-        <div>
-          <h2 className="text-sm font-medium text-white mb-4">Conversion Funnel</h2>
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
-            <div className="space-y-4">
-              {behaviorData.conversion.funnel.map((step, index) => {
-                const isLast = index === behaviorData.conversion.funnel.length - 1;
-                const prevStep = index > 0 ? behaviorData.conversion.funnel[index - 1] : null;
-                const dropoff = prevStep ? prevStep.count - step.count : 0;
-                const dropoffPct = prevStep && prevStep.count > 0 ? Math.round((dropoff / prevStep.count) * 100) : 0;
-
-                return (
-                  <div key={step.step}>
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-zinc-500 font-mono text-xs w-4">{index + 1}</span>
-                        <span className="text-white text-sm font-medium">{step.step}</span>
-                        <span className="text-zinc-600 text-xs">{step.description}</span>
-                      </div>
-                      <div className="flex items-center space-x-4">
-                        <span className="text-white font-mono text-sm">{step.count}</span>
-                        <span className={`text-xs font-mono ${step.percentage >= 50 ? 'text-emerald-400' : step.percentage >= 20 ? 'text-amber-400' : 'text-red-400'}`}>
-                          {step.percentage}%
-                        </span>
-                      </div>
-                    </div>
-                    <div className="ml-7 h-2 bg-zinc-800 rounded-full overflow-hidden" style={{ width: 'calc(100% - 1.75rem)' }}>
-                      <div
-                        className={`h-full rounded-full transition-all duration-500 ${
-                          step.percentage >= 50 ? 'bg-emerald-500' : step.percentage >= 20 ? 'bg-amber-500' : 'bg-red-500'
-                        }`}
-                        style={{ width: `${Math.min(step.percentage, 100)}%` }}
-                      />
-                    </div>
-                    {!isLast && dropoff > 0 && (
-                      <div className="ml-7 mt-1 text-xs text-zinc-600">
-                        -{dropoff} ({dropoffPct}% dropoff)
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-zinc-800/50 grid grid-cols-3 gap-4">
-              <div className="text-center">
-                <div className="text-zinc-500 text-xs uppercase tracking-wider">Trial → Premium</div>
-                <div className="text-xl font-semibold text-emerald-400 mt-1">{behaviorData.conversion.trialToPremiumRate}%</div>
-              </div>
-              <div className="text-center">
-                <div className="text-zinc-500 text-xs uppercase tracking-wider">Trial → Expired</div>
-                <div className="text-xl font-semibold text-red-400 mt-1">{behaviorData.conversion.trialToExpiredRate}%</div>
-              </div>
-              <div className="text-center">
-                <div className="text-zinc-500 text-xs uppercase tracking-wider">Search Rate</div>
-                <div className="text-xl font-semibold text-purple-400 mt-1">{behaviorData.engagement.searchRate}%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Users Table */}
       <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
         <div className="px-4 py-3 border-b border-zinc-800/50 flex items-center justify-between">
-          <h2 className="text-sm font-medium text-white">
-            {searchQuery ? `Found ${filteredUsers.length} of ${allUsers.length} users` : `All Users (${allUsers.length})`}
-            {totalPages > 1 && <span className="text-zinc-500 font-normal"> · Page {currentPage} of {totalPages}</span>}
-          </h2>
+          <div className="text-sm text-zinc-400">
+            {searchQuery ? `Found ${filteredUsers.length} of ${allUsers.length} users` : `${allUsers.length} users`}
+            {totalPages > 1 && <span className="text-zinc-600"> · Page {currentPage} of {totalPages}</span>}
+          </div>
           <div className="relative">
             <input
               type="text"
