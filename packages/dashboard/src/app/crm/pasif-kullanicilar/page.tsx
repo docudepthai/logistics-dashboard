@@ -451,10 +451,15 @@ export default function PasifKullanicilarPage() {
               {/* Message Template */}
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-2">Mesaj Sablonu</label>
-                <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300">
-                  {settings.messageTemplate || 'Sablon yukleniyor...'}
-                </div>
-                <p className="text-xs text-zinc-600 mt-2">Sablon su an degistirilemez</p>
+                <textarea
+                  value={settings.messageTemplate}
+                  onChange={(e) => setSettings(prev => ({ ...prev, messageTemplate: e.target.value }))}
+                  onBlur={() => saveSettings({ messageTemplate: settings.messageTemplate })}
+                  rows={4}
+                  className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300 resize-none focus:outline-none focus:border-zinc-600"
+                  placeholder="Mesaj sablonunu girin..."
+                />
+                <p className="text-xs text-zinc-500 mt-2">Duzenleme bitince otomatik kaydedilir</p>
               </div>
 
               {settings.lastUpdated && (
