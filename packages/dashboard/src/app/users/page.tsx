@@ -59,12 +59,15 @@ function getStatusBadge(user: User): { text: string; bgColor: string; textColor:
   return { text: 'Expired', bgColor: 'bg-red-400/10', textColor: 'text-red-400' };
 }
 
+type SortOrder = 'asc' | 'desc';
+
 export default function UsersPage() {
   const [data, setData] = useState<UsersData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortOrder, setSortOrder] = useState<SortOrder>('desc'); // newest first by default
 
   const allUsers = data?.users || [];
   const filteredUsers = searchQuery.trim()
@@ -73,9 +76,21 @@ export default function UsersPage() {
       )
     : allUsers;
 
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  // Sort users by first contact date
+  const sortedUsers = [...filteredUsers].sort((a, b) => {
+    const dateA = new Date(a.firstContactAt).getTime();
+    const dateB = new Date(b.firstContactAt).getTime();
+    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+  });
+
+  const toggleSortOrder = () => {
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(sortedUsers.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const paginatedUsers = sortedUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   const handleSearchChange = (value: string) => {
     setSearchQuery(value);
@@ -175,7 +190,7 @@ export default function UsersPage() {
           </div>
         </div>
 
-        {filteredUsers.length === 0 ? (
+        {sortedUsers.length === 0 ? (
           <div className="p-8 text-center text-zinc-500">
             {searchQuery ? `No users found matching "${searchQuery}"` : 'No users yet.'}
           </div>
@@ -188,7 +203,22 @@ export default function UsersPage() {
                   <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Status</th>
                   <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Days Left</th>
                   <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Welcome</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">First Contact</th>
+                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">
+                    <button
+                      onClick={toggleSortOrder}
+                      className="flex items-center space-x-1 hover:text-white transition-colors"
+                    >
+                      <span>First Contact</span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </th>
                   <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Expires</th>
                   <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Phones</th>
                 </tr>
