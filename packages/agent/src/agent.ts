@@ -50,6 +50,10 @@ interface ParsedLocations {
   // Multi-destination support: "Samsundan istanbul ankara izmir varmi"
   // = origin: samsun, destinations: [istanbul, ankara, izmir]
   destinations?: string[];       // Multiple destinations when origin has explicit suffix
+  // Region support: "istanbuldan ege bolgesine"
+  // = origin: istanbul, destinationRegion: ege, destinations: [izmir, aydin, ...]
+  originRegion?: string;         // Region name if origin is a region
+  destinationRegion?: string;    // Region name if destination is a region
   // Cargo type detection
   cargoType?: string;            // Detected cargo type (parsiyel, palet, etc.)
   // International destination detection
@@ -147,6 +151,82 @@ const ISTANBUL_ASIAN_DISTRICTS = new Set([
 ]);
 
 /**
+ * Turkish geographical regions (bölgeler) and their provinces.
+ * When user says "ege bolgesine", search all provinces in that region.
+ */
+const TURKISH_REGIONS: Record<string, string[]> = {
+  // Marmara Bolgesi
+  'marmara': ['istanbul', 'kocaeli', 'bursa', 'balikesir', 'canakkale', 'edirne', 'kirklareli', 'tekirdag', 'sakarya', 'yalova', 'bilecik'],
+  // Ege Bolgesi
+  'ege': ['izmir', 'aydin', 'denizli', 'manisa', 'mugla', 'usak', 'afyonkarahisar', 'kutahya'],
+  // Akdeniz Bolgesi
+  'akdeniz': ['antalya', 'adana', 'mersin', 'hatay', 'isparta', 'burdur', 'kahramanmaras', 'osmaniye'],
+  // Ic Anadolu Bolgesi
+  'ic anadolu': ['ankara', 'konya', 'eskisehir', 'kayseri', 'sivas', 'yozgat', 'aksaray', 'nigde', 'nevsehir', 'kirsehir', 'kirikkale', 'karaman', 'cankiri'],
+  'icanadolu': ['ankara', 'konya', 'eskisehir', 'kayseri', 'sivas', 'yozgat', 'aksaray', 'nigde', 'nevsehir', 'kirsehir', 'kirikkale', 'karaman', 'cankiri'],
+  'orta anadolu': ['ankara', 'konya', 'eskisehir', 'kayseri', 'sivas', 'yozgat', 'aksaray', 'nigde', 'nevsehir', 'kirsehir', 'kirikkale', 'karaman', 'cankiri'],
+  // Karadeniz Bolgesi
+  'karadeniz': ['samsun', 'trabzon', 'ordu', 'giresun', 'rize', 'artvin', 'sinop', 'kastamonu', 'corum', 'amasya', 'tokat', 'zonguldak', 'bartin', 'karabuk', 'duzce', 'bolu', 'gumushane', 'bayburt'],
+  // Dogu Anadolu Bolgesi
+  'dogu anadolu': ['erzurum', 'van', 'malatya', 'elazig', 'erzincan', 'kars', 'agri', 'mus', 'bingol', 'bitlis', 'hakkari', 'igdir', 'ardahan', 'tunceli'],
+  'doguanadolu': ['erzurum', 'van', 'malatya', 'elazig', 'erzincan', 'kars', 'agri', 'mus', 'bingol', 'bitlis', 'hakkari', 'igdir', 'ardahan', 'tunceli'],
+  'dogu': ['erzurum', 'van', 'malatya', 'elazig', 'erzincan', 'kars', 'agri', 'mus', 'bingol', 'bitlis', 'hakkari', 'igdir', 'ardahan', 'tunceli'],
+  // Guneydogu Anadolu Bolgesi
+  'guneydogu anadolu': ['gaziantep', 'diyarbakir', 'sanliurfa', 'mardin', 'batman', 'siirt', 'sirnak', 'adiyaman', 'kilis'],
+  'guneydoguanadolu': ['gaziantep', 'diyarbakir', 'sanliurfa', 'mardin', 'batman', 'siirt', 'sirnak', 'adiyaman', 'kilis'],
+  'guneydogu': ['gaziantep', 'diyarbakir', 'sanliurfa', 'mardin', 'batman', 'siirt', 'sirnak', 'adiyaman', 'kilis'],
+};
+
+/**
+ * Region name aliases for flexible matching
+ */
+const REGION_ALIASES: Record<string, string> = {
+  'marmarabolgesi': 'marmara',
+  'marmara bolgesi': 'marmara',
+  'egebolgesi': 'ege',
+  'ege bolgesi': 'ege',
+  'akdenizbolgesi': 'akdeniz',
+  'akdeniz bolgesi': 'akdeniz',
+  'icanadolubolgesi': 'ic anadolu',
+  'ic anadolu bolgesi': 'ic anadolu',
+  'ortaanadolu': 'ic anadolu',
+  'orta anadolu bolgesi': 'ic anadolu',
+  'karadenizbolgesi': 'karadeniz',
+  'karadeniz bolgesi': 'karadeniz',
+  'doguanadolubolgesi': 'dogu anadolu',
+  'dogu anadolu bolgesi': 'dogu anadolu',
+  'dogubolgesi': 'dogu anadolu',
+  'dogu bolgesi': 'dogu anadolu',
+  'guneydoguanadolubolgesi': 'guneydogu anadolu',
+  'guneydogu anadolu bolgesi': 'guneydogu anadolu',
+  'guneydogubolgesi': 'guneydogu anadolu',
+  'guneydogu bolgesi': 'guneydogu anadolu',
+};
+
+/**
+ * Detect region from text and return the region key
+ */
+function detectRegion(text: string): string | null {
+  const normalized = normalizeToAscii(text).toLowerCase();
+
+  // Check direct region names first
+  for (const regionName of Object.keys(TURKISH_REGIONS)) {
+    if (normalized.includes(regionName)) {
+      return regionName;
+    }
+  }
+
+  // Check aliases
+  for (const [alias, regionKey] of Object.entries(REGION_ALIASES)) {
+    if (normalized.includes(alias)) {
+      return regionKey;
+    }
+  }
+
+  return null;
+}
+
+/**
  * Parse Turkish location suffixes from user message to extract origin and destination.
  * This runs BEFORE GPT to ensure correct interpretation of -dan/-den (from) and -a/-e (to).
  *
@@ -193,6 +273,73 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
     if (INTERNATIONAL_DESTINATIONS.has(cleanToken)) {
       result.internationalDestination = cleanToken;
       // Continue parsing to get the origin, but we'll handle the response differently
+    }
+  }
+
+  // Check for Turkish regions (bölge) - must be done on full normalized text
+  // Detect patterns like "ege bolgesine", "karadenizden", "marmara bolgesi"
+  const detectedRegion = detectRegion(normalized);
+  if (detectedRegion) {
+    const regionProvinces = TURKISH_REGIONS[detectedRegion];
+    console.log(`[Parser] Detected region: ${detectedRegion} with provinces:`, regionProvinces);
+
+    // Check if region has origin or destination suffix
+    // "egeden" or "ege bolgesinden" = origin region
+    // "egeye" or "ege bolgesine" = destination region
+    const regionPatterns = [
+      detectedRegion,
+      detectedRegion + ' bolgesi',
+      detectedRegion.replace(' ', ''),
+      detectedRegion.replace(' ', '') + 'bolgesi',
+    ];
+
+    let isOriginRegion = false;
+    let isDestinationRegion = false;
+
+    for (const pattern of regionPatterns) {
+      // Check for origin suffixes: dan, den, ndan, nden
+      if (normalized.includes(pattern + 'den') ||
+          normalized.includes(pattern + 'dan') ||
+          normalized.includes(pattern + 'nden') ||
+          normalized.includes(pattern + 'ndan') ||
+          normalized.includes(pattern + ' den') ||
+          normalized.includes(pattern + ' dan')) {
+        isOriginRegion = true;
+        break;
+      }
+      // Check for destination suffixes: a, e, ya, ye, na, ne, ine
+      if (normalized.includes(pattern + 'e') ||
+          normalized.includes(pattern + 'a') ||
+          normalized.includes(pattern + 'ye') ||
+          normalized.includes(pattern + 'ya') ||
+          normalized.includes(pattern + 'ne') ||
+          normalized.includes(pattern + 'na') ||
+          normalized.includes(pattern + 'sine') ||
+          normalized.includes(pattern + 'ine') ||
+          normalized.includes(pattern + ' e') ||
+          normalized.includes(pattern + ' a')) {
+        isDestinationRegion = true;
+        break;
+      }
+    }
+
+    // Default to destination if no suffix found (most common case: "ege bolgesi")
+    if (!isOriginRegion && !isDestinationRegion) {
+      isDestinationRegion = true;
+    }
+
+    if (isOriginRegion) {
+      result.originRegion = detectedRegion;
+      result.destinations = regionProvinces;
+      // Set first province as origin for context
+      result.origin = regionProvinces[0];
+      result.originProvince = regionProvinces[0];
+    } else if (isDestinationRegion) {
+      result.destinationRegion = detectedRegion;
+      result.destinations = regionProvinces;
+      // Set first province as destination for context
+      result.destination = regionProvinces[0];
+      result.destinationProvince = regionProvinces[0];
     }
   }
 
@@ -950,9 +1097,174 @@ export class LogisticsAgent {
       };
     }
 
+    // Handle region-based search (e.g., "istanbuldan ege bolgesine")
+    // Search for jobs from origin to each province in the destination region
+    if (parsedLocations.destinationRegion && parsedLocations.destinations && parsedLocations.destinations.length > 0) {
+      // Get origin from parsed message or context
+      const origin = parsedLocations.origin || conversation?.context.lastOrigin;
+      const regionName = parsedLocations.destinationRegion;
+      const destinations = parsedLocations.destinations;
+
+      if (!origin) {
+        // Need origin to search region
+        const response = `nerden cikacak abi? ${regionName} bolgesine arama yapmak icin bir sehir yaz`;
+        await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
+        await this.conversationStore.addMessage(userId, { role: 'assistant', content: response });
+        return {
+          message: response,
+          jobIds: [],
+          context: {} as ConversationContext,
+        };
+      }
+
+      console.log(`[Agent] Region search: ${origin} → ${regionName} bolgesi (${destinations.length} il)`);
+
+      // Search for each province in the region
+      const allJobs: JobResult[] = [];
+      const jobsByDestination: Map<string, JobResult[]> = new Map();
+      const jobCounts: Map<string, number> = new Map();
+
+      for (const dest of destinations) {
+        const params: SearchJobsParams = {
+          origin,
+          destination: dest,
+          limit: 3, // Limit per province to show variety
+        };
+        const result = await searchJobs(this.sql, params);
+        jobCounts.set(dest, result.totalCount);
+        if (result.jobs.length > 0) {
+          jobsByDestination.set(dest, result.jobs);
+          allJobs.push(...result.jobs);
+        }
+      }
+
+      let response: string;
+      if (allJobs.length === 0) {
+        response = `${origin}'dan ${regionName} bolgesine is yok su an abi.`;
+      } else {
+        // Format results grouped by destination
+        const sections: string[] = [];
+        for (const dest of destinations) {
+          const jobs = jobsByDestination.get(dest);
+          const totalCount = jobCounts.get(dest) || 0;
+          if (jobs && jobs.length > 0) {
+            let sectionHeader = `${origin} → ${dest}`;
+            if (totalCount > jobs.length) {
+              sectionHeader += ` (${totalCount} is var, ${jobs.length} gosteriyorum)`;
+            }
+            sections.push(`${sectionHeader}:\n${this.formatJobsAsText(jobs)}`);
+          }
+        }
+        response = `${origin}'dan ${regionName} bolgesi:\n\n${sections.join('\n\n')}`;
+
+        // Add summary of provinces with no jobs
+        const emptyDests = destinations.filter(d => !jobsByDestination.has(d) || jobsByDestination.get(d)!.length === 0);
+        if (emptyDests.length > 0 && emptyDests.length < destinations.length) {
+          response += `\n\nnot: ${emptyDests.slice(0, 5).join(', ')}${emptyDests.length > 5 ? ` ve ${emptyDests.length - 5} il daha` : ''} yonune is yok.`;
+        }
+      }
+
+      await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
+      await this.conversationStore.addMessage(
+        userId,
+        { role: 'assistant', content: response },
+        {
+          lastOrigin: origin,
+          lastDestination: undefined, // Region search, no single destination
+          lastTotalCount: allJobs.length,
+          lastOffset: 0,
+          lastShownCount: allJobs.length,
+        }
+      );
+
+      return {
+        message: response,
+        jobIds: allJobs.map(j => j.id),
+        context: {} as ConversationContext,
+      };
+    }
+
+    // Handle origin region search (e.g., "ege bolgesinden istanbula")
+    if (parsedLocations.originRegion && parsedLocations.destinations && parsedLocations.destinations.length > 0) {
+      const regionName = parsedLocations.originRegion;
+      const origins = parsedLocations.destinations;
+      // Get destination from parsed message or context
+      const destination = parsedLocations.destination || conversation?.context.lastDestination;
+
+      console.log(`[Agent] Origin region search: ${regionName} bolgesi → ${destination || 'tum iller'} (${origins.length} il)`);
+
+      // Search for each province in the region
+      const allJobs: JobResult[] = [];
+      const jobsByOrigin: Map<string, JobResult[]> = new Map();
+      const jobCounts: Map<string, number> = new Map();
+
+      for (const orig of origins) {
+        const params: SearchJobsParams = {
+          origin: orig,
+          destination: destination,
+          limit: 3, // Limit per province to show variety
+        };
+        const result = await searchJobs(this.sql, params);
+        jobCounts.set(orig, result.totalCount);
+        if (result.jobs.length > 0) {
+          jobsByOrigin.set(orig, result.jobs);
+          allJobs.push(...result.jobs);
+        }
+      }
+
+      let response: string;
+      if (allJobs.length === 0) {
+        response = destination
+          ? `${regionName} bolgesinden ${destination}'a is yok su an abi.`
+          : `${regionName} bolgesinden cikan is yok su an abi.`;
+      } else {
+        // Format results grouped by origin
+        const sections: string[] = [];
+        for (const orig of origins) {
+          const jobs = jobsByOrigin.get(orig);
+          const totalCount = jobCounts.get(orig) || 0;
+          if (jobs && jobs.length > 0) {
+            let sectionHeader = destination ? `${orig} → ${destination}` : `${orig}'den`;
+            if (totalCount > jobs.length) {
+              sectionHeader += ` (${totalCount} is var, ${jobs.length} gosteriyorum)`;
+            }
+            sections.push(`${sectionHeader}:\n${this.formatJobsAsText(jobs)}`);
+          }
+        }
+        response = destination
+          ? `${regionName} bolgesinden ${destination}'a:\n\n${sections.join('\n\n')}`
+          : `${regionName} bolgesinden:\n\n${sections.join('\n\n')}`;
+
+        // Add summary of provinces with no jobs
+        const emptyOrigins = origins.filter(o => !jobsByOrigin.has(o) || jobsByOrigin.get(o)!.length === 0);
+        if (emptyOrigins.length > 0 && emptyOrigins.length < origins.length) {
+          response += `\n\nnot: ${emptyOrigins.slice(0, 5).join(', ')}${emptyOrigins.length > 5 ? ` ve ${emptyOrigins.length - 5} il daha` : ''}'den is yok.`;
+        }
+      }
+
+      await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
+      await this.conversationStore.addMessage(
+        userId,
+        { role: 'assistant', content: response },
+        {
+          lastOrigin: undefined, // Region search, no single origin
+          lastDestination: destination,
+          lastTotalCount: allJobs.length,
+          lastOffset: 0,
+          lastShownCount: allJobs.length,
+        }
+      );
+
+      return {
+        message: response,
+        jobIds: allJobs.map(j => j.id),
+        context: {} as ConversationContext,
+      };
+    }
+
     // Handle multi-destination search (e.g., "Samsundan istanbul ankara izmir varmi")
     // Search for jobs from origin to each destination and combine results
-    if (parsedLocations.destinations && parsedLocations.destinations.length >= 2 && parsedLocations.origin) {
+    if (parsedLocations.destinations && parsedLocations.destinations.length >= 2 && parsedLocations.origin && !parsedLocations.destinationRegion) {
       const origin = parsedLocations.origin;
       const destinations = parsedLocations.destinations;
 
@@ -1600,10 +1912,11 @@ export class LogisticsAgent {
   /**
    * Generate specific "no results" message based on search filters.
    * Instead of generic "su an yok abi", tell user what was searched.
+   * Also adds a hint that jobs are constantly updated.
    */
   private formatNoResultsMessage(params?: SearchJobsParams): string {
     if (!params) {
-      return 'su an yok abi';
+      return 'su an yok abi, isler surekli guncelleniyor sonradan tekrar deneyebilirsin.';
     }
 
     const parts: string[] = [];
@@ -1640,10 +1953,14 @@ export class LogisticsAgent {
       filters.push(params.vehicleType.toLowerCase());
     }
 
+    let message: string;
     if (filters.length > 0) {
-      return `${filters.join(' ')} ${parts[0]}`;
+      message = `${filters.join(' ')} ${parts[0]}`;
+    } else {
+      message = parts[0];
     }
 
-    return parts[0];
+    // Add hint that jobs are constantly updated
+    return `${message}, isler surekli guncelleniyor sonradan tekrar deneyebilirsin.`;
   }
 }
