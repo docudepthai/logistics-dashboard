@@ -11,6 +11,7 @@ applications:
         build:
           commands:
             - cd ../..
+            - env | grep -E '^(WHATSAPP_|DATABASE_|MY_AWS_|REGION|CONVERSATIONS_)' >> packages/dashboard/.env.production || true
             - pnpm --filter @turkish-logistics/dashboard run build
       artifacts:
         baseDirectory: .next
