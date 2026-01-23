@@ -137,8 +137,8 @@ function analyzeConversation(
     problems.push('Searched but found nothing');
   }
 
-  // 6. Long conversation with no successful search (user stuck)
-  if (!foundResults && messages.length >= 8) {
+  // 6. Long conversation with no successful search (user stuck) - only if they tried searching
+  if (hasSearched && !foundResults && messages.length >= 8) {
     problems.push('Long conversation, no results');
   }
 
