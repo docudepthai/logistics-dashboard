@@ -28,33 +28,27 @@ interface ConversationContext {
   swearWarned?: boolean;
 }
 
-// Bot confusion/failure phrases
-const CONFUSION_PHRASES = [
-  'sadece is bakarim abi',
-  'nerden cikacak abi',
-  'nerden nereye bakayim',
-  'nerden nereye yaz',
-  'anlamadim',
+// Bot parsing failure - ONLY when user tried to search but bot couldn't understand
+// These are problems only if they appear AFTER the first exchange
+const BOT_PARSE_FAILURE = [
+  'nerden cikacak abi',      // Bot couldn't find origin
+  'nerden nereye bakayim',   // Bot couldn't parse location
 ];
 
+// No results - problem only if repeated
 const NO_RESULTS_PHRASES = [
   'su an yok abi',
   'simdilik yok',
   'bulamadim',
-  'hepsini gosterdim',
 ];
 
-const FRUSTRATION_PHRASES = [
-  'abi kufur etme',
-  'duzgun konus',
-];
-
+// User explicitly confused AFTER trying to use
 const USER_CONFUSION_PATTERNS = [
-  /\?{2,}/,  // Multiple question marks
-  /ne\s*(yap|et|bu|oluyor)/i,  // "ne yapiyorsun", "ne bu"
-  /anlamadim/i,
-  /nasil/i,
-  /calismiy/i,  // "calismiyor"
+  /\?{2,}/,           // Multiple question marks
+  /anlamadim/i,       // "I don't understand"
+  /calismiy/i,        // "it's not working"
+  /niye.*yok/i,       // "why is there nothing"
+  /bozuk/i,           // "broken"
 ];
 
 interface ProblemConversation {
@@ -92,59 +86,60 @@ function analyzeConversation(
   const durationMs = new Date(updatedAt).getTime() - new Date(createdAt).getTime();
   const durationMinutes = Math.round(durationMs / 60000);
 
+  // How old is this conversation?
+  const now = new Date();
+  const hoursSinceUpdate = (now.getTime() - new Date(updatedAt).getTime()) / (1000 * 60 * 60);
+
   // Check if user searched and found results
   const hasSearched = !!(context.lastOrigin || context.lastDestination);
   const foundResults = !!(context.lastJobIds && context.lastJobIds.length > 0);
 
+  // Skip very recent conversations - they might still be active
+  if (hoursSinceUpdate < 1 && messages.length < 6) {
+    return null;
+  }
+
   // Problem detection
 
-  // 1. Very short conversation (bounced)
-  if (messages.length < 4 && !foundResults) {
-    problems.push('Bounced: Very short conversation');
-  }
-
-  // 2. Bot confusion phrases
-  const confusionCount = botMessages.filter(m =>
-    CONFUSION_PHRASES.some(phrase => m.content.toLowerCase().includes(phrase))
+  // 1. Bot couldn't parse AFTER first exchange (skip first bot response - that's onboarding)
+  const botMessagesAfterFirst = botMessages.slice(1); // Skip first bot message
+  const parseFailureCount = botMessagesAfterFirst.filter(m =>
+    BOT_PARSE_FAILURE.some(phrase => m.content.toLowerCase().includes(phrase))
   ).length;
-  if (confusionCount > 0) {
-    problems.push(`Bot confused ${confusionCount}x`);
+  if (parseFailureCount > 0) {
+    problems.push(`Bot couldn't parse ${parseFailureCount}x`);
   }
 
-  // 3. No results found
+  // 2. Repeated no results (2+ times = user kept trying, couldn't find loads)
   const noResultsCount = botMessages.filter(m =>
     NO_RESULTS_PHRASES.some(phrase => m.content.toLowerCase().includes(phrase))
   ).length;
-  if (noResultsCount > 1) {
+  if (noResultsCount >= 2) {
     problems.push(`No results ${noResultsCount}x`);
   }
 
-  // 4. User frustration (swearing)
+  // 3. User frustration (swearing)
   if (context.swearWarned) {
     problems.push('User frustrated (swore)');
   }
 
-  // 5. User confusion patterns
-  const userConfusionCount = userMessages.filter(m =>
+  // 4. User explicitly confused (AFTER first message, not the Instagram CTA)
+  const userMessagesAfterFirst = userMessages.slice(1);
+  const userConfusionCount = userMessagesAfterFirst.filter(m =>
     USER_CONFUSION_PATTERNS.some(pattern => pattern.test(m.content))
   ).length;
   if (userConfusionCount > 0) {
     problems.push(`User confused ${userConfusionCount}x`);
   }
 
-  // 6. Never searched
-  if (!hasSearched && messages.length > 3) {
-    problems.push('Never performed a search');
-  }
-
-  // 7. Searched but no results
-  if (hasSearched && !foundResults && noResultsCount > 0) {
+  // 5. Searched multiple times but never found anything
+  if (hasSearched && !foundResults && noResultsCount >= 1 && messages.length > 4) {
     problems.push('Searched but found nothing');
   }
 
-  // 8. Short duration abrupt end
-  if (durationMinutes < 2 && messages.length < 6 && !foundResults) {
-    problems.push('Quick abandonment');
+  // 6. Long conversation with no successful search (user stuck)
+  if (!foundResults && messages.length >= 8) {
+    problems.push('Long conversation, no results');
   }
 
   // If no problems, skip
@@ -157,14 +152,13 @@ function analyzeConversation(
 
   if (
     context.swearWarned ||
-    (confusionCount >= 2 && !foundResults) ||
-    (userConfusionCount >= 2)
+    userConfusionCount >= 1 ||
+    (parseFailureCount >= 2)
   ) {
     severity = 'critical';
   } else if (
-    (hasSearched && !foundResults) ||
-    confusionCount >= 1 ||
-    noResultsCount >= 2
+    noResultsCount >= 2 ||
+    (hasSearched && !foundResults && messages.length > 4)
   ) {
     severity = 'warning';
   }

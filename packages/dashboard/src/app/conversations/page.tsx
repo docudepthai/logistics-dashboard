@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -36,6 +37,9 @@ const CALL_REASONS = [
 ];
 
 export default function ConversationsPage() {
+  const searchParams = useSearchParams();
+  const searchFromUrl = searchParams.get('search') || '';
+
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [callList, setCallList] = useState<Map<string, CallListItem>>(new Map());
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -43,12 +47,25 @@ export default function ConversationsPage() {
   const [addingToCallList, setAddingToCallList] = useState<string | null>(null);
   const [showReasonDropdown, setShowReasonDropdown] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState(searchFromUrl);
+
+  // Filter conversations by search
+  const filteredConversations = searchQuery
+    ? conversations.filter(c => c.userId.includes(searchQuery.replace(/\D/g, '')))
+    : conversations;
 
   // Pagination calculations
-  const totalPages = Math.ceil(conversations.length / ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredConversations.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
   const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedConversations = conversations.slice(startIndex, endIndex);
+  const paginatedConversations = filteredConversations.slice(startIndex, endIndex);
+
+  // Auto-expand if searching for specific user
+  useEffect(() => {
+    if (searchFromUrl && filteredConversations.length === 1) {
+      setExpanded(filteredConversations[0].userId);
+    }
+  }, [searchFromUrl, filteredConversations]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -122,18 +139,44 @@ export default function ConversationsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
-        <p className="text-zinc-500 text-sm mt-1">
-          {conversations.length} active conversations
-          {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
+          <p className="text-zinc-500 text-sm mt-1">
+            {searchQuery ? `${filteredConversations.length} of ${conversations.length} conversations` : `${conversations.length} active conversations`}
+            {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
+          </p>
+        </div>
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search by phone..."
+            value={searchQuery}
+            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+            className="w-64 px-3 py-1.5 pl-9 text-sm bg-zinc-800/50 border border-zinc-700/50 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600"
+          />
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Conversations List */}
-      {conversations.length === 0 ? (
+      {filteredConversations.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-zinc-500">No conversations yet</p>
+          <p className="text-zinc-500">
+            {searchQuery ? `No conversations found for "${searchQuery}"` : 'No conversations yet'}
+          </p>
         </div>
       ) : (
         <div className="space-y-3">
