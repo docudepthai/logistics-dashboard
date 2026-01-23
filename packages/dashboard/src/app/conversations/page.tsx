@@ -27,7 +27,6 @@ interface CallListItem {
 }
 
 const CALL_REASONS = [
-  'İş fonksiyonu kullanılmamış',
   'Sistem arızası oluşmuş ve düzeltildi',
   'Şu araç var mı diyor ama bizde yok',
   'Deneme süresi ile ilgili soru',

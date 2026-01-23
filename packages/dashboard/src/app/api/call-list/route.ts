@@ -47,130 +47,20 @@ export interface CallListItem {
   autoAdded: boolean; // true if auto-added because user didn't search
 }
 
-// Helper to check if user has searched (has origin or destination in context)
-function hasSearched(context: Record<string, unknown> | undefined): boolean {
-  if (!context) return false;
-  return !!(context.lastOrigin || context.lastDestination);
-}
-
-// GET - Get all call list items (also auto-adds users who haven't searched)
+// GET - Get all call list items (manually added users only)
+// Note: Users who haven't searched are now shown in /crm/24-saat-penceresi via /api/nudge-eligible
 export async function GET() {
   try {
-    // Fetch both call list items and conversations in parallel (with pagination)
-    const [callListItems, conversationItems] = await Promise.all([
-      scanAllItems({
-        TableName: CONVERSATIONS_TABLE,
-        FilterExpression: 'sk = :callList',
-        ExpressionAttributeValues: {
-          ':callList': 'CALL_LIST',
-        },
-      }),
-      scanAllItems({
-        TableName: CONVERSATIONS_TABLE,
-        FilterExpression: 'sk = :conversation',
-        ExpressionAttributeValues: {
-          ':conversation': 'CONVERSATION',
-        },
-        ProjectionExpression: 'pk, #ctx',
-        ExpressionAttributeNames: {
-          '#ctx': 'context',
-        },
-      }),
-    ]);
+    // Fetch call list items with pagination
+    const callListItems = await scanAllItems({
+      TableName: CONVERSATIONS_TABLE,
+      FilterExpression: 'sk = :callList',
+      ExpressionAttributeValues: {
+        ':callList': 'CALL_LIST',
+      },
+    });
 
-    // Build a map of phone -> context for quick lookup
-    const phoneContextMap = new Map<string, Record<string, unknown> | undefined>();
-    for (const item of conversationItems) {
-      const phone = (item.pk as string)?.replace('USER#', '') || '';
-      phoneContextMap.set(phone, item.context as Record<string, unknown> | undefined);
-    }
-
-    // Get existing call list items
-    const existingCallListItems = callListItems;
-    const existingPhones = new Set(
-      existingCallListItems.map(item => item.phoneNumber as string)
-    );
-
-    // Find auto-added users who have NOW searched - remove them from call list
-    const usersToRemove = existingCallListItems
-      .filter(item => {
-        // Only auto-remove if they were auto-added (not manually added)
-        if (!item.autoAdded) return false;
-        // Check if they have now searched
-        const context = phoneContextMap.get(item.phoneNumber as string);
-        return hasSearched(context);
-      })
-      .map(item => item.phoneNumber as string);
-
-    // Remove users who have now searched
-    if (usersToRemove.length > 0) {
-      const removePromises = usersToRemove.map(phone =>
-        docClient.send(
-          new DeleteCommand({
-            TableName: CONVERSATIONS_TABLE,
-            Key: {
-              pk: `USER#${phone}`,
-              sk: 'CALL_LIST',
-            },
-          })
-        ).catch(() => {}) // Ignore errors
-      );
-      await Promise.all(removePromises);
-      // Update the existing phones set
-      for (const phone of usersToRemove) {
-        existingPhones.delete(phone);
-      }
-    }
-
-    // Find users who haven't searched and aren't in call list
-    const usersToAdd = conversationItems
-      .filter(item => {
-        const phone = (item.pk as string)?.replace('USER#', '') || '';
-        // Must be a valid phone number (10+ digits)
-        if (!/^[+]?\d{10,}$/.test(phone)) return false;
-        // Not already in call list
-        if (existingPhones.has(phone)) return false;
-        // Hasn't searched
-        return !hasSearched(item.context as Record<string, unknown>);
-      })
-      .map(item => (item.pk as string).replace('USER#', ''));
-
-    // Auto-add users who haven't searched (in background, don't wait)
-    if (usersToAdd.length > 0) {
-      const addPromises = usersToAdd.map(phone =>
-        docClient.send(
-          new PutCommand({
-            TableName: CONVERSATIONS_TABLE,
-            Item: {
-              pk: `USER#${phone}`,
-              sk: 'CALL_LIST',
-              phoneNumber: phone,
-              reason: 'İş fonksiyonu kullanılmamış',
-              notes: '',
-              calledAt: null,
-              addedAt: new Date().toISOString(),
-              autoAdded: true,
-            },
-            ConditionExpression: 'attribute_not_exists(pk)', // Only add if not exists
-          })
-        ).catch(() => {}) // Ignore errors (e.g., if already exists)
-      );
-      // Wait for all to complete
-      await Promise.all(addPromises);
-    }
-
-    // Re-fetch call list after auto-adding/removing
-    const finalItems = (usersToAdd.length > 0 || usersToRemove.length > 0)
-      ? await scanAllItems({
-          TableName: CONVERSATIONS_TABLE,
-          FilterExpression: 'sk = :callList',
-          ExpressionAttributeValues: {
-            ':callList': 'CALL_LIST',
-          },
-        })
-      : callListItems;
-
-    const items: CallListItem[] = finalItems.map(item => ({
+    const items: CallListItem[] = callListItems.map(item => ({
       phoneNumber: item.phoneNumber || '',
       reason: item.reason || '',
       notes: item.notes || '',
@@ -188,7 +78,7 @@ export async function GET() {
       return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
     });
 
-    return NextResponse.json({ items, autoAdded: usersToAdd.length, autoRemoved: usersToRemove.length });
+    return NextResponse.json({ items });
   } catch (error) {
     console.error('Error fetching call list:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -225,7 +115,7 @@ export async function POST(request: NextRequest) {
           pk: `USER#${phoneNumber}`,
           sk: 'CALL_LIST',
           phoneNumber: phoneNumber,
-          reason: reason || 'İş fonksiyonu kullanılmamış',
+          reason: reason || '',
           notes: notes || '',
           calledAt: null,
           addedAt: new Date().toISOString(),
