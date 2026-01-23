@@ -83,22 +83,51 @@ export default function ProblemsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'low'>('all');
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    try {
+      const res = await fetch('/api/problem-conversations');
+      if (res.ok) {
+        setData(await res.json());
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch('/api/problem-conversations');
-        if (res.ok) {
-          setData(await res.json());
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleRemove = async (userId: string) => {
+    if (!confirm('Bu konusmayi problem listesinden kaldirmak istediginize emin misiniz?')) return;
+
+    setRemoving(userId);
+    try {
+      const res = await fetch('/api/problem-conversations', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId }),
+      });
+
+      if (res.ok) {
+        // Remove from local state
+        setData(prev => prev ? {
+          ...prev,
+          conversations: prev.conversations.filter(c => c.userId !== userId),
+          stats: {
+            ...prev.stats,
+            total: prev.stats.total - 1,
+          }
+        } : null);
+      }
+    } finally {
+      setRemoving(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -268,6 +297,13 @@ export default function ProblemsPage() {
                       >
                         View Full Conversation
                       </a>
+                      <button
+                        onClick={() => handleRemove(conv.userId)}
+                        disabled={removing === conv.userId}
+                        className="px-3 py-1.5 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50"
+                      >
+                        {removing === conv.userId ? 'Kaldiriliyor...' : 'Kaldir'}
+                      </button>
                     </div>
                   </div>
                 )}

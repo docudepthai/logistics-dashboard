@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -214,6 +214,11 @@ export async function GET() {
         continue;
       }
 
+      // Skip dismissed conversations
+      if (item.problemDismissed) {
+        continue;
+      }
+
       const messages: Message[] = (item.messages || []).map((msg: any) => ({
         role: msg.role || 'unknown',
         content: msg.content || '',
@@ -259,6 +264,41 @@ export async function GET() {
     console.error('Problem conversations API error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch problem conversations' },
+      { status: 500 }
+    );
+  }
+}
+
+// DELETE - Dismiss a conversation from problem list
+export async function DELETE(request: Request) {
+  try {
+    const { userId } = await request.json();
+
+    if (!userId) {
+      return NextResponse.json({ error: 'userId required' }, { status: 400 });
+    }
+
+    // Mark conversation as dismissed
+    await docClient.send(
+      new UpdateCommand({
+        TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
+        Key: {
+          pk: `USER#${userId}`,
+          sk: 'CONVERSATION',
+        },
+        UpdateExpression: 'SET problemDismissed = :dismissed, problemDismissedAt = :at',
+        ExpressionAttributeValues: {
+          ':dismissed': true,
+          ':at': new Date().toISOString(),
+        },
+      })
+    );
+
+    return NextResponse.json({ success: true, userId });
+  } catch (error) {
+    console.error('Dismiss problem error:', error);
+    return NextResponse.json(
+      { error: 'Failed to dismiss problem' },
       { status: 500 }
     );
   }
