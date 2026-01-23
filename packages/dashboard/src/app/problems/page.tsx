@@ -78,12 +78,15 @@ const severityConfig = {
   },
 };
 
+const SUPPORT_MESSAGE = 'sistem ile ilgili daha fazla bilgi ve destek almak icin bu numaraya mesaj atip veya yazabilirsiniz +90 533 208 9867';
+
 export default function ProblemsPage() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'low'>('all');
   const [expanded, setExpanded] = useState<string | null>(null);
   const [removing, setRemoving] = useState<string | null>(null);
+  const [sendingSupport, setSendingSupport] = useState<string | null>(null);
 
   const fetchData = async () => {
     try {
@@ -126,6 +129,37 @@ export default function ProblemsPage() {
       }
     } finally {
       setRemoving(null);
+    }
+  };
+
+  const handleSendSupport = async (userId: string) => {
+    const confirmMessage = `Bu mesaji gondermek istediginize emin misiniz?\n\nMesaj:\n"${SUPPORT_MESSAGE}"`;
+    if (!confirm(confirmMessage)) return;
+
+    setSendingSupport(userId);
+    try {
+      const res = await fetch('/api/send-support', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: userId }),
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        alert('Destek mesaji basariyla gonderildi!');
+      } else {
+        if (result.windowExpired) {
+          alert(`Mesaj gonderilemedi: ${result.error}`);
+        } else {
+          alert(`Hata: ${result.error || 'Mesaj gonderilemedi'}`);
+        }
+      }
+    } catch (error) {
+      alert('Bir hata olustu. Lutfen tekrar deneyin.');
+      console.error('Send support error:', error);
+    } finally {
+      setSendingSupport(null);
     }
   };
 
@@ -297,6 +331,13 @@ export default function ProblemsPage() {
                       >
                         View Full Conversation
                       </a>
+                      <button
+                        onClick={() => handleSendSupport(conv.userId)}
+                        disabled={sendingSupport === conv.userId}
+                        className="px-3 py-1.5 text-xs bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 transition-colors disabled:opacity-50"
+                      >
+                        {sendingSupport === conv.userId ? 'Gonderiliyor...' : 'Destek No Gonder'}
+                      </button>
                       <button
                         onClick={() => handleRemove(conv.userId)}
                         disabled={removing === conv.userId}
