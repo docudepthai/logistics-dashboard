@@ -1441,10 +1441,183 @@
     "aws:asset:property": "Code"
    }
   },
+  "AutoNudgeHandlerServiceRoleEE627AC7": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/AutoNudgeHandler/ServiceRole/Resource"
+   }
+  },
+  "AutoNudgeHandlerServiceRoleDefaultPolicyDA3077A7": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "xray:PutTelemetryRecords",
+        "xray:PutTraceSegments"
+       ],
+       "Effect": "Allow",
+       "Resource": "*"
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ConversationsTableCD91EB96",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "AutoNudgeHandlerServiceRoleDefaultPolicyDA3077A7",
+    "Roles": [
+     {
+      "Ref": "AutoNudgeHandlerServiceRoleEE627AC7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/AutoNudgeHandler/ServiceRole/DefaultPolicy/Resource"
+   }
+  },
+  "AutoNudgeHandler6CD0AA9C": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
+     "S3Key": "5fc9fecfdb82a83c4935f1e5a3c338121158d5c8885fa388e9f1d13c73211813.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "CONVERSATIONS_TABLE": {
+       "Ref": "ConversationsTableCD91EB96"
+      },
+      "NODE_OPTIONS": "--enable-source-maps"
+     }
+    },
+    "FunctionName": "turkish-logistics-auto-nudge",
+    "Handler": "index.handler",
+    "MemorySize": 256,
+    "Role": {
+     "Fn::GetAtt": [
+      "AutoNudgeHandlerServiceRoleEE627AC7",
+      "Arn"
+     ]
+    },
+    "Runtime": "nodejs20.x",
+    "Timeout": 120,
+    "TracingConfig": {
+     "Mode": "Active"
+    }
+   },
+   "DependsOn": [
+    "AutoNudgeHandlerServiceRoleDefaultPolicyDA3077A7",
+    "AutoNudgeHandlerServiceRoleEE627AC7"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/AutoNudgeHandler/Resource",
+    "aws:asset:path": "asset.5fc9fecfdb82a83c4935f1e5a3c338121158d5c8885fa388e9f1d13c73211813",
+    "aws:asset:is-bundled": true,
+    "aws:asset:property": "Code"
+   }
+  },
+  "AutoNudgeSchedule1DA79644": {
+   "Type": "AWS::Events::Rule",
+   "Properties": {
+    "Description": "Triggers auto-nudge Lambda every 15 minutes to send reminder messages",
+    "Name": "turkish-logistics-auto-nudge-schedule",
+    "ScheduleExpression": "rate(15 minutes)",
+    "State": "ENABLED",
+    "Targets": [
+     {
+      "Arn": {
+       "Fn::GetAtt": [
+        "AutoNudgeHandler6CD0AA9C",
+        "Arn"
+       ]
+      },
+      "Id": "Target0",
+      "RetryPolicy": {
+       "MaximumRetryAttempts": 2
+      }
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/AutoNudgeSchedule/Resource"
+   }
+  },
+  "AutoNudgeScheduleAllowEventRuleTurkishLogisticsBotAutoNudgeHandler567F02BE5FD19CF2": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "AutoNudgeHandler6CD0AA9C",
+      "Arn"
+     ]
+    },
+    "Principal": "events.amazonaws.com",
+    "SourceArn": {
+     "Fn::GetAtt": [
+      "AutoNudgeSchedule1DA79644",
+      "Arn"
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "TurkishLogisticsBot/AutoNudgeSchedule/AllowEventRuleTurkishLogisticsBotAutoNudgeHandler567F02BE"
+   }
+  },
   "CDKMetadata": {
    "Type": "AWS::CDK::Metadata",
    "Properties": {
-    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Ry07DMBD8Fu6uQQ18QMvjVigt92jrLMFJbIes3SqK8u+s7ahw4DSzo8nserKW66KQdzdwoZWq2lWnT3I6elCtYKmcqJDTNqgWvXj8tAvLsAXCWdA3yek9YMBoSIRFVAN6MmChxoED0xwNmc2iA3OqoLSuwobka4KXYJXXzgoNRk4H16XIhHvXaTXGMTNeUZRAxEvkJsISKCe2XHOez2j90YVB4Q76Xts6Jvyv7nEwmog/m0U1WjCu4iY+4JSvSGQW0OsaPF5g5AOR/KbX6caFPmHfudFwflT/TNxonXIyYX/aHyu8DktQ5jv0X66KUmbz/OtLD45By+lvwfeBO41lyoZuz+t7+cD/tCGtV0OwXhuUh4w/qN5Vj/ABAAA="
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/21Ry1LDMAz8Fu6uYRr4gJbHrVBa7h3VEcFpbIfIbieT8b8j25nCgdOudqSVvF7KZVXJuxu40ELVp0Wnj3Lae1AnwdJhokpO66BO6MXjp51ZgTUQRkHfJKf3gAFTQyYsohrQkwELDQ5smOvUUFgUHZhjDQframxJvmZ4CVZ57azQYOS0c122zLh1nVZjKgvjFdUBiHiJXCWYDeXELVef5zNav3dhULiBvte2SQ7/q1scjCbisSjq0YJxNSfxAcdyRSZRQK8b8HiBkQ9E8qte5xtn+oR950bD/kn9U3GiTfYphPvz/hThtZiNCt+g/3J1kgqLAtPZnPUuzLkwxvg7nWNI9vOD3oLvAyedIpYt3Z6X9/KBf7olrRdDsF4blLuCP7qsr5IGAgAA"
    },
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/CDKMetadata/Default"

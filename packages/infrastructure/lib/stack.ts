@@ -7,6 +7,8 @@ import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambdaEventSources from 'aws-cdk-lib/aws-lambda-event-sources';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import * as dynamodb from 'aws-cdk-lib/aws-dynamodb';
+import * as events from 'aws-cdk-lib/aws-events';
+import * as targets from 'aws-cdk-lib/aws-events-targets';
 import type { Construct } from 'constructs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
@@ -290,6 +292,47 @@ export class LogisticsStack extends cdk.Stack {
     payment.addMethod('GET', paymentIntegration); // Generate payment link
     payment.addMethod('POST', paymentIntegration); // PayTR webhook callback
     payment.addMethod('OPTIONS', paymentIntegration); // CORS preflight
+
+    // ==========================================
+    // Auto-Nudge Lambda (Scheduled)
+    // ==========================================
+
+    // Auto-nudge Lambda function (sends reminder messages to inactive users)
+    const autoNudgeLambda = new NodejsFunction(this, 'AutoNudgeHandler', {
+      functionName: 'turkish-logistics-auto-nudge',
+      runtime: lambda.Runtime.NODEJS_20_X,
+      handler: 'handler',
+      entry: path.join(lambdaSrcPath, 'auto-nudge.ts'),
+      timeout: cdk.Duration.seconds(120), // Allow time for multiple messages
+      memorySize: 256,
+      environment: {
+        CONVERSATIONS_TABLE: this.conversationsTable.tableName,
+        NODE_OPTIONS: '--enable-source-maps',
+        // Note: WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN set manually
+      },
+      tracing: lambda.Tracing.ACTIVE,
+      bundling: {
+        minify: true,
+        sourceMap: true,
+        externalModules: ['@aws-sdk/*'],
+      },
+    });
+
+    // Grant auto-nudge lambda permissions
+    this.conversationsTable.grantReadWriteData(autoNudgeLambda);
+
+    // EventBridge rule to trigger auto-nudge every 15 minutes
+    const autoNudgeRule = new events.Rule(this, 'AutoNudgeSchedule', {
+      ruleName: 'turkish-logistics-auto-nudge-schedule',
+      description: 'Triggers auto-nudge Lambda every 15 minutes to send reminder messages',
+      schedule: events.Schedule.rate(cdk.Duration.minutes(15)),
+      enabled: true,
+    });
+
+    // Add Lambda as target
+    autoNudgeRule.addTarget(new targets.LambdaFunction(autoNudgeLambda, {
+      retryAttempts: 2,
+    }));
 
     // Outputs
     this.webhookUrl = new cdk.CfnOutput(this, 'WebhookUrl', {

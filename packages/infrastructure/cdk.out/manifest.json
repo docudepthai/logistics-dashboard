@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::426476636541:role/cdk-hnb659fds-deploy-role-426476636541-eu-central-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::426476636541:role/cdk-hnb659fds-cfn-exec-role-426476636541-eu-central-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-426476636541-eu-central-1/352b00a8a4aaedb6dae56c12987458ad6f5461d1e60770c24f45534585cadb2e.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-426476636541-eu-central-1/6cb6b0d14aec46e3d57ced8acd3009ec30588ca3159100874588e7d46265ba82.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -316,6 +316,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PaymentHandler5B1365B9"
+          }
+        ],
+        "/TurkishLogisticsBot/AutoNudgeHandler/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoNudgeHandlerServiceRoleEE627AC7"
+          }
+        ],
+        "/TurkishLogisticsBot/AutoNudgeHandler/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoNudgeHandlerServiceRoleDefaultPolicyDA3077A7"
+          }
+        ],
+        "/TurkishLogisticsBot/AutoNudgeHandler/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoNudgeHandler6CD0AA9C"
+          }
+        ],
+        "/TurkishLogisticsBot/AutoNudgeSchedule/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoNudgeSchedule1DA79644"
+          }
+        ],
+        "/TurkishLogisticsBot/AutoNudgeSchedule/AllowEventRuleTurkishLogisticsBotAutoNudgeHandler567F02BE": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "AutoNudgeScheduleAllowEventRuleTurkishLogisticsBotAutoNudgeHandler567F02BE5FD19CF2"
           }
         ],
         "/TurkishLogisticsBot/WebhookUrl": [

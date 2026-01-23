@@ -61,16 +61,31 @@
         }
       }
     },
-    "352b00a8a4aaedb6dae56c12987458ad6f5461d1e60770c24f45534585cadb2e": {
+    "5fc9fecfdb82a83c4935f1e5a3c338121158d5c8885fa388e9f1d13c73211813": {
+      "displayName": "AutoNudgeHandler/Code",
+      "source": {
+        "path": "asset.5fc9fecfdb82a83c4935f1e5a3c338121158d5c8885fa388e9f1d13c73211813",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "426476636541-eu-central-1-90731a57": {
+          "bucketName": "cdk-hnb659fds-assets-426476636541-eu-central-1",
+          "objectKey": "5fc9fecfdb82a83c4935f1e5a3c338121158d5c8885fa388e9f1d13c73211813.zip",
+          "region": "eu-central-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::426476636541:role/cdk-hnb659fds-file-publishing-role-426476636541-eu-central-1"
+        }
+      }
+    },
+    "6cb6b0d14aec46e3d57ced8acd3009ec30588ca3159100874588e7d46265ba82": {
       "displayName": "TurkishLogisticsBot Template",
       "source": {
         "path": "TurkishLogisticsBot.template.json",
         "packaging": "file"
       },
       "destinations": {
-        "426476636541-eu-central-1-15906b0f": {
+        "426476636541-eu-central-1-081d05e4": {
           "bucketName": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-          "objectKey": "352b00a8a4aaedb6dae56c12987458ad6f5461d1e60770c24f45534585cadb2e.json",
+          "objectKey": "6cb6b0d14aec46e3d57ced8acd3009ec30588ca3159100874588e7d46265ba82.json",
           "region": "eu-central-1",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::426476636541:role/cdk-hnb659fds-file-publishing-role-426476636541-eu-central-1"
         }
