@@ -92,7 +92,28 @@ export async function POST(request: Request) {
       );
     }
 
-    // Mark as nudged in conversation
+    // Get current conversation to add message to history
+    const conversationResult = await docClient.send(
+      new GetCommand({
+        TableName: TABLE_NAME,
+        Key: {
+          pk: `USER#${phoneNumber}`,
+          sk: 'CONVERSATION',
+        },
+      })
+    );
+
+    const now = new Date().toISOString();
+    const currentMessages = conversationResult.Item?.messages || [];
+
+    // Add the nudge message to conversation history as assistant message
+    const newMessage = {
+      role: 'assistant',
+      content: message,
+      timestamp: now,
+    };
+
+    // Mark as nudged and add message to conversation history
     await docClient.send(
       new UpdateCommand({
         TableName: TABLE_NAME,
@@ -100,10 +121,12 @@ export async function POST(request: Request) {
           pk: `USER#${phoneNumber}`,
           sk: 'CONVERSATION',
         },
-        UpdateExpression: 'SET nudgeSent = :sent, nudgeSentAt = :at',
+        UpdateExpression: 'SET nudgeSent = :sent, nudgeSentAt = :at, messages = :messages, updatedAt = :updatedAt',
         ExpressionAttributeValues: {
           ':sent': true,
-          ':at': new Date().toISOString(),
+          ':at': now,
+          ':messages': [...currentMessages, newMessage],
+          ':updatedAt': now,
         },
       })
     );
