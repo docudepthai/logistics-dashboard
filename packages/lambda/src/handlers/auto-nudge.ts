@@ -119,9 +119,32 @@ async function sendWhatsAppMessage(phoneNumber: string, message: string): Promis
 }
 
 /**
- * Mark a user as nudged in DynamoDB
+ * Mark a user as nudged and save message to conversation history
  */
-async function markAsNudged(phoneNumber: string): Promise<void> {
+async function markAsNudgedAndSaveMessage(phoneNumber: string, message: string): Promise<void> {
+  const now = new Date().toISOString();
+
+  // First, get current conversation to append message
+  const result = await docClient.send(
+    new GetCommand({
+      TableName: TABLE_NAME,
+      Key: {
+        pk: `USER#${phoneNumber}`,
+        sk: 'CONVERSATION',
+      },
+    })
+  );
+
+  const currentMessages: Message[] = result.Item?.messages || [];
+
+  // Add the nudge message to conversation history as assistant message
+  const newMessage: Message = {
+    role: 'assistant',
+    content: message,
+    timestamp: now,
+  };
+
+  // Update with nudge status and new message
   await docClient.send(
     new UpdateCommand({
       TableName: TABLE_NAME,
@@ -129,10 +152,12 @@ async function markAsNudged(phoneNumber: string): Promise<void> {
         pk: `USER#${phoneNumber}`,
         sk: 'CONVERSATION',
       },
-      UpdateExpression: 'SET nudgeSent = :sent, nudgeSentAt = :at',
+      UpdateExpression: 'SET nudgeSent = :sent, nudgeSentAt = :at, messages = :messages, updatedAt = :updatedAt',
       ExpressionAttributeValues: {
         ':sent': true,
-        ':at': new Date().toISOString(),
+        ':at': now,
+        ':messages': [...currentMessages, newMessage],
+        ':updatedAt': now,
       },
     })
   );
@@ -258,11 +283,11 @@ export async function handler(event: any): Promise<{ statusCode: number; body: s
     for (const user of usersToProcess) {
       console.log(`Processing ${user.phoneNumber} (${user.hoursRemaining.toFixed(1)}h remaining)`);
 
-      // Mark as nudged FIRST to prevent duplicate sends on retry
-      await markAsNudged(user.phoneNumber);
-
-      // Send the message
+      // Send the message first
       const success = await sendWhatsAppMessage(user.phoneNumber, settings.messageTemplate);
+
+      // Mark as nudged and save message to conversation history
+      await markAsNudgedAndSaveMessage(user.phoneNumber, settings.messageTemplate);
 
       results.push({
         phoneNumber: user.phoneNumber,

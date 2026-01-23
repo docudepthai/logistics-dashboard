@@ -465,20 +465,20 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
         if (!shouldSendWelcome) {
           console.log(`Welcome message already sent to ${message.from} by another request`);
         } else {
-          // NOTE: Don't save user's first message here - agent.processMessage will save it
-          // This prevents duplicate messages in conversation history
+          // Save user's first message FIRST so it appears before welcome message in history
+          const convStore = getConversationStore();
+          await convStore.addMessage(message.from, { role: 'user', content: message.text });
 
+          // Then send and save welcome message
           await sendWelcomeMessage(message.from);
           console.log(`Sent welcome message to new user: ${message.from}`);
 
           // Save welcome message to conversation store so it shows in dashboard
-          // NOTE: We save it BEFORE agent processes, so welcome appears first in history
           const welcomeText = `Merhaba! Patron'a hoşgeldiniz.
 
 🎁 1 HAFTA ÜCRETSİZ DENEME: Tüm özellikleri 1 hafta boyunca ücretsiz kullanabilirsiniz!
 
 📍 Nasıl kullanılır? Şehir adı yazarak yük arayabilirsiniz. Örneğin: *"istanbul ankara"* veya *"bursa"*`;
-          const convStore = getConversationStore();
           await convStore.addMessage(message.from, { role: 'assistant', content: welcomeText });
 
           // Notify admins about new user
@@ -491,6 +491,13 @@ export async function handler(event: APIGatewayProxyEvent): Promise<APIGatewayPr
               // Don't fail if admin notification fails
             }
           }
+
+          // Return early - welcome message is the response to first message
+          // Don't process with agent to avoid duplicate message saves
+          return response(200, {
+            status: 'welcome_sent',
+            isNewUser: true,
+          });
         }
       } catch (error) {
         console.error('Failed to send welcome message:', error);

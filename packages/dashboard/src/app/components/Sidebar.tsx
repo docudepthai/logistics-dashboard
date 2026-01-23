@@ -19,16 +19,16 @@ const navigation: NavGroup[] = [
     name: 'Operations',
     items: [
       { name: 'Overview', href: '/', icon: 'chart' },
-      { name: 'Problems', href: '/problems', icon: 'alert' },
       { name: 'Health', href: '/health', icon: 'heart' },
+      { name: 'Problems', href: '/problems', icon: 'alert' },
     ],
   },
   {
     name: 'Customers',
     items: [
-      { name: 'Conversations', href: '/conversations', icon: 'chat' },
       { name: 'Users', href: '/users', icon: 'users' },
       { name: 'User Analytics', href: '/user-analytics', icon: 'analytics' },
+      { name: 'Conversations', href: '/conversations', icon: 'chat' },
     ],
   },
   {
