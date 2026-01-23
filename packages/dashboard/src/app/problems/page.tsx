@@ -2,6 +2,74 @@
 
 import { useEffect, useState } from 'react';
 
+// Custom Modal Component
+function ConfirmModal({
+  isOpen,
+  onClose,
+  onConfirm,
+  title,
+  message,
+  confirmText = 'Onayla',
+  cancelText = 'Iptal',
+  confirmColor = 'blue',
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  confirmColor?: 'blue' | 'red' | 'green';
+}) {
+  if (!isOpen) return null;
+
+  const colorClasses = {
+    blue: 'bg-blue-500 hover:bg-blue-600',
+    red: 'bg-red-500 hover:bg-red-600',
+    green: 'bg-emerald-500 hover:bg-emerald-600',
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+
+      {/* Modal */}
+      <div className="relative bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+        {/* Header */}
+        <div className="px-6 py-4 border-b border-zinc-800">
+          <h3 className="text-lg font-semibold text-white">{title}</h3>
+        </div>
+
+        {/* Body */}
+        <div className="px-6 py-4">
+          <p className="text-zinc-300 text-sm whitespace-pre-wrap">{message}</p>
+        </div>
+
+        {/* Footer */}
+        <div className="px-6 py-4 bg-zinc-800/50 flex items-center justify-end space-x-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded-lg transition-colors"
+          >
+            {cancelText}
+          </button>
+          <button
+            onClick={() => {
+              onConfirm();
+              onClose();
+            }}
+            className={`px-4 py-2 text-sm font-medium text-white ${colorClasses[confirmColor]} rounded-lg transition-colors`}
+          >
+            {confirmText}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface ProblemConversation {
   userId: string;
   messageCount: number;
@@ -87,6 +155,26 @@ export default function ProblemsPage() {
   const [expanded, setExpanded] = useState<string | null>(null);
   const [removing, setRemoving] = useState<string | null>(null);
   const [sendingSupport, setSendingSupport] = useState<string | null>(null);
+  const [supportSent, setSupportSent] = useState<Set<string>>(new Set());
+
+  // Modal state
+  const [modalConfig, setModalConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    confirmText: string;
+    confirmColor: 'blue' | 'red' | 'green';
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    confirmText: '',
+    confirmColor: 'blue',
+    onConfirm: () => {},
+  });
+
+  const closeModal = () => setModalConfig(prev => ({ ...prev, isOpen: false }));
 
   const fetchData = async () => {
     try {
@@ -105,62 +193,87 @@ export default function ProblemsPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const handleRemove = async (userId: string) => {
-    if (!confirm('Bu konusmayi problem listesinden kaldirmak istediginize emin misiniz?')) return;
+  const handleRemove = (userId: string) => {
+    setModalConfig({
+      isOpen: true,
+      title: 'Konusmayi Kaldir',
+      message: 'Bu konusmayi problem listesinden kaldirmak istediginize emin misiniz?',
+      confirmText: 'Kaldir',
+      confirmColor: 'red',
+      onConfirm: async () => {
+        setRemoving(userId);
+        try {
+          const res = await fetch('/api/problem-conversations', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId }),
+          });
 
-    setRemoving(userId);
-    try {
-      const res = await fetch('/api/problem-conversations', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId }),
-      });
-
-      if (res.ok) {
-        // Remove from local state
-        setData(prev => prev ? {
-          ...prev,
-          conversations: prev.conversations.filter(c => c.userId !== userId),
-          stats: {
-            ...prev.stats,
-            total: prev.stats.total - 1,
+          if (res.ok) {
+            setData(prev => prev ? {
+              ...prev,
+              conversations: prev.conversations.filter(c => c.userId !== userId),
+              stats: {
+                ...prev.stats,
+                total: prev.stats.total - 1,
+              }
+            } : null);
           }
-        } : null);
-      }
-    } finally {
-      setRemoving(null);
-    }
+        } finally {
+          setRemoving(null);
+        }
+      },
+    });
   };
 
-  const handleSendSupport = async (userId: string) => {
-    const confirmMessage = `Bu mesaji gondermek istediginize emin misiniz?\n\nMesaj:\n"${SUPPORT_MESSAGE}"`;
-    if (!confirm(confirmMessage)) return;
+  const handleSendSupport = (userId: string) => {
+    setModalConfig({
+      isOpen: true,
+      title: 'Destek Numarasi Gonder',
+      message: `Bu mesaji gondermek istediginize emin misiniz?\n\nMesaj:\n"${SUPPORT_MESSAGE}"`,
+      confirmText: 'Gonder',
+      confirmColor: 'blue',
+      onConfirm: async () => {
+        setSendingSupport(userId);
+        try {
+          const res = await fetch('/api/send-support', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ phoneNumber: userId }),
+          });
 
-    setSendingSupport(userId);
-    try {
-      const res = await fetch('/api/send-support', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phoneNumber: userId }),
-      });
+          const result = await res.json();
 
-      const result = await res.json();
-
-      if (res.ok) {
-        alert('Destek mesaji basariyla gonderildi!');
-      } else {
-        if (result.windowExpired) {
-          alert(`Mesaj gonderilemedi: ${result.error}`);
-        } else {
-          alert(`Hata: ${result.error || 'Mesaj gonderilemedi'}`);
+          if (res.ok) {
+            setSupportSent(prev => new Set(prev).add(userId));
+          } else {
+            // Show error modal
+            setModalConfig({
+              isOpen: true,
+              title: 'Hata',
+              message: result.windowExpired
+                ? `Mesaj gonderilemedi:\n\n${result.error}`
+                : `Hata: ${result.error || 'Mesaj gonderilemedi'}`,
+              confirmText: 'Tamam',
+              confirmColor: 'red',
+              onConfirm: () => {},
+            });
+          }
+        } catch (error) {
+          console.error('Send support error:', error);
+          setModalConfig({
+            isOpen: true,
+            title: 'Hata',
+            message: 'Bir hata olustu. Lutfen tekrar deneyin.',
+            confirmText: 'Tamam',
+            confirmColor: 'red',
+            onConfirm: () => {},
+          });
+        } finally {
+          setSendingSupport(null);
         }
-      }
-    } catch (error) {
-      alert('Bir hata olustu. Lutfen tekrar deneyin.');
-      console.error('Send support error:', error);
-    } finally {
-      setSendingSupport(null);
-    }
+      },
+    });
   };
 
   if (loading) {
@@ -183,6 +296,17 @@ export default function ProblemsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={modalConfig.isOpen}
+        onClose={closeModal}
+        onConfirm={modalConfig.onConfirm}
+        title={modalConfig.title}
+        message={modalConfig.message}
+        confirmText={modalConfig.confirmText}
+        confirmColor={modalConfig.confirmColor}
+      />
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -333,10 +457,18 @@ export default function ProblemsPage() {
                       </a>
                       <button
                         onClick={() => handleSendSupport(conv.userId)}
-                        disabled={sendingSupport === conv.userId}
-                        className="px-3 py-1.5 text-xs bg-blue-500/20 text-blue-400 rounded hover:bg-blue-500/30 transition-colors disabled:opacity-50"
+                        disabled={sendingSupport === conv.userId || supportSent.has(conv.userId)}
+                        className={`px-3 py-1.5 text-xs rounded transition-colors disabled:opacity-50 ${
+                          supportSent.has(conv.userId)
+                            ? 'bg-emerald-500/20 text-emerald-400 cursor-default'
+                            : 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30'
+                        }`}
                       >
-                        {sendingSupport === conv.userId ? 'Gonderiliyor...' : 'Destek No Gonder'}
+                        {sendingSupport === conv.userId
+                          ? 'Gonderiliyor...'
+                          : supportSent.has(conv.userId)
+                          ? 'Destek No Gonderildi'
+                          : 'Destek No Gonder'}
                       </button>
                       <button
                         onClick={() => handleRemove(conv.userId)}
