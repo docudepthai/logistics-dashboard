@@ -19,7 +19,7 @@ const TABLE_NAME = process.env.CONVERSATIONS_TABLE || 'turkish-logistics-convers
 const DEFAULT_SETTINGS = {
   mode: 'manual' as 'automatic' | 'manual',
   triggerHours: 3,
-  messageTemplate: 'abi merhaba, dun kaydolmuştun ama hic is aramadin. nasil calistigini gostereyim mi? ornek: "istanbul ankara" yaz, sana yukler gostereyim. bedava 7 gun, istersen dene.',
+  messageTemplate: 'abi merhaba, dun yazmistin ama hic is aramadin. nasil calistigini gostereyim mi? ornek: "istanbul ankara" yaz, sana yukler gostereyim. bedava 7 gun, istersen dene.',
   lastUpdated: null as string | null,
   updatedBy: null as string | null,
 };
@@ -57,7 +57,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { mode, triggerHours, updatedBy } = body;
+    const { mode, triggerHours, messageTemplate, updatedBy } = body;
 
     // Validate
     if (mode && !['automatic', 'manual'].includes(mode)) {
@@ -82,7 +82,7 @@ export async function POST(request: Request) {
       ...SETTINGS_KEY,
       mode: mode ?? currentSettings.mode ?? DEFAULT_SETTINGS.mode,
       triggerHours: triggerHours ?? currentSettings.triggerHours ?? DEFAULT_SETTINGS.triggerHours,
-      messageTemplate: currentSettings.messageTemplate || DEFAULT_SETTINGS.messageTemplate,
+      messageTemplate: messageTemplate ?? currentSettings.messageTemplate ?? DEFAULT_SETTINGS.messageTemplate,
       lastUpdated: new Date().toISOString(),
       updatedBy: updatedBy || null,
     };
