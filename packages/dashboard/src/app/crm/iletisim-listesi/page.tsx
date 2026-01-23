@@ -12,19 +12,21 @@ interface CallListItem {
   autoAdded: boolean;
 }
 
-// Removed "İş fonksiyonu kullanılmamış" - that's handled in 24 saat penceresi
 const CALL_REASONS = [
-  'Sistem arızası oluşmuş ve düzeltildi',
-  'Şu araç var mı diyor ama bizde yok',
-  'Deneme süresi ile ilgili soru',
-  'Bilgilendirme için ara',
-  'Yurtdışına sevkiyat var mı sorusu',
-  'Şehir içi var mı sorusu',
-  'Marketing için yazmış',
+  'Sistem arizasi olusmus ve duzeltildi',
+  'Su arac var mi diyor ama bizde yok',
+  'Deneme suresi ile ilgili soru',
+  'Bilgilendirme icin ara',
+  'Yurtdisina sevkiyat var mi sorusu',
+  'Sehir ici var mi sorusu',
+  'Marketing icin yazmis',
 ];
+
+const ITEMS_PER_PAGE = 50;
 
 function formatDate(dateStr: string): string {
   const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return 'Invalid Date';
   return date.toLocaleDateString('tr-TR', {
     day: '2-digit',
     month: '2-digit',
@@ -41,6 +43,11 @@ function formatPhoneNumber(phone: string): string {
   return `+${phone}`;
 }
 
+function isValidPhoneNumber(phone: string): boolean {
+  // Must be at least 10 digits and contain only numbers
+  return /^\d{10,}$/.test(phone);
+}
+
 export default function IletisimListesiPage() {
   const [items, setItems] = useState<CallListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -50,6 +57,7 @@ export default function IletisimListesiPage() {
   const [editingReason, setEditingReason] = useState<string | null>(null);
   const [tempNotes, setTempNotes] = useState<string>('');
   const [showContacted, setShowContacted] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchCallList();
@@ -60,9 +68,11 @@ export default function IletisimListesiPage() {
       const res = await fetch('/api/call-list');
       if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      // Filter out "İş fonksiyonu kullanılmamış" items - they belong to 24 saat penceresi
+      // Filter out invalid entries: empty phone numbers and "Is fonksiyonu kullanilmamis"
       const filtered = (data.items || []).filter(
-        (item: CallListItem) => item.reason !== 'İş fonksiyonu kullanılmamış'
+        (item: CallListItem) =>
+          isValidPhoneNumber(item.phoneNumber) &&
+          item.reason !== 'Is fonksiyonu kullanilmamis'
       );
       setItems(filtered);
       setError(null);
@@ -144,7 +154,7 @@ export default function IletisimListesiPage() {
   };
 
   const removeFromList = async (phoneNumber: string) => {
-    if (!confirm('Bu kullanıcıyı listeden silmek istediğinize emin misiniz?')) return;
+    if (!confirm('Bu kullaniciyi listeden silmek istediginize emin misiniz?')) return;
 
     setUpdatingPhone(phoneNumber);
     try {
@@ -167,19 +177,22 @@ export default function IletisimListesiPage() {
   const contactedCount = items.filter(item => item.calledAt).length;
   const pendingCount = items.filter(item => !item.calledAt).length;
 
+  // Pagination
+  const totalPages = Math.ceil(filteredItems.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedItems = filteredItems.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [showContacted]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center space-x-4">
-        <Link href="/crm" className="text-zinc-500 hover:text-white transition-colors">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-        </Link>
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">İletişim Listesi</h1>
-          <p className="text-zinc-500 text-sm mt-1">Aranması veya iletişime geçilmesi gereken kullanıcılar</p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-semibold text-white tracking-tight">Iletisim Listesi</h1>
+        <p className="text-zinc-500 text-sm mt-1">Aranmasi veya iletisime gecilmesi gereken kullanicilar</p>
       </div>
 
       {/* Stats */}
@@ -193,13 +206,13 @@ export default function IletisimListesiPage() {
           <div className="text-2xl font-semibold text-amber-400 mt-1">{pendingCount}</div>
         </div>
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">İletişime Geçildi</div>
+          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Iletisime Gecildi</div>
           <div className="text-2xl font-semibold text-emerald-400 mt-1">{contactedCount}</div>
         </div>
       </div>
 
       {/* Filter Toggle */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center justify-between">
         <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="checkbox"
@@ -207,8 +220,13 @@ export default function IletisimListesiPage() {
             onChange={(e) => setShowContacted(e.target.checked)}
             className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500"
           />
-          <span className="text-sm text-zinc-400">İletişime geçilmiş olanları da göster</span>
+          <span className="text-sm text-zinc-400">Iletisime gecilmis olanlari da goster</span>
         </label>
+        {totalPages > 1 && (
+          <div className="text-sm text-zinc-500">
+            Sayfa {currentPage} / {totalPages} ({filteredItems.length} kayit)
+          </div>
+        )}
       </div>
 
       {loading ? (
@@ -220,152 +238,201 @@ export default function IletisimListesiPage() {
           {error}
         </div>
       ) : (
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-zinc-800/50">
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12">Tamamlandı</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">İletişim Nedeni</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Notlar</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">İletişim Tarihi</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12"></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredItems.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
-                      {showContacted ? 'Liste boş' : 'İletişime geçilecek kimse yok'}
-                    </td>
+        <>
+          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-zinc-800/50">
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12">Tamamlandi</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Telefon</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Iletisim Nedeni</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Notlar</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Iletisim Tarihi</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
+                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12"></th>
                   </tr>
-                ) : (
-                  filteredItems.map((item) => (
-                    <tr
-                      key={item.phoneNumber}
-                      className={`border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors ${
-                        item.calledAt ? 'opacity-60' : ''
-                      }`}
-                    >
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={!!item.calledAt}
-                          onChange={() => toggleContacted(item.phoneNumber, item.calledAt)}
-                          disabled={updatingPhone === item.phoneNumber}
-                          className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 text-emerald-500 cursor-pointer"
-                        />
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center space-x-2">
-                          <Link
-                            href={`/profile/${item.phoneNumber}`}
-                            className="font-mono text-sm text-white hover:text-blue-400 transition-colors"
-                          >
-                            {formatPhoneNumber(item.phoneNumber)}
-                          </Link>
-                          {item.autoAdded && (
-                            <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
-                              Oto
-                            </span>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-4 py-3">
-                        {editingReason === item.phoneNumber ? (
-                          <select
-                            value={item.reason}
-                            onChange={(e) => updateReason(item.phoneNumber, e.target.value)}
-                            autoFocus
-                            onBlur={() => setEditingReason(null)}
-                            className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
-                          >
-                            <option value="">Seçiniz...</option>
-                            {CALL_REASONS.map((reason) => (
-                              <option key={reason} value={reason}>
-                                {reason}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <button
-                            onClick={() => setEditingReason(item.phoneNumber)}
-                            className="text-sm text-left hover:text-white transition-colors w-full"
-                          >
-                            {item.reason || (
-                              <span className="text-zinc-500 italic">Neden seç...</span>
-                            )}
-                          </button>
-                        )}
-                      </td>
-                      <td className="px-4 py-3">
-                        {editingNotes === item.phoneNumber ? (
-                          <div className="flex items-center space-x-2">
-                            <input
-                              type="text"
-                              value={tempNotes}
-                              onChange={(e) => setTempNotes(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter') saveNotes(item.phoneNumber);
-                                if (e.key === 'Escape') {
-                                  setEditingNotes(null);
-                                  setTempNotes('');
-                                }
-                              }}
-                              autoFocus
-                              className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white flex-1"
-                              placeholder="Not ekle..."
-                            />
-                            <button
-                              onClick={() => saveNotes(item.phoneNumber)}
-                              className="text-emerald-400 hover:text-emerald-300 text-sm"
-                            >
-                              Kaydet
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setEditingNotes(item.phoneNumber);
-                              setTempNotes(item.notes);
-                            }}
-                            className="text-sm text-left hover:text-white transition-colors w-full"
-                          >
-                            {item.notes || (
-                              <span className="text-zinc-500 italic">Not ekle...</span>
-                            )}
-                          </button>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-zinc-400 text-sm">
-                        {item.calledAt ? (
-                          <span className="text-emerald-400">{formatDate(item.calledAt)}</span>
-                        ) : (
-                          <span className="text-zinc-600">-</span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-zinc-500 text-sm">
-                        {formatDate(item.addedAt)}
-                      </td>
-                      <td className="px-4 py-3">
-                        <button
-                          onClick={() => removeFromList(item.phoneNumber)}
-                          disabled={updatingPhone === item.phoneNumber}
-                          className="text-red-400 hover:text-red-300 text-sm"
-                          title="Listeden sil"
-                        >
-                          ✕
-                        </button>
+                </thead>
+                <tbody>
+                  {paginatedItems.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
+                        {showContacted ? 'Liste bos' : 'Iletisime gecilecek kimse yok'}
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
+                  ) : (
+                    paginatedItems.map((item) => (
+                      <tr
+                        key={item.phoneNumber}
+                        className={`border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors ${
+                          item.calledAt ? 'opacity-60' : ''
+                        }`}
+                      >
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={!!item.calledAt}
+                            onChange={() => toggleContacted(item.phoneNumber, item.calledAt)}
+                            disabled={updatingPhone === item.phoneNumber}
+                            className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 text-emerald-500 cursor-pointer"
+                          />
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center space-x-2">
+                            <Link
+                              href={`/profile/${item.phoneNumber}`}
+                              className="font-mono text-sm text-white hover:text-blue-400 transition-colors"
+                            >
+                              {formatPhoneNumber(item.phoneNumber)}
+                            </Link>
+                            {item.autoAdded && (
+                              <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
+                                Oto
+                              </span>
+                            )}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          {editingReason === item.phoneNumber ? (
+                            <select
+                              value={item.reason}
+                              onChange={(e) => updateReason(item.phoneNumber, e.target.value)}
+                              autoFocus
+                              onBlur={() => setEditingReason(null)}
+                              className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                            >
+                              <option value="">Seciniz...</option>
+                              {CALL_REASONS.map((reason) => (
+                                <option key={reason} value={reason}>
+                                  {reason}
+                                </option>
+                              ))}
+                            </select>
+                          ) : (
+                            <button
+                              onClick={() => setEditingReason(item.phoneNumber)}
+                              className="text-sm text-left hover:text-white transition-colors w-full"
+                            >
+                              {item.reason || (
+                                <span className="text-zinc-500 italic">Neden sec...</span>
+                              )}
+                            </button>
+                          )}
+                        </td>
+                        <td className="px-4 py-3">
+                          {editingNotes === item.phoneNumber ? (
+                            <div className="flex items-center space-x-2">
+                              <input
+                                type="text"
+                                value={tempNotes}
+                                onChange={(e) => setTempNotes(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') saveNotes(item.phoneNumber);
+                                  if (e.key === 'Escape') {
+                                    setEditingNotes(null);
+                                    setTempNotes('');
+                                  }
+                                }}
+                                autoFocus
+                                className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white flex-1"
+                                placeholder="Not ekle..."
+                              />
+                              <button
+                                onClick={() => saveNotes(item.phoneNumber)}
+                                className="text-emerald-400 hover:text-emerald-300 text-sm"
+                              >
+                                Kaydet
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setEditingNotes(item.phoneNumber);
+                                setTempNotes(item.notes);
+                              }}
+                              className="text-sm text-left hover:text-white transition-colors w-full"
+                            >
+                              {item.notes || (
+                                <span className="text-zinc-500 italic">Not ekle...</span>
+                              )}
+                            </button>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-zinc-400 text-sm">
+                          {item.calledAt ? (
+                            <span className="text-emerald-400">{formatDate(item.calledAt)}</span>
+                          ) : (
+                            <span className="text-zinc-600">-</span>
+                          )}
+                        </td>
+                        <td className="px-4 py-3 text-zinc-500 text-sm">
+                          {formatDate(item.addedAt)}
+                        </td>
+                        <td className="px-4 py-3">
+                          <button
+                            onClick={() => removeFromList(item.phoneNumber)}
+                            disabled={updatingPhone === item.phoneNumber}
+                            className="text-red-400 hover:text-red-300 text-sm"
+                            title="Listeden sil"
+                          >
+                            x
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+              >
+                Onceki
+              </button>
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`w-8 h-8 rounded text-sm transition-colors ${
+                        currentPage === pageNum
+                          ? 'bg-white text-black'
+                          : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+              >
+                Sonraki
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

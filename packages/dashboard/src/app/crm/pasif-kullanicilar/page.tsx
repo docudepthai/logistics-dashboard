@@ -47,12 +47,15 @@ function formatHoursRemaining(hours: number): string {
   return `${h}s ${m}dk`;
 }
 
-export default function PenceresPage() {
+const ITEMS_PER_PAGE = 50;
+
+export default function PasifKullanicilarPage() {
   const [users, setUsers] = useState<NudgeEligibleUser[]>([]);
   const [stats, setStats] = useState({ total: 0, urgent: 0, nudgeSent: 0, pending: 0 });
   const [loading, setLoading] = useState(true);
   const [showSent, setShowSent] = useState(false);
   const [sendingNudge, setSendingNudge] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Settings modal state
   const [showSettingsModal, setShowSettingsModal] = useState(false);
@@ -152,11 +155,11 @@ export default function PenceresPage() {
         }));
       } else {
         const error = await res.json();
-        alert(`Mesaj gönderilemedi: ${error.error || 'Bilinmeyen hata'}`);
+        alert(`Mesaj gonderilemedi: ${error.error || 'Bilinmeyen hata'}`);
       }
     } catch (err) {
       console.error('Failed to send nudge:', err);
-      alert('Mesaj gönderilemedi');
+      alert('Mesaj gonderilemedi');
     } finally {
       setSendingNudge(null);
     }
@@ -164,27 +167,30 @@ export default function PenceresPage() {
 
   const filteredUsers = showSent ? users : users.filter(u => !u.nudgeSent);
 
+  // Pagination
+  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  // Reset to page 1 when filter changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [showSent]);
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <Link href="/crm" className="text-zinc-500 hover:text-white transition-colors">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </Link>
-          <div>
-            <h1 className="text-2xl font-semibold text-white tracking-tight">24 Saat Penceresi</h1>
-            <p className="text-zinc-500 text-sm mt-1">
-              Henüz arama yapmamış kullanıcılar
-              <span className="mx-2">·</span>
-              <span className={settings.mode === 'automatic' ? 'text-emerald-400' : 'text-amber-400'}>
-                {settings.mode === 'automatic' ? 'Otomatik' : 'Manuel'}
-              </span>
-              <span className="text-zinc-600"> ({settings.triggerHours}s kala)</span>
-            </p>
-          </div>
+        <div>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Pasif Kullanicilar</h1>
+          <p className="text-zinc-500 text-sm mt-1">
+            Henuz arama yapmamis kullanicilar (24s penceresi)
+            <span className="mx-2">·</span>
+            <span className={settings.mode === 'automatic' ? 'text-emerald-400' : 'text-amber-400'}>
+              {settings.mode === 'automatic' ? 'Otomatik' : 'Manuel'}
+            </span>
+            <span className="text-zinc-600"> ({settings.triggerHours}s kala)</span>
+          </p>
         </div>
         <button
           onClick={() => setShowSettingsModal(true)}
@@ -213,13 +219,13 @@ export default function PenceresPage() {
           <div className="text-2xl font-semibold text-amber-400 mt-1">{stats.pending}</div>
         </div>
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
-          <div className="text-emerald-400/70 text-xs font-medium uppercase tracking-wider">Gönderildi</div>
+          <div className="text-emerald-400/70 text-xs font-medium uppercase tracking-wider">Gonderildi</div>
           <div className="text-2xl font-semibold text-emerald-400 mt-1">{stats.nudgeSent}</div>
         </div>
       </div>
 
       {/* Filter Toggle */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center justify-between">
         <label className="flex items-center space-x-2 cursor-pointer">
           <input
             type="checkbox"
@@ -227,8 +233,13 @@ export default function PenceresPage() {
             onChange={(e) => setShowSent(e.target.checked)}
             className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500"
           />
-          <span className="text-sm text-zinc-400">Mesaj gönderilenleri de göster</span>
+          <span className="text-sm text-zinc-400">Mesaj gonderilenleri de goster</span>
         </label>
+        {totalPages > 1 && (
+          <div className="text-sm text-zinc-500">
+            Sayfa {currentPage} / {totalPages} ({filteredUsers.length} kayit)
+          </div>
+        )}
       </div>
 
       {/* Users Table */}
@@ -238,24 +249,25 @@ export default function PenceresPage() {
         </div>
       ) : filteredUsers.length === 0 ? (
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-8 text-center text-zinc-500">
-          {showSent ? 'Henüz kullanıcı yok' : 'Mesaj gönderilecek kullanıcı yok'}
+          {showSent ? 'Henuz kullanici yok' : 'Mesaj gonderilecek kullanici yok'}
         </div>
       ) : (
+        <>
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-zinc-800/50">
                   <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Kalan Süre</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Mesaj Sayısı</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">İlk Mesaj</th>
+                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Kalan Sure</th>
+                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Mesaj Sayisi</th>
+                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Ilk Mesaj</th>
                   <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Durum</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">İşlem</th>
+                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Islem</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredUsers.map((user) => (
+                {paginatedUsers.map((user) => (
                   <tr
                     key={user.phoneNumber}
                     className={`border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors ${user.nudgeSent ? 'opacity-60' : ''}`}
@@ -284,7 +296,7 @@ export default function PenceresPage() {
                     <td className="px-4 py-3">
                       {user.nudgeSent ? (
                         <span className="text-xs px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded">
-                          Gönderildi
+                          Gonderildi
                         </span>
                       ) : (
                         <span className="text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded">
@@ -300,7 +312,7 @@ export default function PenceresPage() {
                             disabled={sendingNudge === user.phoneNumber}
                             className="text-xs px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors disabled:opacity-50"
                           >
-                            {sendingNudge === user.phoneNumber ? 'Gönderiliyor...' : 'Şablon Gönder'}
+                            {sendingNudge === user.phoneNumber ? 'Gonderiliyor...' : 'Sablon Gonder'}
                           </button>
                         )}
                         <a
@@ -309,7 +321,7 @@ export default function PenceresPage() {
                           rel="noopener noreferrer"
                           className="text-xs px-2 py-1 bg-zinc-700/50 text-zinc-400 hover:bg-zinc-700 rounded transition-colors"
                         >
-                          WA Aç
+                          WA Ac
                         </a>
                       </div>
                     </td>
@@ -319,6 +331,54 @@ export default function PenceresPage() {
             </table>
           </div>
         </div>
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="flex items-center justify-center space-x-2">
+            <button
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+            >
+              Onceki
+            </button>
+            <div className="flex items-center space-x-1">
+              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                let pageNum: number;
+                if (totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (currentPage <= 3) {
+                  pageNum = i + 1;
+                } else if (currentPage >= totalPages - 2) {
+                  pageNum = totalPages - 4 + i;
+                } else {
+                  pageNum = currentPage - 2 + i;
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setCurrentPage(pageNum)}
+                    className={`w-8 h-8 rounded text-sm transition-colors ${
+                      currentPage === pageNum
+                        ? 'bg-white text-black'
+                        : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+            >
+              Sonraki
+            </button>
+          </div>
+        )}
+        </>
       )}
 
       {/* Settings Modal */}
@@ -326,7 +386,7 @@ export default function PenceresPage() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-lg mx-4 overflow-hidden">
             <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-white">24 Saat Penceresi Ayarları</h3>
+              <h3 className="text-lg font-medium text-white">Pasif Kullanicilar Ayarlari</h3>
               <button
                 onClick={() => setShowSettingsModal(false)}
                 className="text-zinc-500 hover:text-white transition-colors"
@@ -340,7 +400,7 @@ export default function PenceresPage() {
             <div className="px-6 py-5 space-y-6">
               {/* Mode Selection */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-3">Mesaj Gönderme Modu</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-3">Mesaj Gonderme Modu</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => saveSettings({ mode: 'manual' })}
@@ -352,7 +412,7 @@ export default function PenceresPage() {
                     }`}
                   >
                     <div className="text-lg font-medium mb-1">Manuel</div>
-                    <div className="text-xs opacity-70">Mesajları kendiniz gönderin</div>
+                    <div className="text-xs opacity-70">Mesajlari kendiniz gonderin</div>
                   </button>
                   <button
                     onClick={() => saveSettings({ mode: 'automatic' })}
@@ -364,7 +424,7 @@ export default function PenceresPage() {
                     }`}
                   >
                     <div className="text-lg font-medium mb-1">Otomatik</div>
-                    <div className="text-xs opacity-70">Sistem otomatik gönderir</div>
+                    <div className="text-xs opacity-70">Sistem otomatik gonderir</div>
                   </button>
                 </div>
               </div>
@@ -372,8 +432,8 @@ export default function PenceresPage() {
               {/* Trigger Time */}
               <div>
                 <label className="block text-sm font-medium text-zinc-400 mb-3">
-                  Mesaj Gönderim Zamanı
-                  <span className="text-zinc-600 font-normal ml-2">(24 saat dolmadan kaç saat önce)</span>
+                  Mesaj Gonderim Zamani
+                  <span className="text-zinc-600 font-normal ml-2">(24 saat dolmadan kac saat once)</span>
                 </label>
                 <div className="flex items-center space-x-3">
                   <input
@@ -390,16 +450,16 @@ export default function PenceresPage() {
 
               {/* Message Template */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Mesaj Şablonu</label>
+                <label className="block text-sm font-medium text-zinc-400 mb-2">Mesaj Sablonu</label>
                 <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300">
-                  {settings.messageTemplate || 'Şablon yükleniyor...'}
+                  {settings.messageTemplate || 'Sablon yukleniyor...'}
                 </div>
-                <p className="text-xs text-zinc-600 mt-2">Şablon şu an değiştirilemez</p>
+                <p className="text-xs text-zinc-600 mt-2">Sablon su an degistirilemez</p>
               </div>
 
               {settings.lastUpdated && (
                 <div className="text-xs text-zinc-600">
-                  Son güncelleme: {formatDate(settings.lastUpdated)}
+                  Son guncelleme: {formatDate(settings.lastUpdated)}
                 </div>
               )}
             </div>
@@ -421,15 +481,15 @@ export default function PenceresPage() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
             <div className="px-6 py-4 border-b border-zinc-800">
-              <h3 className="text-lg font-medium text-white">Şablon Mesajı Gönder</h3>
+              <h3 className="text-lg font-medium text-white">Sablon Mesaji Gonder</h3>
             </div>
             <div className="px-6 py-5">
               <p className="text-zinc-400 mb-4">
-                <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasına
-                şablon mesajı göndermek istediğinize emin misiniz?
+                <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasina
+                sablon mesaji gondermek istediginize emin misiniz?
               </p>
               <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300">
-                {settings.messageTemplate || 'Şablon yükleniyor...'}
+                {settings.messageTemplate || 'Sablon yukleniyor...'}
               </div>
             </div>
             <div className="px-6 py-4 border-t border-zinc-800 flex justify-end space-x-3">
@@ -437,7 +497,7 @@ export default function PenceresPage() {
                 onClick={() => setConfirmModal(null)}
                 className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
               >
-                İptal
+                Iptal
               </button>
               <button
                 onClick={handleConfirmStep1}
@@ -459,11 +519,11 @@ export default function PenceresPage() {
             </div>
             <div className="px-6 py-5">
               <p className="text-zinc-400 mb-4">
-                Bu işlem geri alınamaz. Mesaj <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasına
-                hemen gönderilecektir.
+                Bu islem geri alinamaz. Mesaj <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasina
+                hemen gonderilecektir.
               </p>
               <p className="text-amber-400 text-sm">
-                Göndermek istediğinizden emin misiniz?
+                Gondermek istediginizden emin misiniz?
               </p>
             </div>
             <div className="px-6 py-4 border-t border-zinc-800 flex justify-end space-x-3">
@@ -471,13 +531,13 @@ export default function PenceresPage() {
                 onClick={() => setConfirmModal(null)}
                 className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
               >
-                İptal
+                Iptal
               </button>
               <button
                 onClick={handleConfirmStep2}
                 className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-colors"
               >
-                Gönder
+                Gonder
               </button>
             </div>
           </div>

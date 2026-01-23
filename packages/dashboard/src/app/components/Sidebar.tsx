@@ -2,13 +2,11 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 
 interface NavItem {
   name: string;
   href: string;
   icon: string;
-  subItems?: { name: string; href: string }[];
 }
 
 interface NavGroup {
@@ -31,15 +29,8 @@ const navigation: NavGroup[] = [
       { name: 'Conversations', href: '/conversations', icon: 'chat' },
       { name: 'Users', href: '/users', icon: 'users' },
       { name: 'User Analytics', href: '/user-analytics', icon: 'analytics' },
-      {
-        name: 'CRM',
-        href: '/crm',
-        icon: 'phone',
-        subItems: [
-          { name: '24 Saat Penceresi', href: '/crm/24-saat-penceresi' },
-          { name: 'Iletisim Listesi', href: '/crm/iletisim-listesi' },
-        ],
-      },
+      { name: 'Pasif Kullanicilar', href: '/crm/pasif-kullanicilar', icon: 'clock' },
+      { name: 'Iletisim Listesi', href: '/crm/iletisim-listesi', icon: 'phone' },
     ],
   },
   {
@@ -61,6 +52,11 @@ const icons: Record<string, React.ReactNode> = {
   chart: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 13h4v8H3v-8zm7-5h4v13h-4V8zm7-5h4v18h-4V3z" />
+    </svg>
+  ),
+  clock: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
     </svg>
   ),
   alert: (
@@ -112,24 +108,6 @@ const icons: Record<string, React.ReactNode> = {
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [expandedItems, setExpandedItems] = useState<string[]>(() => {
-    // Auto-expand CRM if we're on a CRM sub-page
-    if (typeof window !== 'undefined' && window.location.pathname.startsWith('/crm')) {
-      return ['CRM'];
-    }
-    return [];
-  });
-
-  const toggleExpand = (name: string) => {
-    setExpandedItems(prev =>
-      prev.includes(name) ? prev.filter(n => n !== name) : [...prev, name]
-    );
-  };
-
-  // Auto-expand parent when on sub-page
-  const isSubPageActive = (item: NavItem) => {
-    return item.subItems?.some(sub => pathname === sub.href) || false;
-  };
 
   return (
     <aside className="w-56 bg-zinc-950 border-r border-zinc-800/50 flex flex-col">
@@ -153,73 +131,21 @@ export default function Sidebar() {
             <div className="space-y-1">
               {group.items.map((item) => {
                 const isActive = pathname === item.href;
-                const hasSubItems = item.subItems && item.subItems.length > 0;
-                const isExpanded = expandedItems.includes(item.name) || isSubPageActive(item);
-
                 return (
-                  <div key={item.name}>
-                    {hasSubItems ? (
-                      <>
-                        <button
-                          onClick={() => toggleExpand(item.name)}
-                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
-                            isActive || isSubPageActive(item)
-                              ? 'bg-zinc-800 text-white'
-                              : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-                          }`}
-                        >
-                          <div className="flex items-center space-x-3">
-                            <span className={isActive || isSubPageActive(item) ? 'text-white' : 'text-zinc-500'}>
-                              {icons[item.icon]}
-                            </span>
-                            <span>{item.name}</span>
-                          </div>
-                          <svg
-                            className={`w-4 h-4 text-zinc-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 9l-7 7-7-7" />
-                          </svg>
-                        </button>
-                        {isExpanded && item.subItems && (
-                          <div className="ml-6 mt-1 space-y-1">
-                            {item.subItems.map((subItem) => {
-                              const isSubActive = pathname === subItem.href;
-                              return (
-                                <Link
-                                  key={subItem.href}
-                                  href={subItem.href}
-                                  className={`block px-3 py-1.5 rounded-lg text-xs transition-all duration-150 ${
-                                    isSubActive
-                                      ? 'bg-zinc-800/70 text-white'
-                                      : 'text-zinc-500 hover:text-white hover:bg-zinc-800/30'
-                                  }`}
-                                >
-                                  {subItem.name}
-                                </Link>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </>
-                    ) : (
-                      <Link
-                        href={item.href}
-                        className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
-                          isActive
-                            ? 'bg-zinc-800 text-white'
-                            : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-                        }`}
-                      >
-                        <span className={isActive ? 'text-white' : 'text-zinc-500'}>
-                          {icons[item.icon]}
-                        </span>
-                        <span>{item.name}</span>
-                      </Link>
-                    )}
-                  </div>
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                      isActive
+                        ? 'bg-zinc-800 text-white'
+                        : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
+                    }`}
+                  >
+                    <span className={isActive ? 'text-white' : 'text-zinc-500'}>
+                      {icons[item.icon]}
+                    </span>
+                    <span>{item.name}</span>
+                  </Link>
                 );
               })}
             </div>
