@@ -2,7 +2,8 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
-import Navigation from './Navigation';
+import Sidebar from './Sidebar';
+import TopBar from './TopBar';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -30,11 +31,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   }
 
   return (
-    <>
-      <Navigation />
-      <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-        {children}
-      </main>
-    </>
+    <div className="min-h-screen bg-black flex">
+      <Sidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopBar />
+        <main className="flex-1 overflow-auto p-6">
+          <div className="max-w-6xl mx-auto">
+            {children}
+          </div>
+        </main>
+      </div>
+    </div>
   );
 }

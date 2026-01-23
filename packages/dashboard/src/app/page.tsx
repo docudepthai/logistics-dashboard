@@ -61,7 +61,7 @@ export default function Dashboard() {
   const maxBodyType = Math.max(...stats.bodyTypes.map(x => x.count), 1);
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">Overview</h1>
@@ -69,7 +69,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-5 gap-4 stagger-children">
+      <div className="grid grid-cols-5 gap-4">
         {[
           { label: 'Jobs (24h)', value: stats.overview.totalJobs },
           { label: 'Messages', value: stats.overview.totalMessages },
@@ -85,7 +85,7 @@ export default function Dashboard() {
       </div>
 
       {/* Two Column Layout */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-4">
         {/* Sources */}
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Sources</h2>
@@ -185,7 +185,7 @@ export default function Dashboard() {
       </div>
 
       {/* Top Routes and Cargo Types - Side by Side */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-4">
         {/* Top Routes */}
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Top Routes</h2>

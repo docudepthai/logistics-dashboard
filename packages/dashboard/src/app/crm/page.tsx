@@ -1,8 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 
 interface CallListItem {
   phoneNumber: string;
@@ -42,12 +40,7 @@ function formatPhoneNumber(phone: string): string {
   return `+${phone}`;
 }
 
-const sidebarItems = [
-  { name: 'İletişime Geçilecekler', href: '/crm', icon: '📞' },
-];
-
 export default function CRMPage() {
-  const pathname = usePathname();
   const [items, setItems] = useState<CallListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -170,41 +163,15 @@ export default function CRMPage() {
   const pendingCount = items.filter(item => !item.calledAt).length;
 
   return (
-    <div className="flex min-h-[calc(100vh-56px)]">
-      {/* Sidebar */}
-      <div className="w-48 bg-zinc-900/30 border-r border-zinc-800/50 p-3">
-        <h2 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">CRM</h2>
-        <nav className="space-y-1">
-          {sidebarItems.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.name}
-                href={item.href}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-sm transition-colors ${
-                  isActive
-                    ? 'bg-zinc-800 text-white'
-                    : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
-                }`}
-              >
-                <span>{item.icon}</span>
-                <span>{item.name}</span>
-              </Link>
-            );
-          })}
-        </nav>
+    <div className="space-y-6">
+      {/* Header */}
+      <div>
+        <h1 className="text-2xl font-semibold text-white tracking-tight">CRM</h1>
+        <p className="text-zinc-500 text-sm mt-1">İletişime geçilmesi gereken kullanıcılar</p>
       </div>
 
-      {/* Main Content */}
-      <div className="flex-1 p-4">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-semibold text-white">İletişime Geçilecekler</h1>
-          <p className="text-zinc-500 text-sm mt-1">İletişime geçilmesi gereken kullanıcılar</p>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-3 gap-4 mb-6">
+      {/* Stats */}
+      <div className="grid grid-cols-3 gap-4">
           <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
             <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
             <div className="text-2xl font-semibold text-white mt-1">{items.length}</div>
@@ -398,7 +365,6 @@ export default function CRMPage() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

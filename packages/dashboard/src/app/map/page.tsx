@@ -347,17 +347,17 @@ export default function MapPage() {
   if (!data) return <div className="text-zinc-500 text-center py-20">Failed to load</div>;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">Route Map</h1>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Routes</h1>
           <p className="text-zinc-500 text-sm mt-1">
             {data.routes.length} active routes · {data.provinces.filter(p => p.total > 0).length} cities
           </p>
         </div>
         {selectedRoute && (
-          <div className="bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-2">
+          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-4 py-2">
             <span className="text-white">{selectedRoute.origin}</span>
             <span className="text-zinc-500 mx-2">→</span>
             <span className="text-zinc-300">{selectedRoute.destination}</span>

@@ -120,16 +120,14 @@ export default function ConversationsPage() {
   }
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
-          <p className="text-zinc-500 text-sm mt-1">
-            {conversations.length} active conversations
-            {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
-          </p>
-        </div>
+      <div>
+        <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
+        <p className="text-zinc-500 text-sm mt-1">
+          {conversations.length} active conversations
+          {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
+        </p>
       </div>
 
       {/* Conversations List */}

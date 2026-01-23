@@ -65,14 +65,14 @@ export default function HealthPage() {
   };
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">System Health</h1>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Health</h1>
           <p className="text-zinc-500 text-sm mt-1">Service status and metrics</p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2">
           <div className={`w-2 h-2 rounded-full ${statusColors[health.status as keyof typeof statusColors] || statusColors.down}`} />
           <span className="text-zinc-400 text-sm">
             {health.status === 'operational' ? 'All systems operational' : 'Issues detected'}

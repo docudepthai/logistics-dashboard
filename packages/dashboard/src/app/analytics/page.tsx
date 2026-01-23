@@ -48,14 +48,14 @@ export default function AnalyticsPage() {
   const maxPeakHour = Math.max(...data.peakHours.map(h => h.count), 1);
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Analytics</h1>
           <p className="text-zinc-500 text-sm mt-1">Performance metrics and trends</p>
         </div>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2">
           <span className={`text-sm font-mono ${data.weekChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
             {data.weekChange >= 0 ? '+' : ''}{data.weekChange}%
           </span>
@@ -135,7 +135,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Top Origins and Destinations */}
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-4">
         <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Top Origins (24h)</h2>
           <div className="space-y-3">
