@@ -6,16 +6,24 @@ import { DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand } from '@a
 const ADMIN_USER = 'caglar.binici';
 const TABLE_NAME = process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
 
-// All available pages in the dashboard
+// All available pages in the dashboard (matches Sidebar.tsx)
 const ALL_PAGES = [
+  // Operations
   { id: 'overview', name: 'Overview', href: '/' },
+  { id: 'health', name: 'Health', href: '/health' },
+  { id: 'problems', name: 'Problems', href: '/problems' },
+  // Customers
+  { id: 'users', name: 'Users', href: '/users' },
+  { id: 'user-analytics', name: 'User Analytics', href: '/user-analytics' },
   { id: 'conversations', name: 'Conversations', href: '/conversations' },
-  { id: 'crm', name: 'CRM', href: '/crm' },
-  { id: 'map', name: 'Routes', href: '/map' },
+  // CRM
+  { id: 'crm-inactive', name: 'Inactive Users', href: '/crm/pasif-kullanicilar' },
+  { id: 'crm-contacts', name: 'Contact List', href: '/crm/iletisim-listesi' },
+  // Business
   { id: 'analytics', name: 'Analytics', href: '/analytics' },
   { id: 'finance', name: 'Finance', href: '/finance' },
-  { id: 'users', name: 'Users', href: '/users' },
-  { id: 'health', name: 'Health', href: '/health' },
+  // Data
+  { id: 'map', name: 'Routes', href: '/map' },
 ];
 
 // Employee definitions

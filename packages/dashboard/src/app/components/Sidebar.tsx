@@ -2,11 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 interface NavItem {
   name: string;
   href: string;
   icon: string;
+  id: string; // permission ID
 }
 
 interface NavGroup {
@@ -14,41 +17,43 @@ interface NavGroup {
   items: NavItem[];
 }
 
+const ADMIN_USER = 'caglar.binici';
+
 const navigation: NavGroup[] = [
   {
     name: 'Operations',
     items: [
-      { name: 'Overview', href: '/', icon: 'chart' },
-      { name: 'Health', href: '/health', icon: 'heart' },
-      { name: 'Problems', href: '/problems', icon: 'alert' },
+      { name: 'Overview', href: '/', icon: 'chart', id: 'overview' },
+      { name: 'Health', href: '/health', icon: 'heart', id: 'health' },
+      { name: 'Problems', href: '/problems', icon: 'alert', id: 'problems' },
     ],
   },
   {
     name: 'Customers',
     items: [
-      { name: 'Users', href: '/users', icon: 'users' },
-      { name: 'User Analytics', href: '/user-analytics', icon: 'analytics' },
-      { name: 'Conversations', href: '/conversations', icon: 'chat' },
+      { name: 'Users', href: '/users', icon: 'users', id: 'users' },
+      { name: 'User Analytics', href: '/user-analytics', icon: 'analytics', id: 'user-analytics' },
+      { name: 'Conversations', href: '/conversations', icon: 'chat', id: 'conversations' },
     ],
   },
   {
     name: 'CRM',
     items: [
-      { name: 'Inactive Users', href: '/crm/pasif-kullanicilar', icon: 'clock' },
-      { name: 'Contact List', href: '/crm/iletisim-listesi', icon: 'phone' },
+      { name: 'Inactive Users', href: '/crm/pasif-kullanicilar', icon: 'clock', id: 'crm-inactive' },
+      { name: 'Contact List', href: '/crm/iletisim-listesi', icon: 'phone', id: 'crm-contacts' },
     ],
   },
   {
     name: 'Business',
     items: [
-      { name: 'Analytics', href: '/analytics', icon: 'trending' },
-      { name: 'Finance', href: '/finance', icon: 'dollar' },
+      { name: 'Analytics', href: '/analytics', icon: 'trending', id: 'analytics' },
+      { name: 'Finance', href: '/finance', icon: 'dollar', id: 'finance' },
     ],
   },
   {
     name: 'Data',
     items: [
-      { name: 'Routes', href: '/map', icon: 'map' },
+      { name: 'Routes', href: '/map', icon: 'map', id: 'map' },
     ],
   },
 ];
@@ -113,6 +118,41 @@ const icons: Record<string, React.ReactNode> = {
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+  const [allowedPages, setAllowedPages] = useState<string[]>([]);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (session?.user?.name) {
+      // Admin always sees all
+      if (session.user.name === ADMIN_USER) {
+        setAllowedPages(navigation.flatMap(g => g.items.map(i => i.id)));
+        setLoaded(true);
+      } else {
+        // Fetch permissions
+        fetch('/api/user-permissions')
+          .then(res => res.json())
+          .then(data => {
+            setAllowedPages(data.allowedPages || []);
+            setLoaded(true);
+          })
+          .catch(() => {
+            setAllowedPages(navigation.flatMap(g => g.items.map(i => i.id)));
+            setLoaded(true);
+          });
+      }
+    }
+  }, [session]);
+
+  // Filter navigation based on permissions
+  const filteredNavigation = loaded
+    ? navigation
+        .map(group => ({
+          ...group,
+          items: group.items.filter(item => allowedPages.includes(item.id)),
+        }))
+        .filter(group => group.items.length > 0)
+    : navigation;
 
   return (
     <aside className="w-56 bg-neutral-950 border-r border-neutral-800/50 flex flex-col">
@@ -128,7 +168,7 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-4 px-3">
-        {navigation.map((group) => (
+        {filteredNavigation.map((group) => (
           <div key={group.name} className="mb-6">
             <h3 className="px-3 text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-2">
               {group.name}

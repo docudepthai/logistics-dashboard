@@ -6,8 +6,8 @@ import { DynamoDBDocumentClient, GetCommand } from '@aws-sdk/lib-dynamodb';
 const ADMIN_USER = 'caglar.binici';
 const TABLE_NAME = process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
 
-// All available pages
-const ALL_PAGES = ['overview', 'conversations', 'crm', 'map', 'analytics', 'finance', 'users', 'health'];
+// All available pages (matches Sidebar.tsx)
+const ALL_PAGES = ['overview', 'health', 'problems', 'users', 'user-analytics', 'conversations', 'crm-inactive', 'crm-contacts', 'analytics', 'finance', 'map'];
 
 // DynamoDB client
 const dynamoClient = new DynamoDBClient({
