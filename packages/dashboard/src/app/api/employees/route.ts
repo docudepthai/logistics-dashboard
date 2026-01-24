@@ -104,7 +104,9 @@ export async function GET() {
             },
           }));
           if (permResult.Item?.allowedPages) {
-            allowedPages = permResult.Item.allowedPages;
+            allowedPages = Array.isArray(permResult.Item.allowedPages)
+              ? permResult.Item.allowedPages
+              : [];
           }
         } catch {
           // Use default
