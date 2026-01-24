@@ -35,6 +35,8 @@ export default function NotesPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
   const titleRef = useRef<HTMLInputElement>(null);
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -241,9 +243,8 @@ export default function NotesPage() {
               </div>
               <button
                 onClick={() => {
-                  if (confirm('Delete this note?')) {
-                    deleteNote(selectedNote.id);
-                  }
+                  setNoteToDelete(selectedNote);
+                  setDeleteModalOpen(true);
                 }}
                 className="p-2 text-neutral-500 hover:text-red-400 transition-colors"
                 title="Delete"
@@ -284,6 +285,57 @@ export default function NotesPage() {
           </div>
         )}
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {deleteModalOpen && noteToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setDeleteModalOpen(false)}
+          />
+
+          {/* Modal */}
+          <div className="relative bg-neutral-900 border border-neutral-700 rounded-2xl shadow-2xl w-80 overflow-hidden">
+            {/* Icon */}
+            <div className="pt-6 pb-4 flex justify-center">
+              <div className="w-14 h-14 rounded-full bg-red-500/10 flex items-center justify-center">
+                <svg className="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="px-6 pb-5 text-center">
+              <h3 className="text-lg font-semibold text-white mb-2">Delete Note</h3>
+              <p className="text-neutral-400 text-sm">
+                Are you sure you want to delete "<span className="text-white">{noteToDelete.title || 'Untitled'}</span>"? This action cannot be undone.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="border-t border-neutral-800 flex">
+              <button
+                onClick={() => setDeleteModalOpen(false)}
+                className="flex-1 py-3.5 text-sm font-medium text-neutral-300 hover:bg-neutral-800 transition-colors border-r border-neutral-800"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => {
+                  deleteNote(noteToDelete.id);
+                  setDeleteModalOpen(false);
+                  setNoteToDelete(null);
+                }}
+                className="flex-1 py-3.5 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
