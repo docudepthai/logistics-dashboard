@@ -183,18 +183,18 @@ export default function PasifKullanicilarPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Pasif Kullanicilar</h1>
-          <p className="text-zinc-500 text-sm mt-1">
+          <p className="text-neutral-500 text-sm mt-1">
             Henuz arama yapmamis kullanicilar (24s penceresi)
             <span className="mx-2">·</span>
             <span className={settings.mode === 'automatic' ? 'text-emerald-400' : 'text-amber-400'}>
               {settings.mode === 'automatic' ? 'Otomatik' : 'Manuel'}
             </span>
-            <span className="text-zinc-600"> ({settings.triggerHours}s kala)</span>
+            <span className="text-neutral-600"> ({settings.triggerHours}s kala)</span>
           </p>
         </div>
         <button
           onClick={() => setShowSettingsModal(true)}
-          className="px-4 py-2 text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg transition-colors flex items-center space-x-2"
+          className="px-4 py-2 text-sm bg-neutral-800 hover:bg-neutral-700 text-neutral-300 rounded-lg transition-colors flex items-center space-x-2"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -206,8 +206,8 @@ export default function PasifKullanicilarPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
           <div className="text-2xl font-semibold text-white mt-1">{stats.total}</div>
         </div>
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
@@ -231,12 +231,12 @@ export default function PasifKullanicilarPage() {
             type="checkbox"
             checked={showSent}
             onChange={(e) => setShowSent(e.target.checked)}
-            className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500"
+            className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500"
           />
-          <span className="text-sm text-zinc-400">Mesaj gonderilenleri de goster</span>
+          <span className="text-sm text-neutral-400">Mesaj gonderilenleri de goster</span>
         </label>
         {totalPages > 1 && (
-          <div className="text-sm text-zinc-500">
+          <div className="text-sm text-neutral-500">
             Sayfa {currentPage} / {totalPages} ({filteredUsers.length} kayit)
           </div>
         )}
@@ -245,32 +245,32 @@ export default function PasifKullanicilarPage() {
       {/* Users Table */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
         </div>
       ) : filteredUsers.length === 0 ? (
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-8 text-center text-zinc-500">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-8 text-center text-neutral-500">
           {showSent ? 'Henuz kullanici yok' : 'Mesaj gonderilecek kullanici yok'}
         </div>
       ) : (
         <>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-zinc-800/50">
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Kalan Sure</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Mesaj Sayisi</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Ilk Mesaj</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Durum</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Islem</th>
+                <tr className="border-b border-neutral-800/50">
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Telefon</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Kalan Sure</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Mesaj Sayisi</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Ilk Mesaj</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Durum</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Islem</th>
                 </tr>
               </thead>
               <tbody>
                 {paginatedUsers.map((user) => (
                   <tr
                     key={user.phoneNumber}
-                    className={`border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors ${user.nudgeSent ? 'opacity-60' : ''}`}
+                    className={`border-b border-neutral-800/30 hover:bg-neutral-800/30 transition-colors ${user.nudgeSent ? 'opacity-60' : ''}`}
                   >
                     <td className="px-4 py-3">
                       <Link
@@ -289,8 +289,8 @@ export default function PasifKullanicilarPage() {
                         {formatHoursRemaining(user.hoursRemaining)}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-zinc-400 text-sm">{user.messageCount}</td>
-                    <td className="px-4 py-3 text-zinc-400 text-sm truncate max-w-[200px]" title={user.firstMessage}>
+                    <td className="px-4 py-3 text-neutral-400 text-sm">{user.messageCount}</td>
+                    <td className="px-4 py-3 text-neutral-400 text-sm truncate max-w-[200px]" title={user.firstMessage}>
                       {user.firstMessage || '-'}
                     </td>
                     <td className="px-4 py-3">
@@ -319,7 +319,7 @@ export default function PasifKullanicilarPage() {
                           href={`https://wa.me/${user.phoneNumber}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-xs px-2 py-1 bg-zinc-700/50 text-zinc-400 hover:bg-zinc-700 rounded transition-colors"
+                          className="text-xs px-2 py-1 bg-neutral-700/50 text-neutral-400 hover:bg-neutral-700 rounded transition-colors"
                         >
                           WA Ac
                         </a>
@@ -338,7 +338,7 @@ export default function PasifKullanicilarPage() {
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
             >
               Onceki
             </button>
@@ -361,7 +361,7 @@ export default function PasifKullanicilarPage() {
                     className={`w-8 h-8 rounded text-sm transition-colors ${
                       currentPage === pageNum
                         ? 'bg-white text-black'
-                        : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                        : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
                     }`}
                   >
                     {pageNum}
@@ -372,7 +372,7 @@ export default function PasifKullanicilarPage() {
             <button
               onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+              className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
             >
               Sonraki
             </button>
@@ -384,12 +384,12 @@ export default function PasifKullanicilarPage() {
       {/* Settings Modal */}
       {showSettingsModal && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-lg mx-4 overflow-hidden">
-            <div className="px-6 py-4 border-b border-zinc-800 flex items-center justify-between">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 overflow-hidden">
+            <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between">
               <h3 className="text-lg font-medium text-white">Pasif Kullanicilar Ayarlari</h3>
               <button
                 onClick={() => setShowSettingsModal(false)}
-                className="text-zinc-500 hover:text-white transition-colors"
+                className="text-neutral-500 hover:text-white transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -400,7 +400,7 @@ export default function PasifKullanicilarPage() {
             <div className="px-6 py-5 space-y-6">
               {/* Mode Selection */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-3">Mesaj Gonderme Modu</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-3">Mesaj Gonderme Modu</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => saveSettings({ mode: 'manual' })}
@@ -408,7 +408,7 @@ export default function PasifKullanicilarPage() {
                     className={`p-4 rounded-lg border transition-all ${
                       settings.mode === 'manual'
                         ? 'bg-amber-500/20 border-amber-500/50 text-amber-400'
-                        : 'bg-zinc-800/50 border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                        : 'bg-neutral-800/50 border-neutral-700 text-neutral-400 hover:border-neutral-600'
                     }`}
                   >
                     <div className="text-lg font-medium mb-1">Manuel</div>
@@ -420,7 +420,7 @@ export default function PasifKullanicilarPage() {
                     className={`p-4 rounded-lg border transition-all ${
                       settings.mode === 'automatic'
                         ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
-                        : 'bg-zinc-800/50 border-zinc-700 text-zinc-400 hover:border-zinc-600'
+                        : 'bg-neutral-800/50 border-neutral-700 text-neutral-400 hover:border-neutral-600'
                     }`}
                   >
                     <div className="text-lg font-medium mb-1">Otomatik</div>
@@ -431,9 +431,9 @@ export default function PasifKullanicilarPage() {
 
               {/* Trigger Time */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-3">
+                <label className="block text-sm font-medium text-neutral-400 mb-3">
                   Mesaj Gonderim Zamani
-                  <span className="text-zinc-600 font-normal ml-2">(24 saat dolmadan kac saat once)</span>
+                  <span className="text-neutral-600 font-normal ml-2">(24 saat dolmadan kac saat once)</span>
                 </label>
                 <div className="flex items-center space-x-3">
                   <input
@@ -442,7 +442,7 @@ export default function PasifKullanicilarPage() {
                     max="12"
                     value={settings.triggerHours}
                     onChange={(e) => saveSettings({ triggerHours: parseInt(e.target.value) })}
-                    className="flex-1 h-2 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    className="flex-1 h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                   />
                   <span className="text-white font-medium w-16 text-right">{settings.triggerHours} saat</span>
                 </div>
@@ -450,29 +450,29 @@ export default function PasifKullanicilarPage() {
 
               {/* Message Template */}
               <div>
-                <label className="block text-sm font-medium text-zinc-400 mb-2">Mesaj Sablonu</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Mesaj Sablonu</label>
                 <textarea
                   value={settings.messageTemplate}
                   onChange={(e) => setSettings(prev => ({ ...prev, messageTemplate: e.target.value }))}
                   onBlur={() => saveSettings({ messageTemplate: settings.messageTemplate })}
                   rows={4}
-                  className="w-full bg-zinc-800/50 border border-zinc-700 rounded-lg p-4 text-sm text-zinc-300 resize-none focus:outline-none focus:border-zinc-600"
+                  className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg p-4 text-sm text-neutral-300 resize-none focus:outline-none focus:border-neutral-600"
                   placeholder="Mesaj sablonunu girin..."
                 />
-                <p className="text-xs text-zinc-500 mt-2">Duzenleme bitince otomatik kaydedilir</p>
+                <p className="text-xs text-neutral-500 mt-2">Duzenleme bitince otomatik kaydedilir</p>
               </div>
 
               {settings.lastUpdated && (
-                <div className="text-xs text-zinc-600">
+                <div className="text-xs text-neutral-600">
                   Son guncelleme: {formatDate(settings.lastUpdated)}
                 </div>
               )}
             </div>
 
-            <div className="px-6 py-4 border-t border-zinc-800 flex justify-end">
+            <div className="px-6 py-4 border-t border-neutral-800 flex justify-end">
               <button
                 onClick={() => setShowSettingsModal(false)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
               >
                 Kapat
               </button>
@@ -484,23 +484,23 @@ export default function PasifKullanicilarPage() {
       {/* Confirmation Modal - Step 1 */}
       {confirmModal?.step === 1 && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
-            <div className="px-6 py-4 border-b border-zinc-800">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
+            <div className="px-6 py-4 border-b border-neutral-800">
               <h3 className="text-lg font-medium text-white">Sablon Mesaji Gonder</h3>
             </div>
             <div className="px-6 py-5">
-              <p className="text-zinc-400 mb-4">
+              <p className="text-neutral-400 mb-4">
                 <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasina
                 sablon mesaji gondermek istediginize emin misiniz?
               </p>
-              <div className="bg-zinc-800/50 border border-zinc-700 rounded-lg p-3 text-sm text-zinc-300">
+              <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-3 text-sm text-neutral-300">
                 {settings.messageTemplate || 'Sablon yukleniyor...'}
               </div>
             </div>
-            <div className="px-6 py-4 border-t border-zinc-800 flex justify-end space-x-3">
+            <div className="px-6 py-4 border-t border-neutral-800 flex justify-end space-x-3">
               <button
                 onClick={() => setConfirmModal(null)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
               >
                 Iptal
               </button>
@@ -518,12 +518,12 @@ export default function PasifKullanicilarPage() {
       {/* Confirmation Modal - Step 2 */}
       {confirmModal?.step === 2 && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
-          <div className="bg-zinc-900 border border-zinc-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
+          <div className="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
             <div className="px-6 py-4 border-b border-amber-500/30 bg-amber-500/10">
               <h3 className="text-lg font-medium text-amber-400">Son Onay</h3>
             </div>
             <div className="px-6 py-5">
-              <p className="text-zinc-400 mb-4">
+              <p className="text-neutral-400 mb-4">
                 Bu islem geri alinamaz. Mesaj <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasina
                 hemen gonderilecektir.
               </p>
@@ -531,10 +531,10 @@ export default function PasifKullanicilarPage() {
                 Gondermek istediginizden emin misiniz?
               </p>
             </div>
-            <div className="px-6 py-4 border-t border-zinc-800 flex justify-end space-x-3">
+            <div className="px-6 py-4 border-t border-neutral-800 flex justify-end space-x-3">
               <button
                 onClick={() => setConfirmModal(null)}
-                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-colors"
+                className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
               >
                 Iptal
               </button>

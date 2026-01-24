@@ -115,9 +115,9 @@ export default function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="w-56 bg-zinc-950 border-r border-zinc-800/50 flex flex-col">
+    <aside className="w-56 bg-neutral-950 border-r border-neutral-800/50 flex flex-col">
       {/* Logo */}
-      <div className="h-14 flex items-center px-4 border-b border-zinc-800/50">
+      <div className="h-14 flex items-center px-4 border-b border-neutral-800/50">
         <div className="flex items-center space-x-2">
           <div className="w-7 h-7 bg-white rounded-md flex items-center justify-center">
             <span className="text-black font-bold text-sm">P</span>
@@ -130,7 +130,7 @@ export default function Sidebar() {
       <nav className="flex-1 overflow-y-auto py-4 px-3">
         {navigation.map((group) => (
           <div key={group.name} className="mb-6">
-            <h3 className="px-3 text-[10px] font-semibold text-zinc-500 uppercase tracking-wider mb-2">
+            <h3 className="px-3 text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-2">
               {group.name}
             </h3>
             <div className="space-y-1">
@@ -142,11 +142,11 @@ export default function Sidebar() {
                     href={item.href}
                     className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
                       isActive
-                        ? 'bg-zinc-800 text-white'
-                        : 'text-zinc-400 hover:text-white hover:bg-zinc-800/50'
+                        ? 'bg-neutral-800 text-white'
+                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
                     }`}
                   >
-                    <span className={isActive ? 'text-white' : 'text-zinc-500'}>
+                    <span className={isActive ? 'text-white' : 'text-neutral-500'}>
                       {icons[item.icon]}
                     </span>
                     <span>{item.name}</span>
@@ -159,10 +159,10 @@ export default function Sidebar() {
       </nav>
 
       {/* Status Footer */}
-      <div className="p-4 border-t border-zinc-800/50">
+      <div className="p-4 border-t border-neutral-800/50">
         <div className="flex items-center space-x-2">
           <div className="w-2 h-2 bg-emerald-400 rounded-full pulse-glow" />
-          <span className="text-zinc-500 text-xs">System Operational</span>
+          <span className="text-neutral-500 text-xs">System Operational</span>
         </div>
       </div>
     </aside>

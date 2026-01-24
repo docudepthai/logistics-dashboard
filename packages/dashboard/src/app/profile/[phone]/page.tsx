@@ -128,7 +128,7 @@ export default function UserProfilePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -166,7 +166,7 @@ export default function UserProfilePage() {
         <div className="flex items-center space-x-4">
           <Link
             href="/users"
-            className="text-zinc-500 hover:text-white transition-colors"
+            className="text-neutral-500 hover:text-white transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -181,7 +181,7 @@ export default function UserProfilePage() {
                 {status.label}
               </span>
               {profile?.firstContactAt && (
-                <span className="text-zinc-500 text-sm">
+                <span className="text-neutral-500 text-sm">
                   Joined {getTimeAgo(profile.firstContactAt)}
                 </span>
               )}
@@ -202,22 +202,22 @@ export default function UserProfilePage() {
 
       {/* Stats Row */}
       <div className="grid grid-cols-5 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs uppercase tracking-wider">Messages</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs uppercase tracking-wider">Messages</div>
           <div className="text-2xl font-semibold text-white mt-1">{messages.length}</div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs uppercase tracking-wider">Active Days</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs uppercase tracking-wider">Active Days</div>
           <div className="text-2xl font-semibold text-white mt-1">{searchDays}</div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs uppercase tracking-wider">Searched</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs uppercase tracking-wider">Searched</div>
           <div className={`text-2xl font-semibold mt-1 ${hasSearched ? 'text-emerald-400' : 'text-red-400'}`}>
             {hasSearched ? 'Yes' : 'No'}
           </div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs uppercase tracking-wider">Last Route</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs uppercase tracking-wider">Last Route</div>
           <div className="text-lg font-semibold text-white mt-1 truncate">
             {conversation?.context?.lastOrigin
               ? `${fixProvinceName(conversation.context.lastOrigin)} → ${conversation.context.lastDestination ? fixProvinceName(conversation.context.lastDestination) : '?'}`
@@ -225,7 +225,7 @@ export default function UserProfilePage() {
           </div>
         </div>
         <div className={`border rounded-lg p-4 ${hoursRemaining > 6 ? 'bg-emerald-500/10 border-emerald-500/30' : hoursRemaining > 0 ? 'bg-amber-500/10 border-amber-500/30' : 'bg-red-500/10 border-red-500/30'}`}>
-          <div className="text-zinc-500 text-xs uppercase tracking-wider">24h Window</div>
+          <div className="text-neutral-500 text-xs uppercase tracking-wider">24h Window</div>
           <div className={`text-2xl font-semibold mt-1 ${hoursRemaining > 6 ? 'text-emerald-400' : hoursRemaining > 0 ? 'text-amber-400' : 'text-red-400'}`}>
             {hoursRemaining > 0 ? `${hoursRemaining.toFixed(1)}h left` : 'Closed'}
           </div>
@@ -235,66 +235,66 @@ export default function UserProfilePage() {
       {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
         {/* Left: User Info */}
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">User Details</h2>
           <div className="space-y-3">
-            <div className="flex justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-500 text-sm">Phone</span>
+            <div className="flex justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-500 text-sm">Phone</span>
               <span className="text-white font-mono text-sm">{formatPhone(phone)}</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-500 text-sm">Status</span>
+            <div className="flex justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-500 text-sm">Status</span>
               <span className={`${status.text} text-sm`}>{status.label}</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-500 text-sm">First Contact</span>
+            <div className="flex justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-500 text-sm">First Contact</span>
               <span className="text-white text-sm">{formatDate(profile?.firstContactAt || '')}</span>
             </div>
-            <div className="flex justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-500 text-sm">Trial Expires</span>
+            <div className="flex justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-500 text-sm">Trial Expires</span>
               <span className="text-white text-sm">{formatDate(profile?.freeTierExpiresAt || '')}</span>
             </div>
             {profile?.paidUntil && (
-              <div className="flex justify-between py-2 border-b border-zinc-800/50">
-                <span className="text-zinc-500 text-sm">Paid Until</span>
+              <div className="flex justify-between py-2 border-b border-neutral-800/50">
+                <span className="text-neutral-500 text-sm">Paid Until</span>
                 <span className="text-emerald-400 text-sm">{formatDate(profile.paidUntil)}</span>
               </div>
             )}
-            <div className="flex justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-500 text-sm">Welcome Sent</span>
-              <span className={profile?.welcomeMessageSent ? 'text-emerald-400 text-sm' : 'text-zinc-500 text-sm'}>
+            <div className="flex justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-500 text-sm">Welcome Sent</span>
+              <span className={profile?.welcomeMessageSent ? 'text-emerald-400 text-sm' : 'text-neutral-500 text-sm'}>
                 {profile?.welcomeMessageSent ? 'Yes' : 'No'}
               </span>
             </div>
             <div className="flex justify-between py-2">
-              <span className="text-zinc-500 text-sm">Last Active</span>
+              <span className="text-neutral-500 text-sm">Last Active</span>
               <span className="text-white text-sm">{conversation?.updatedAt ? getTimeAgo(conversation.updatedAt) : '-'}</span>
             </div>
           </div>
         </div>
 
         {/* Right: Search Context */}
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Search Context</h2>
           {hasSearched ? (
             <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b border-zinc-800/50">
-                <span className="text-zinc-500 text-sm">Last Origin</span>
+              <div className="flex justify-between py-2 border-b border-neutral-800/50">
+                <span className="text-neutral-500 text-sm">Last Origin</span>
                 <span className="text-cyan-400 text-sm">{conversation?.context?.lastOrigin ? fixProvinceName(conversation.context.lastOrigin) : '-'}</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-zinc-800/50">
-                <span className="text-zinc-500 text-sm">Last Destination</span>
+              <div className="flex justify-between py-2 border-b border-neutral-800/50">
+                <span className="text-neutral-500 text-sm">Last Destination</span>
                 <span className="text-orange-400 text-sm">{conversation?.context?.lastDestination ? fixProvinceName(conversation.context.lastDestination) : '-'}</span>
               </div>
               {conversation?.context?.lastBodyType && (
-                <div className="flex justify-between py-2 border-b border-zinc-800/50">
-                  <span className="text-zinc-500 text-sm">Body Type</span>
+                <div className="flex justify-between py-2 border-b border-neutral-800/50">
+                  <span className="text-neutral-500 text-sm">Body Type</span>
                   <span className="text-white text-sm">{conversation.context.lastBodyType}</span>
                 </div>
               )}
             </div>
           ) : (
-            <div className="text-zinc-500 text-sm py-8 text-center">
+            <div className="text-neutral-500 text-sm py-8 text-center">
               User hasn't searched yet
             </div>
           )}
@@ -302,26 +302,26 @@ export default function UserProfilePage() {
       </div>
 
       {/* Learned Preferences */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-4">Learned Preferences</h2>
         {conversation?.context?.totalSearches || conversation?.context?.preferredVehicle || conversation?.context?.frequentRoutes?.length ? (
           <div className="space-y-4">
             {/* Stats Row */}
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-zinc-800/50 rounded-lg p-3">
-                <div className="text-zinc-500 text-xs uppercase tracking-wider">Total Searches</div>
+              <div className="bg-neutral-800/50 rounded-lg p-3">
+                <div className="text-neutral-500 text-xs uppercase tracking-wider">Total Searches</div>
                 <div className="text-xl font-semibold text-white mt-1">
                   {conversation?.context?.totalSearches || 0}
                 </div>
               </div>
-              <div className="bg-zinc-800/50 rounded-lg p-3">
-                <div className="text-zinc-500 text-xs uppercase tracking-wider">Preferred Vehicle</div>
+              <div className="bg-neutral-800/50 rounded-lg p-3">
+                <div className="text-neutral-500 text-xs uppercase tracking-wider">Preferred Vehicle</div>
                 <div className="text-xl font-semibold text-purple-400 mt-1">
                   {conversation?.context?.preferredVehicle || '-'}
                 </div>
               </div>
-              <div className="bg-zinc-800/50 rounded-lg p-3">
-                <div className="text-zinc-500 text-xs uppercase tracking-wider">First Seen</div>
+              <div className="bg-neutral-800/50 rounded-lg p-3">
+                <div className="text-neutral-500 text-xs uppercase tracking-wider">First Seen</div>
                 <div className="text-sm font-medium text-white mt-1">
                   {conversation?.context?.firstSeen ? formatDate(conversation.context.firstSeen) : '-'}
                 </div>
@@ -331,22 +331,22 @@ export default function UserProfilePage() {
             {/* Frequent Routes */}
             {conversation?.context?.frequentRoutes && conversation.context.frequentRoutes.length > 0 && (
               <div>
-                <div className="text-zinc-500 text-xs uppercase tracking-wider mb-2">Frequent Routes</div>
+                <div className="text-neutral-500 text-xs uppercase tracking-wider mb-2">Frequent Routes</div>
                 <div className="space-y-2">
                   {conversation.context.frequentRoutes.slice(0, 5).map((route, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center justify-between bg-zinc-800/30 rounded px-3 py-2"
+                      className="flex items-center justify-between bg-neutral-800/30 rounded px-3 py-2"
                     >
                       <div className="flex items-center space-x-2">
-                        <span className="text-zinc-500 text-xs w-5">{idx + 1}.</span>
+                        <span className="text-neutral-500 text-xs w-5">{idx + 1}.</span>
                         <span className="text-cyan-400 text-sm">{fixProvinceName(route.origin)}</span>
-                        <span className="text-zinc-600">→</span>
+                        <span className="text-neutral-600">→</span>
                         <span className="text-orange-400 text-sm">{route.destination ? fixProvinceName(route.destination) : 'herhangi'}</span>
                       </div>
                       <div className="flex items-center space-x-4">
                         <span className="text-white text-sm font-medium">{route.count}x</span>
-                        <span className="text-zinc-500 text-xs">{getTimeAgo(route.lastSearched)}</span>
+                        <span className="text-neutral-500 text-xs">{getTimeAgo(route.lastSearched)}</span>
                       </div>
                     </div>
                   ))}
@@ -355,20 +355,20 @@ export default function UserProfilePage() {
             )}
           </div>
         ) : (
-          <div className="text-zinc-500 text-sm py-8 text-center">
+          <div className="text-neutral-500 text-sm py-8 text-center">
             No learned preferences yet - user needs to search more
           </div>
         )}
       </div>
 
       {/* Conversation History */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-4">
           Conversation History ({messages.length} messages)
         </h2>
         <div className="space-y-3 max-h-96 overflow-y-auto">
           {messages.length === 0 ? (
-            <div className="text-zinc-500 text-sm text-center py-8">No messages yet</div>
+            <div className="text-neutral-500 text-sm text-center py-8">No messages yet</div>
           ) : (
             messages.map((msg, idx) => (
               <div
@@ -379,11 +379,11 @@ export default function UserProfilePage() {
                   className={`max-w-[70%] rounded-lg px-3 py-2 ${
                     msg.role === 'user'
                       ? 'bg-blue-500/20 text-blue-100'
-                      : 'bg-zinc-800 text-zinc-300'
+                      : 'bg-neutral-800 text-neutral-300'
                   }`}
                 >
                   <div className="text-sm whitespace-pre-wrap">{msg.content}</div>
-                  <div className="text-xs text-zinc-500 mt-1">
+                  <div className="text-xs text-neutral-500 mt-1">
                     {formatDate(msg.timestamp)}
                   </div>
                 </div>

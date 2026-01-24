@@ -491,6 +491,7 @@ export const DISTRICTS: District[] = [
   // İSTANBUL (34)
   { name: 'Adalar', normalized: 'adalar', provinceCode: 34, provinceName: 'Istanbul' },
   { name: 'Arnavutköy', normalized: 'arnavutkoy', provinceCode: 34, provinceName: 'Istanbul' },
+  { name: 'Hadımköy', normalized: 'hadimkoy', provinceCode: 34, provinceName: 'Istanbul' }, // Popular industrial area in Arnavutköy
   { name: 'Ataşehi̇r', normalized: 'atasehir', provinceCode: 34, provinceName: 'Istanbul' },
   { name: 'Avcilar', normalized: 'avcilar', provinceCode: 34, provinceName: 'Istanbul' },
   { name: 'Bağcilar', normalized: 'bagcilar', provinceCode: 34, provinceName: 'Istanbul' },

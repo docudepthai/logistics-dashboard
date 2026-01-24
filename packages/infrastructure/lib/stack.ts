@@ -146,6 +146,9 @@ export class LogisticsStack extends cdk.Stack {
       memorySize: 512,
       environment: {
         NODE_OPTIONS: '--enable-source-maps',
+        // For proactive notifications when new jobs match pending user searches
+        CONVERSATIONS_TABLE: 'turkish-logistics-conversations',
+        // Note: WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN set manually via AWS console
       },
       tracing: lambda.Tracing.ACTIVE,
       bundling: {
@@ -177,9 +180,12 @@ export class LogisticsStack extends cdk.Stack {
       partitionKey: { name: 'pk', type: dynamodb.AttributeType.STRING },
       sortKey: { name: 'sk', type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
-      timeToLiveAttribute: 'ttl',
+      timeToLiveAttribute: 'ttl', // Used for pending notification auto-expiry (3 hours)
       removalPolicy: cdk.RemovalPolicy.DESTROY, // Conversations are ephemeral
     });
+
+    // Grant processor lambda access to conversations table for pending notifications
+    this.conversationsTable.grantReadWriteData(processorLambda);
 
     // OpenAI API key secret
     const openaiApiKeySecret = new secretsmanager.Secret(

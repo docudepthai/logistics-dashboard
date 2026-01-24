@@ -192,21 +192,21 @@ export default function IletisimListesiPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">Iletisim Listesi</h1>
-        <p className="text-zinc-500 text-sm mt-1">Aranmasi veya iletisime gecilmesi gereken kullanicilar</p>
+        <p className="text-neutral-500 text-sm mt-1">Aranmasi veya iletisime gecilmesi gereken kullanicilar</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
           <div className="text-2xl font-semibold text-white mt-1">{items.length}</div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Bekleyen</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Bekleyen</div>
           <div className="text-2xl font-semibold text-amber-400 mt-1">{pendingCount}</div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-          <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Iletisime Gecildi</div>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Iletisime Gecildi</div>
           <div className="text-2xl font-semibold text-emerald-400 mt-1">{contactedCount}</div>
         </div>
       </div>
@@ -218,12 +218,12 @@ export default function IletisimListesiPage() {
             type="checkbox"
             checked={showContacted}
             onChange={(e) => setShowContacted(e.target.checked)}
-            className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500"
+            className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500"
           />
-          <span className="text-sm text-zinc-400">Iletisime gecilmis olanlari da goster</span>
+          <span className="text-sm text-neutral-400">Iletisime gecilmis olanlari da goster</span>
         </label>
         {totalPages > 1 && (
-          <div className="text-sm text-zinc-500">
+          <div className="text-sm text-neutral-500">
             Sayfa {currentPage} / {totalPages} ({filteredItems.length} kayit)
           </div>
         )}
@@ -231,7 +231,7 @@ export default function IletisimListesiPage() {
 
       {loading ? (
         <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
         </div>
       ) : error ? (
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
@@ -239,24 +239,24 @@ export default function IletisimListesiPage() {
         </div>
       ) : (
         <>
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
+          <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-zinc-800/50">
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12">Tamamlandi</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Iletisim Nedeni</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Notlar</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Iletisim Tarihi</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12"></th>
+                  <tr className="border-b border-neutral-800/50">
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12">Tamamlandi</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Telefon</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Iletisim Nedeni</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Notlar</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Iletisim Tarihi</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {paginatedItems.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
+                      <td colSpan={7} className="px-4 py-8 text-center text-neutral-500">
                         {showContacted ? 'Liste bos' : 'Iletisime gecilecek kimse yok'}
                       </td>
                     </tr>
@@ -264,7 +264,7 @@ export default function IletisimListesiPage() {
                     paginatedItems.map((item) => (
                       <tr
                         key={item.phoneNumber}
-                        className={`border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors ${
+                        className={`border-b border-neutral-800/30 hover:bg-neutral-800/30 transition-colors ${
                           item.calledAt ? 'opacity-60' : ''
                         }`}
                       >
@@ -274,7 +274,7 @@ export default function IletisimListesiPage() {
                             checked={!!item.calledAt}
                             onChange={() => toggleContacted(item.phoneNumber, item.calledAt)}
                             disabled={updatingPhone === item.phoneNumber}
-                            className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 text-emerald-500 cursor-pointer"
+                            className="w-5 h-5 rounded border-neutral-600 bg-neutral-800 text-emerald-500 cursor-pointer"
                           />
                         </td>
                         <td className="px-4 py-3">
@@ -299,7 +299,7 @@ export default function IletisimListesiPage() {
                               onChange={(e) => updateReason(item.phoneNumber, e.target.value)}
                               autoFocus
                               onBlur={() => setEditingReason(null)}
-                              className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                              className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white w-full"
                             >
                               <option value="">Seciniz...</option>
                               {CALL_REASONS.map((reason) => (
@@ -314,7 +314,7 @@ export default function IletisimListesiPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.reason || (
-                                <span className="text-zinc-500 italic">Neden sec...</span>
+                                <span className="text-neutral-500 italic">Neden sec...</span>
                               )}
                             </button>
                           )}
@@ -334,7 +334,7 @@ export default function IletisimListesiPage() {
                                   }
                                 }}
                                 autoFocus
-                                className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white flex-1"
+                                className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white flex-1"
                                 placeholder="Not ekle..."
                               />
                               <button
@@ -353,19 +353,19 @@ export default function IletisimListesiPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.notes || (
-                                <span className="text-zinc-500 italic">Not ekle...</span>
+                                <span className="text-neutral-500 italic">Not ekle...</span>
                               )}
                             </button>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-zinc-400 text-sm">
+                        <td className="px-4 py-3 text-neutral-400 text-sm">
                           {item.calledAt ? (
                             <span className="text-emerald-400">{formatDate(item.calledAt)}</span>
                           ) : (
-                            <span className="text-zinc-600">-</span>
+                            <span className="text-neutral-600">-</span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-zinc-500 text-sm">
+                        <td className="px-4 py-3 text-neutral-500 text-sm">
                           {formatDate(item.addedAt)}
                         </td>
                         <td className="px-4 py-3">
@@ -392,7 +392,7 @@ export default function IletisimListesiPage() {
               <button
                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
-                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+                className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
               >
                 Onceki
               </button>
@@ -415,7 +415,7 @@ export default function IletisimListesiPage() {
                       className={`w-8 h-8 rounded text-sm transition-colors ${
                         currentPage === pageNum
                           ? 'bg-white text-black'
-                          : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-300'
+                          : 'bg-neutral-800 hover:bg-neutral-700 text-neutral-300'
                       }`}
                     >
                       {pageNum}
@@ -426,7 +426,7 @@ export default function IletisimListesiPage() {
               <button
                 onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
-                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50 disabled:hover:bg-zinc-800 text-zinc-300 rounded text-sm transition-colors"
+                className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
               >
                 Sonraki
               </button>

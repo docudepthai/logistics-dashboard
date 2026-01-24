@@ -121,8 +121,8 @@ function getStatusBadge(status: string): { text: string; bgColor: string; textCo
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-3 shadow-xl">
-        <p className="text-zinc-400 text-xs mb-1">{label}</p>
+      <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-3 shadow-xl">
+        <p className="text-neutral-400 text-xs mb-1">{label}</p>
         {payload.map((entry: any, index: number) => (
           <p key={index} className="text-white text-sm font-medium">
             {entry.name}: {entry.name === 'revenue' ? formatCurrency(entry.value) : entry.value}
@@ -163,7 +163,7 @@ export default function FinancePage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -183,52 +183,52 @@ export default function FinancePage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">Finance</h1>
-        <p className="text-zinc-500 text-sm mt-1">Track revenue, payments, and financial metrics</p>
+        <p className="text-neutral-500 text-sm mt-1">Track revenue, payments, and financial metrics</p>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-5">
-          <p className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Total Revenue</p>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-5">
+          <p className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Total Revenue</p>
           <p className="text-2xl font-bold text-emerald-400 mt-2">{formatCurrency(data.stats.totalRevenue)}</p>
-          <p className="text-zinc-500 text-xs mt-1">{data.stats.successCount} transactions</p>
+          <p className="text-neutral-500 text-xs mt-1">{data.stats.successCount} transactions</p>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-5">
-          <p className="text-zinc-500 text-xs font-medium uppercase tracking-wider">This Month</p>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-5">
+          <p className="text-neutral-500 text-xs font-medium uppercase tracking-wider">This Month</p>
           <p className="text-2xl font-bold text-blue-400 mt-2">{formatCurrency(data.stats.monthlyRevenue)}</p>
           <div className="flex items-center mt-1 space-x-1">
             <span className={`text-xs font-medium ${data.stats.monthlyGrowth >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
               {data.stats.monthlyGrowth >= 0 ? '↑' : '↓'} {Math.abs(data.stats.monthlyGrowth)}%
             </span>
-            <span className="text-zinc-600 text-xs">vs last month</span>
+            <span className="text-neutral-600 text-xs">vs last month</span>
           </div>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-5">
-          <p className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Avg Transaction</p>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-5">
+          <p className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Avg Transaction</p>
           <p className="text-2xl font-bold text-purple-400 mt-2">{formatCurrency(data.stats.avgTransactionValue)}</p>
-          <p className="text-zinc-500 text-xs mt-1">per successful payment</p>
+          <p className="text-neutral-500 text-xs mt-1">per successful payment</p>
         </div>
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-5">
-          <p className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Success Rate</p>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-5">
+          <p className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Success Rate</p>
           <p className="text-2xl font-bold text-amber-400 mt-2">{data.stats.successRate}%</p>
-          <p className="text-zinc-500 text-xs mt-1">{data.stats.failedCount} failed</p>
+          <p className="text-neutral-500 text-xs mt-1">{data.stats.failedCount} failed</p>
         </div>
       </div>
 
       {/* Charts Row */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Revenue Trend Chart */}
-        <div className="lg:col-span-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="lg:col-span-2 bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h3 className="text-sm font-medium text-white">Revenue Trend</h3>
-              <p className="text-zinc-500 text-xs mt-1">Track your revenue over time</p>
+              <p className="text-neutral-500 text-xs mt-1">Track your revenue over time</p>
             </div>
-            <div className="flex bg-zinc-800 rounded-lg p-1">
+            <div className="flex bg-neutral-800 rounded-lg p-1">
               <button
                 onClick={() => setChartView('daily')}
                 className={`px-3 py-1 text-xs rounded-md transition-colors ${
-                  chartView === 'daily' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'
+                  chartView === 'daily' ? 'bg-neutral-700 text-white' : 'text-neutral-400 hover:text-white'
                 }`}
               >
                 Daily
@@ -236,7 +236,7 @@ export default function FinancePage() {
               <button
                 onClick={() => setChartView('weekly')}
                 className={`px-3 py-1 text-xs rounded-md transition-colors ${
-                  chartView === 'weekly' ? 'bg-zinc-700 text-white' : 'text-zinc-400 hover:text-white'
+                  chartView === 'weekly' ? 'bg-neutral-700 text-white' : 'text-neutral-400 hover:text-white'
                 }`}
               >
                 Weekly
@@ -275,10 +275,10 @@ export default function FinancePage() {
         </div>
 
         {/* Payment Status Pie Chart */}
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <div className="mb-6">
             <h3 className="text-sm font-medium text-white">Payment Status</h3>
-            <p className="text-zinc-500 text-xs mt-1">Distribution of payment outcomes</p>
+            <p className="text-neutral-500 text-xs mt-1">Distribution of payment outcomes</p>
           </div>
           <div className="h-48">
             <ResponsiveContainer width="100%" height="100%">
@@ -301,9 +301,9 @@ export default function FinancePage() {
                     if (active && payload && payload.length) {
                       const d = payload[0].payload;
                       return (
-                        <div className="bg-zinc-900 border border-zinc-700 rounded-lg p-2 shadow-xl">
+                        <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-2 shadow-xl">
                           <p className="text-white text-sm font-medium">{d.name}</p>
-                          <p className="text-zinc-400 text-xs">{d.value} transactions</p>
+                          <p className="text-neutral-400 text-xs">{d.value} transactions</p>
                         </div>
                       );
                     }
@@ -317,7 +317,7 @@ export default function FinancePage() {
             {data.charts.conversionData.map((item) => (
               <div key={item.name} className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.fill }} />
-                <span className="text-zinc-400 text-xs">{item.name}</span>
+                <span className="text-neutral-400 text-xs">{item.name}</span>
                 <span className="text-white text-xs font-medium">{item.value}</span>
               </div>
             ))}
@@ -326,10 +326,10 @@ export default function FinancePage() {
       </div>
 
       {/* Daily Transactions Chart */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <div className="mb-6">
           <h3 className="text-sm font-medium text-white">Daily Transactions</h3>
-          <p className="text-zinc-500 text-xs mt-1">Number of successful payments per day</p>
+          <p className="text-neutral-500 text-xs mt-1">Number of successful payments per day</p>
         </div>
         <div className="h-48">
           <ResponsiveContainer width="100%" height="100%">
@@ -350,11 +350,11 @@ export default function FinancePage() {
       </div>
 
       {/* Transactions Table */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
-        <div className="px-6 py-4 border-b border-zinc-800/50 flex justify-between items-center">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg overflow-hidden">
+        <div className="px-6 py-4 border-b border-neutral-800/50 flex justify-between items-center">
           <div>
             <h3 className="text-sm font-medium text-white">Recent Transactions</h3>
-            <p className="text-zinc-500 text-xs mt-1">{data.stats.totalTransactions} total transactions</p>
+            <p className="text-neutral-500 text-xs mt-1">{data.stats.totalTransactions} total transactions</p>
           </div>
           {data.stats.pendingCount > 0 && (
             <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-amber-400/10 text-amber-400">
@@ -365,29 +365,29 @@ export default function FinancePage() {
 
         {data.payments.length === 0 ? (
           <div className="p-12 text-center">
-            <svg className="w-12 h-12 text-zinc-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-12 h-12 text-neutral-700 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
             </svg>
-            <p className="text-zinc-500">No transactions yet</p>
-            <p className="text-zinc-600 text-sm mt-1">Payments will appear here when customers subscribe</p>
+            <p className="text-neutral-500">No transactions yet</p>
+            <p className="text-neutral-600 text-sm mt-1">Payments will appear here when customers subscribe</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-zinc-800/50">
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Customer</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Amount</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Status</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Date</th>
-                  <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-6 py-3">Transaction ID</th>
+                <tr className="border-b border-neutral-800/50">
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-6 py-3">Customer</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-6 py-3">Amount</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-6 py-3">Status</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-6 py-3">Date</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-6 py-3">Transaction ID</th>
                 </tr>
               </thead>
               <tbody>
                 {data.payments.slice(0, 10).map((payment) => {
                   const badge = getStatusBadge(payment.status);
                   return (
-                    <tr key={payment.merchantOid} className="border-b border-zinc-800/30 hover:bg-zinc-800/20 transition-colors">
+                    <tr key={payment.merchantOid} className="border-b border-neutral-800/30 hover:bg-neutral-800/20 transition-colors">
                       <td className="px-6 py-4">
                         <span className="font-mono text-sm text-white">{formatPhoneNumber(payment.phoneNumber)}</span>
                       </td>
@@ -403,16 +403,16 @@ export default function FinancePage() {
                           {badge.text}
                         </span>
                         {payment.failReason && (
-                          <p className="text-xs text-zinc-500 mt-1 max-w-xs truncate">{payment.failReason}</p>
+                          <p className="text-xs text-neutral-500 mt-1 max-w-xs truncate">{payment.failReason}</p>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-zinc-400 text-sm">
+                      <td className="px-6 py-4 text-neutral-400 text-sm">
                         {payment.paidAt ? formatDate(payment.paidAt) :
                          payment.failedAt ? formatDate(payment.failedAt) :
                          formatDate(payment.createdAt)}
                       </td>
                       <td className="px-6 py-4">
-                        <span className="font-mono text-xs text-zinc-500">{payment.merchantOid.slice(0, 16)}...</span>
+                        <span className="font-mono text-xs text-neutral-500">{payment.merchantOid.slice(0, 16)}...</span>
                       </td>
                     </tr>
                   );
@@ -420,8 +420,8 @@ export default function FinancePage() {
               </tbody>
             </table>
             {data.payments.length > 10 && (
-              <div className="px-6 py-4 border-t border-zinc-800/30 text-center">
-                <span className="text-zinc-500 text-sm">Showing 10 of {data.payments.length} transactions</span>
+              <div className="px-6 py-4 border-t border-neutral-800/30 text-center">
+                <span className="text-neutral-500 text-sm">Showing 10 of {data.payments.length} transactions</span>
               </div>
             )}
           </div>

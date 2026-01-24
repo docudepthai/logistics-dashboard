@@ -5,13 +5,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
 :root {
-  --background: #000000;
-  --foreground: #ffffff;
-  --muted: #71717a;
-  --border: #27272a;
-  --accent: #a1a1aa;
-  --card: #09090b;
-  --card-hover: #18181b;
+  --background: #0a0a0a;
+  --foreground: #fafafa;
+  --muted: #737373;
+  --border: #1f1f1f;
+  --accent: #a3a3a3;
+  --card: #141414;
+  --card-hover: #1a1a1a;
+  --sidebar: #0f0f0f;
 }
 
 * {
@@ -43,12 +44,12 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #27272a;
+  background: #262626;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #3f3f46;
+  background: #404040;
 }
 
 /* Monospace for numbers */
@@ -67,7 +68,7 @@ body {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, #ffffff 0%, #71717a 100%);
+  background: linear-gradient(135deg, #fafafa 0%, #737373 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -80,7 +81,7 @@ body {
 }
 
 .animated-border {
-  background: linear-gradient(90deg, #27272a, #3f3f46, #27272a);
+  background: linear-gradient(90deg, #1f1f1f, #333333, #1f1f1f);
   background-size: 200% 100%;
   animation: gradient-shift 3s ease infinite;
 }
@@ -130,7 +131,7 @@ body {
 
 .card-hover:hover {
   background: var(--card-hover);
-  border-color: #3f3f46;
+  border-color: #2a2a2a;
   transform: translateY(-2px);
 }
 

@@ -33,7 +33,7 @@ export const VEHICLE_TYPES: VehicleType[] = [
   {
     key: 'TIR',
     name: 'TIR',
-    patterns: ['tir', 'tirci', 'tırci', 'tır'],
+    patterns: ['tir', 'tirci', 'tırci', 'tır', '40 ayak', '45 ayak', '40ayak', '45ayak'],
     description: 'Large semi-trailer truck (international road transport)',
   },
   {

@@ -54,6 +54,11 @@ export interface ConversationContext {
     destination?: string;
     neighboringOrigins?: string[];
     neighboringDestinations?: string[];
+    // Carry over search filters
+    vehicleType?: string;
+    bodyType?: string;
+    isRefrigerated?: boolean;
+    cargoType?: string;
   };
 }
 

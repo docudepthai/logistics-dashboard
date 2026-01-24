@@ -36,22 +36,22 @@ function ConfirmModal({
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+      <div className="relative bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-zinc-800">
+        <div className="px-6 py-4 border-b border-neutral-800">
           <h3 className="text-lg font-semibold text-white">{title}</h3>
         </div>
 
         {/* Body */}
         <div className="px-6 py-4">
-          <p className="text-zinc-300 text-sm whitespace-pre-wrap">{message}</p>
+          <p className="text-neutral-300 text-sm whitespace-pre-wrap">{message}</p>
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 bg-zinc-800/50 flex items-center justify-end space-x-3">
+        <div className="px-6 py-4 bg-neutral-800/50 flex items-center justify-end space-x-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-zinc-300 bg-zinc-700 hover:bg-zinc-600 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm font-medium text-neutral-300 bg-neutral-700 hover:bg-neutral-600 rounded-lg transition-colors"
           >
             {cancelText}
           </button>
@@ -138,10 +138,10 @@ const severityConfig = {
     icon: '🟡',
   },
   low: {
-    bg: 'bg-zinc-500/10',
-    border: 'border-zinc-500/30',
-    text: 'text-zinc-400',
-    badge: 'bg-zinc-500',
+    bg: 'bg-neutral-500/10',
+    border: 'border-neutral-500/30',
+    text: 'text-neutral-400',
+    badge: 'bg-neutral-500',
     icon: '⚪',
   },
 };
@@ -279,14 +279,14 @@ export default function ProblemsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="text-zinc-500 text-center py-20">Failed to load</div>
+      <div className="text-neutral-500 text-center py-20">Failed to load</div>
     );
   }
 
@@ -311,7 +311,7 @@ export default function ProblemsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Problem Conversations</h1>
-          <p className="text-zinc-500 text-sm mt-1">Users who may have had issues with the bot</p>
+          <p className="text-neutral-500 text-sm mt-1">Users who may have had issues with the bot</p>
         </div>
         <div className="flex items-center space-x-3">
           <div className="flex items-center space-x-2 bg-red-500/10 border border-red-500/30 rounded-lg px-3 py-2">
@@ -322,9 +322,9 @@ export default function ProblemsPage() {
             <span className="text-amber-400 text-2xl font-bold">{data.stats.warning}</span>
             <span className="text-amber-400 text-xs">Warning</span>
           </div>
-          <div className="flex items-center space-x-2 bg-zinc-500/10 border border-zinc-500/30 rounded-lg px-3 py-2">
-            <span className="text-zinc-400 text-2xl font-bold">{data.stats.low}</span>
-            <span className="text-zinc-400 text-xs">Low</span>
+          <div className="flex items-center space-x-2 bg-neutral-500/10 border border-neutral-500/30 rounded-lg px-3 py-2">
+            <span className="text-neutral-400 text-2xl font-bold">{data.stats.low}</span>
+            <span className="text-neutral-400 text-xs">Low</span>
           </div>
         </div>
       </div>
@@ -338,7 +338,7 @@ export default function ProblemsPage() {
             className={`px-4 py-2 text-sm rounded-lg transition-colors ${
               filter === f
                 ? 'bg-white text-black font-medium'
-                : 'bg-zinc-800/50 text-zinc-400 hover:text-white hover:bg-zinc-700/50'
+                : 'bg-neutral-800/50 text-neutral-400 hover:text-white hover:bg-neutral-700/50'
             }`}
           >
             {f === 'all' ? `All (${data.stats.total})` : `${f.charAt(0).toUpperCase() + f.slice(1)} (${data.stats[f]})`}
@@ -349,7 +349,7 @@ export default function ProblemsPage() {
       {/* Conversations List */}
       <div className="space-y-3">
         {filtered.length === 0 ? (
-          <div className="text-center py-12 text-zinc-500">
+          <div className="text-center py-12 text-neutral-500">
             {filter === 'all' ? 'No problem conversations detected' : `No ${filter} conversations`}
           </div>
         ) : (
@@ -371,8 +371,8 @@ export default function ProblemsPage() {
                     <div>
                       <div className="flex items-center space-x-3">
                         <span className="text-white font-mono text-sm">{formatPhone(conv.userId)}</span>
-                        <span className="text-zinc-600 text-xs">{conv.messageCount} msgs</span>
-                        <span className="text-zinc-600 text-xs">{formatTime(conv.updatedAt)}</span>
+                        <span className="text-neutral-600 text-xs">{conv.messageCount} msgs</span>
+                        <span className="text-neutral-600 text-xs">{formatTime(conv.updatedAt)}</span>
                       </div>
                       <div className="flex items-center space-x-2 mt-1">
                         {conv.problems.map((p, i) => (
@@ -388,12 +388,12 @@ export default function ProblemsPage() {
                   </div>
                   <div className="flex items-center space-x-4">
                     {conv.context.lastOrigin && (
-                      <span className="text-zinc-500 text-xs">
+                      <span className="text-neutral-500 text-xs">
                         {conv.context.lastOrigin} → {conv.context.lastDestination || '?'}
                       </span>
                     )}
                     <svg
-                      className={`w-5 h-5 text-zinc-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+                      className={`w-5 h-5 text-neutral-500 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -404,34 +404,34 @@ export default function ProblemsPage() {
                 </button>
 
                 {isExpanded && (
-                  <div className="px-4 pb-4 border-t border-zinc-800/50 pt-3">
+                  <div className="px-4 pb-4 border-t border-neutral-800/50 pt-3">
                     <div className="grid grid-cols-2 gap-4 mb-4">
                       <div>
-                        <div className="text-zinc-500 text-xs mb-1">First message</div>
-                        <div className="text-white text-sm bg-zinc-800/50 rounded p-2">
+                        <div className="text-neutral-500 text-xs mb-1">First message</div>
+                        <div className="text-white text-sm bg-neutral-800/50 rounded p-2">
                           "{conv.firstMessage}"
                         </div>
                       </div>
                       <div>
-                        <div className="text-zinc-500 text-xs mb-1">Last bot response</div>
-                        <div className="text-zinc-300 text-sm bg-zinc-800/50 rounded p-2">
+                        <div className="text-neutral-500 text-xs mb-1">Last bot response</div>
+                        <div className="text-neutral-300 text-sm bg-neutral-800/50 rounded p-2">
                           "{conv.lastBotMessage}"
                         </div>
                       </div>
                     </div>
                     <div className="flex items-center space-x-6 text-xs">
                       <div>
-                        <span className="text-zinc-500">Duration:</span>
+                        <span className="text-neutral-500">Duration:</span>
                         <span className="text-white ml-1">{conv.durationMinutes} min</span>
                       </div>
                       <div>
-                        <span className="text-zinc-500">Searched:</span>
+                        <span className="text-neutral-500">Searched:</span>
                         <span className={conv.hasSearched ? 'text-emerald-400 ml-1' : 'text-red-400 ml-1'}>
                           {conv.hasSearched ? 'Yes' : 'No'}
                         </span>
                       </div>
                       <div>
-                        <span className="text-zinc-500">Found results:</span>
+                        <span className="text-neutral-500">Found results:</span>
                         <span className={conv.foundResults ? 'text-emerald-400 ml-1' : 'text-red-400 ml-1'}>
                           {conv.foundResults ? 'Yes' : 'No'}
                         </span>
@@ -451,7 +451,7 @@ export default function ProblemsPage() {
                       </a>
                       <a
                         href={`/conversations?search=${conv.userId}`}
-                        className="px-3 py-1.5 text-xs bg-zinc-700 text-zinc-300 rounded hover:bg-zinc-600 transition-colors"
+                        className="px-3 py-1.5 text-xs bg-neutral-700 text-neutral-300 rounded hover:bg-neutral-600 transition-colors"
                       >
                         View Full Conversation
                       </a>

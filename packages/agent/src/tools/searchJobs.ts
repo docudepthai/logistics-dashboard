@@ -128,15 +128,11 @@ export async function searchJobs(
   }
 
   if (params.vehicleType) {
-    // Search structured field OR raw_text (fallback for parser misses)
-    const vehicleVariants = getRawTextVariants(params.vehicleType);
-    conditions.push(`(
-      LOWER(vehicle_type) LIKE LOWER($${paramIndex})
-      OR LOWER(raw_text) LIKE LOWER($${paramIndex + 1})
-    )`);
+    // Only search structured vehicle_type field - raw_text causes false positives
+    // (e.g., "kamyonet olmaz" in a tir job would incorrectly match)
+    conditions.push(`LOWER(vehicle_type) LIKE LOWER($${paramIndex})`);
     values.push(`%${params.vehicleType}%`);
-    values.push(`%${vehicleVariants[0]}%`);
-    paramIndex += 2;
+    paramIndex++;
   }
 
   if (params.bodyType) {

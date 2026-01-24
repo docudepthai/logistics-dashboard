@@ -918,18 +918,22 @@ export class LogisticsAgent {
     // If we suggested a nearby search and user confirms, search in neighboring provinces
     const pendingNearby = conversation?.context?.pendingNearbySuggestion;
     if (isConfirmation && pendingNearby) {
-      console.log(`[Agent] Nearby search confirmed: origin=${pendingNearby.origin}, neighbors=${pendingNearby.neighboringOrigins?.join(',')}`);
+      console.log(`[Agent] Nearby search confirmed: origin=${pendingNearby.origin}, neighbors=${pendingNearby.neighboringOrigins?.join(',')}, vehicleType=${pendingNearby.vehicleType || 'any'}`);
 
       // Search in neighboring origins (if available)
       const allJobs: JobResult[] = [];
       const searchedProvinces: string[] = [];
 
-      // Search in each neighboring origin
+      // Search in each neighboring origin (with carried-over filters)
       if (pendingNearby.neighboringOrigins && pendingNearby.neighboringOrigins.length > 0) {
         for (const neighborOrigin of pendingNearby.neighboringOrigins) {
           const params: SearchJobsParams = {
             origin: neighborOrigin,
             destination: pendingNearby.destination || undefined,
+            vehicleType: pendingNearby.vehicleType,
+            bodyType: pendingNearby.bodyType,
+            isRefrigerated: pendingNearby.isRefrigerated,
+            cargoType: pendingNearby.cargoType,
             limit: 5, // Limit per province
           };
           const result = await searchJobs(this.sql, params);
@@ -940,12 +944,16 @@ export class LogisticsAgent {
         }
       }
 
-      // Also search neighboring destinations if origin was specified
+      // Also search neighboring destinations if origin was specified (with carried-over filters)
       if (pendingNearby.origin && pendingNearby.neighboringDestinations && pendingNearby.neighboringDestinations.length > 0) {
         for (const neighborDest of pendingNearby.neighboringDestinations) {
           const params: SearchJobsParams = {
             origin: pendingNearby.origin,
             destination: neighborDest,
+            vehicleType: pendingNearby.vehicleType,
+            bodyType: pendingNearby.bodyType,
+            isRefrigerated: pendingNearby.isRefrigerated,
+            cargoType: pendingNearby.cargoType,
             limit: 5, // Limit per province
           };
           const result = await searchJobs(this.sql, params);
@@ -1977,8 +1985,13 @@ export class LogisticsAgent {
               destination: params.destination,
               neighboringOrigins: originsToSearch,
               neighboringDestinations: destsToSearch,
+              // Carry over search filters for nearby search
+              vehicleType: params.vehicleType,
+              bodyType: params.bodyType,
+              isRefrigerated: params.isRefrigerated,
+              cargoType: params.cargoType,
             };
-            console.log(`[Agent] Suggesting nearby search: origin neighbors=${originsToSearch.join(',')}, dest neighbors=${destsToSearch.join(',')}`);
+            console.log(`[Agent] Suggesting nearby search: origin neighbors=${originsToSearch.join(',')}, dest neighbors=${destsToSearch.join(',')}, vehicleType=${params.vehicleType || 'any'}`);
           }
         }
       }

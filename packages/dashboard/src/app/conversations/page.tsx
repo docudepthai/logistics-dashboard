@@ -131,7 +131,7 @@ export default function ConversationsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-5 h-5 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -142,7 +142,7 @@ export default function ConversationsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
-          <p className="text-zinc-500 text-sm mt-1">
+          <p className="text-neutral-500 text-sm mt-1">
             {searchQuery ? `${filteredConversations.length} of ${conversations.length} conversations` : `${conversations.length} active conversations`}
             {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
           </p>
@@ -153,15 +153,15 @@ export default function ConversationsPage() {
             placeholder="Search by phone..."
             value={searchQuery}
             onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
-            className="w-64 px-3 py-1.5 pl-9 text-sm bg-zinc-800/50 border border-zinc-700/50 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-600"
+            className="w-64 px-3 py-1.5 pl-9 text-sm bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-600"
           />
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
           </svg>
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -174,7 +174,7 @@ export default function ConversationsPage() {
       {/* Conversations List */}
       {filteredConversations.length === 0 ? (
         <div className="text-center py-20">
-          <p className="text-zinc-500">
+          <p className="text-neutral-500">
             {searchQuery ? `No conversations found for "${searchQuery}"` : 'No conversations yet'}
           </p>
         </div>
@@ -184,15 +184,15 @@ export default function ConversationsPage() {
             const inCallList = isInCallList(convo.userId);
 
             return (
-              <div key={convo.userId} className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
+              <div key={convo.userId} className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg overflow-hidden">
                 {/* Header */}
                 <div className="px-6 py-4 flex items-center justify-between">
                   <button
                     onClick={() => setExpanded(expanded === convo.userId ? null : convo.userId)}
                     className="flex items-center space-x-4 flex-1 hover:opacity-80 transition-opacity"
                   >
-                    <div className="w-10 h-10 bg-zinc-800 rounded-full flex items-center justify-center">
-                      <span className="text-zinc-400 font-mono text-sm">{convo.userId.slice(-2)}</span>
+                    <div className="w-10 h-10 bg-neutral-800 rounded-full flex items-center justify-center">
+                      <span className="text-neutral-400 font-mono text-sm">{convo.userId.slice(-2)}</span>
                     </div>
                     <div className="text-left">
                       <Link
@@ -202,7 +202,7 @@ export default function ConversationsPage() {
                       >
                         +{convo.userId}
                       </Link>
-                      <p className="text-zinc-500 text-xs">
+                      <p className="text-neutral-500 text-xs">
                         {convo.messageCount} messages · {formatTimeAgo(convo.updatedAt)}
                       </p>
                     </div>
@@ -217,21 +217,21 @@ export default function ConversationsPage() {
                     ) : (
                       <div className="relative">
                         {showReasonDropdown === convo.userId ? (
-                          <div className="absolute right-0 top-full mt-1 z-50 bg-zinc-800 border border-zinc-700 rounded-lg shadow-xl p-2 min-w-[280px]">
-                            <div className="text-xs text-zinc-400 px-2 py-1 mb-1">İletişim nedeni seçin:</div>
+                          <div className="absolute right-0 top-full mt-1 z-50 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl p-2 min-w-[280px]">
+                            <div className="text-xs text-neutral-400 px-2 py-1 mb-1">İletişim nedeni seçin:</div>
                             {CALL_REASONS.map((reason) => (
                               <button
                                 key={reason}
                                 onClick={() => addToCallList(convo.userId, reason)}
                                 disabled={addingToCallList === convo.userId}
-                                className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-zinc-700 rounded transition-colors"
+                                className="w-full text-left px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-700 rounded transition-colors"
                               >
                                 {reason}
                               </button>
                             ))}
                             <button
                               onClick={() => setShowReasonDropdown(null)}
-                              className="w-full text-left px-3 py-2 text-sm text-zinc-500 hover:bg-zinc-700 rounded mt-1 border-t border-zinc-700"
+                              className="w-full text-left px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-700 rounded mt-1 border-t border-neutral-700"
                             >
                               İptal
                             </button>
@@ -251,7 +251,7 @@ export default function ConversationsPage() {
                       onClick={() => setExpanded(expanded === convo.userId ? null : convo.userId)}
                     >
                       <svg
-                        className={`w-5 h-5 text-zinc-500 transition-transform ${expanded === convo.userId ? 'rotate-180' : ''}`}
+                        className={`w-5 h-5 text-neutral-500 transition-transform ${expanded === convo.userId ? 'rotate-180' : ''}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -264,17 +264,17 @@ export default function ConversationsPage() {
 
                 {/* Messages */}
                 {expanded === convo.userId && (
-                  <div className="px-6 py-4 border-t border-zinc-800/50 bg-black/20 max-h-96 overflow-y-auto">
+                  <div className="px-6 py-4 border-t border-neutral-800/50 bg-black/20 max-h-96 overflow-y-auto">
                     <div className="space-y-3">
                       {convo.messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                           <div className={`max-w-[75%] px-4 py-2.5 rounded-lg ${
                             msg.role === 'user'
                               ? 'bg-white text-black'
-                              : 'bg-zinc-800 text-zinc-200'
+                              : 'bg-neutral-800 text-neutral-200'
                           }`}>
                             <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                            <p className={`text-xs mt-1.5 ${msg.role === 'user' ? 'text-zinc-500' : 'text-zinc-500'}`}>
+                            <p className={`text-xs mt-1.5 ${msg.role === 'user' ? 'text-neutral-500' : 'text-neutral-500'}`}>
                               {new Date(msg.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
                             </p>
                           </div>
@@ -295,14 +295,14 @@ export default function ConversationsPage() {
           <button
             onClick={() => setCurrentPage(1)}
             disabled={currentPage === 1}
-            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-1.5 text-sm text-neutral-400 hover:text-white bg-neutral-800/50 hover:bg-neutral-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             First
           </button>
           <button
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-1.5 text-sm text-neutral-400 hover:text-white bg-neutral-800/50 hover:bg-neutral-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             Prev
           </button>
@@ -321,13 +321,13 @@ export default function ConversationsPage() {
                 const showEllipsisBefore = idx > 0 && page - arr[idx - 1] > 1;
                 return (
                   <span key={page} className="flex items-center">
-                    {showEllipsisBefore && <span className="px-2 text-zinc-600">...</span>}
+                    {showEllipsisBefore && <span className="px-2 text-neutral-600">...</span>}
                     <button
                       onClick={() => setCurrentPage(page)}
                       className={`w-8 h-8 text-sm rounded transition-colors ${
                         currentPage === page
                           ? 'bg-white text-black font-medium'
-                          : 'text-zinc-400 hover:text-white hover:bg-zinc-700/50'
+                          : 'text-neutral-400 hover:text-white hover:bg-neutral-700/50'
                       }`}
                     >
                       {page}
@@ -340,14 +340,14 @@ export default function ConversationsPage() {
           <button
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-1.5 text-sm text-neutral-400 hover:text-white bg-neutral-800/50 hover:bg-neutral-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             Next
           </button>
           <button
             onClick={() => setCurrentPage(totalPages)}
             disabled={currentPage === totalPages}
-            className="px-3 py-1.5 text-sm text-zinc-400 hover:text-white bg-zinc-800/50 hover:bg-zinc-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+            className="px-3 py-1.5 text-sm text-neutral-400 hover:text-white bg-neutral-800/50 hover:bg-neutral-700/50 rounded disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
           >
             Last
           </button>

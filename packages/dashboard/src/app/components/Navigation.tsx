@@ -20,7 +20,7 @@ export default function Navigation() {
   const { data: session } = useSession();
 
   return (
-    <nav className="border-b border-zinc-800/50">
+    <nav className="border-b border-neutral-800/50">
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           {/* Logo */}
@@ -43,8 +43,8 @@ export default function Navigation() {
                   href={tab.href}
                   className={`px-4 py-1.5 text-sm font-medium transition-all duration-200 rounded ${
                     isActive
-                      ? 'text-white bg-zinc-800'
-                      : 'text-zinc-500 hover:text-zinc-300'
+                      ? 'text-white bg-neutral-800'
+                      : 'text-neutral-500 hover:text-neutral-300'
                   }`}
                 >
                   {tab.name}
@@ -57,15 +57,15 @@ export default function Navigation() {
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
               <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full pulse-glow" />
-              <span className="text-zinc-500 text-xs font-medium">Live</span>
+              <span className="text-neutral-500 text-xs font-medium">Live</span>
             </div>
 
             {session?.user && (
-              <div className="flex items-center space-x-3 pl-3 border-l border-zinc-800">
-                <span className="text-zinc-400 text-sm">{session.user.name}</span>
+              <div className="flex items-center space-x-3 pl-3 border-l border-neutral-800">
+                <span className="text-neutral-400 text-sm">{session.user.name}</span>
                 <button
                   onClick={() => signOut({ callbackUrl: '/login' })}
-                  className="text-zinc-500 hover:text-white text-xs font-medium transition-colors"
+                  className="text-neutral-500 hover:text-white text-xs font-medium transition-colors"
                 >
                   Logout
                 </button>

@@ -92,7 +92,7 @@ export default function MapPage() {
     if (!tooltip) {
       tooltip = document.createElement('div');
       tooltip.id = 'map-tooltip';
-      tooltip.className = 'absolute pointer-events-none bg-zinc-900 border border-zinc-700 rounded-lg px-3 py-2 shadow-lg z-20 opacity-0 transition-opacity';
+      tooltip.className = 'absolute pointer-events-none bg-neutral-900 border border-neutral-700 rounded-lg px-3 py-2 shadow-lg z-20 opacity-0 transition-opacity';
       tooltip.style.transform = 'translate(-50%, -120%)';
       svgContainerRef.current.appendChild(tooltip);
     }
@@ -133,7 +133,7 @@ export default function MapPage() {
           tooltip.style.top = `${yPercent * svgRect.height}px`;
           tooltip.innerHTML = `
             <div class="text-white text-sm font-medium">${title || provinceName}</div>
-            <div class="text-zinc-400 text-xs">${activity ? `${activity.origins} origins · ${activity.destinations} destinations` : 'No activity'}</div>
+            <div class="text-neutral-400 text-xs">${activity ? `${activity.origins} origins · ${activity.destinations} destinations` : 'No activity'}</div>
           `;
           tooltip.style.opacity = '1';
         }
@@ -339,12 +339,12 @@ export default function MapPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-5 h-5 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
-  if (!data) return <div className="text-zinc-500 text-center py-20">Failed to load</div>;
+  if (!data) return <div className="text-neutral-500 text-center py-20">Failed to load</div>;
 
   return (
     <div className="space-y-6">
@@ -352,22 +352,22 @@ export default function MapPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Routes</h1>
-          <p className="text-zinc-500 text-sm mt-1">
+          <p className="text-neutral-500 text-sm mt-1">
             {data.routes.length} active routes · {data.provinces.filter(p => p.total > 0).length} cities
           </p>
         </div>
         {selectedRoute && (
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-4 py-2">
+          <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg px-4 py-2">
             <span className="text-white">{selectedRoute.origin}</span>
-            <span className="text-zinc-500 mx-2">→</span>
-            <span className="text-zinc-300">{selectedRoute.destination}</span>
-            <span className="text-zinc-500 ml-3 font-mono">{selectedRoute.count} jobs</span>
+            <span className="text-neutral-500 mx-2">→</span>
+            <span className="text-neutral-300">{selectedRoute.destination}</span>
+            <span className="text-neutral-500 ml-3 font-mono">{selectedRoute.count} jobs</span>
           </div>
         )}
       </div>
 
       {/* Map Container */}
-      <div className="bg-zinc-950 border border-zinc-800/50 rounded-lg overflow-hidden p-4">
+      <div className="bg-neutral-950 border border-neutral-800/50 rounded-lg overflow-hidden p-4">
         <div className="relative" style={{ background: '#0a0a0a' }}>
           {/* Memoized SVG container - won't re-render on state changes */}
           <SvgContainer svgContent={svgContent} svgRef={svgContainerRef} />
@@ -376,8 +376,8 @@ export default function MapPage() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-4 gap-4 items-start">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4 self-start">
-          <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Top Origins</h3>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4 self-start">
+          <h3 className="text-xs text-neutral-500 uppercase tracking-wider mb-3">Top Origins</h3>
           <div className="space-y-2">
             {data.provinces
               .filter(p => p.origins > 0)
@@ -385,15 +385,15 @@ export default function MapPage() {
               .slice(0, 5)
               .map((p) => (
                 <div key={p.name} className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">{p.name}</span>
+                  <span className="text-neutral-400 text-sm">{p.name}</span>
                   <span className="text-white font-mono text-sm">{p.origins}</span>
                 </div>
               ))}
           </div>
         </div>
 
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4 self-start">
-          <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Top Destinations</h3>
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4 self-start">
+          <h3 className="text-xs text-neutral-500 uppercase tracking-wider mb-3">Top Destinations</h3>
           <div className="space-y-2">
             {data.provinces
               .filter(p => p.destinations > 0)
@@ -401,22 +401,22 @@ export default function MapPage() {
               .slice(0, 5)
               .map((p) => (
                 <div key={p.name} className="flex items-center justify-between">
-                  <span className="text-zinc-400 text-sm">{p.name}</span>
+                  <span className="text-neutral-400 text-sm">{p.name}</span>
                   <span className="text-white font-mono text-sm">{p.destinations}</span>
                 </div>
               ))}
           </div>
         </div>
 
-        <div className="col-span-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-4 flex flex-col self-start overflow-hidden">
-          <h3 className="text-xs text-zinc-500 uppercase tracking-wider mb-3 px-1">Busiest Routes</h3>
+        <div className="col-span-2 bg-neutral-900/50 border border-neutral-800/50 rounded-lg px-3 py-4 flex flex-col self-start overflow-hidden">
+          <h3 className="text-xs text-neutral-500 uppercase tracking-wider mb-3 px-1">Busiest Routes</h3>
           <div className="space-y-1 flex-1 overflow-y-auto overflow-x-hidden" style={{ maxHeight: showAllRoutes ? '300px' : 'none' }}>
             {data.routes.slice(0, showAllRoutes ? 50 : 5).map((r, i) => (
               <div
                 key={i}
-                className={`flex items-center justify-between cursor-pointer hover:bg-zinc-800/50 px-1 py-1 rounded transition-colors ${
+                className={`flex items-center justify-between cursor-pointer hover:bg-neutral-800/50 px-1 py-1 rounded transition-colors ${
                   selectedRoute?.origin === r.origin && selectedRoute?.destination === r.destination
-                    ? 'bg-zinc-800 ring-1 ring-zinc-600'
+                    ? 'bg-neutral-800 ring-1 ring-neutral-600'
                     : ''
                 }`}
                 onClick={() => {
@@ -427,9 +427,9 @@ export default function MapPage() {
                 }}
               >
                 <div className="flex items-center space-x-2 text-sm min-w-0">
-                  <span className="text-zinc-400 truncate">{r.origin}</span>
-                  <span className="text-zinc-600 flex-shrink-0">→</span>
-                  <span className="text-zinc-500 truncate">{r.destination}</span>
+                  <span className="text-neutral-400 truncate">{r.origin}</span>
+                  <span className="text-neutral-600 flex-shrink-0">→</span>
+                  <span className="text-neutral-500 truncate">{r.destination}</span>
                 </div>
                 <span className="text-white font-mono text-sm ml-2 flex-shrink-0">{r.count}</span>
               </div>
@@ -438,7 +438,7 @@ export default function MapPage() {
           {data.routes.length > 5 && (
             <button
               onClick={() => setShowAllRoutes(!showAllRoutes)}
-              className="mt-3 text-xs text-zinc-400 hover:text-white transition-colors text-center py-1 border-t border-zinc-800"
+              className="mt-3 text-xs text-neutral-400 hover:text-white transition-colors text-center py-1 border-t border-neutral-800"
             >
               {showAllRoutes ? 'Show Less' : `Show All (${data.routes.length})`}
             </button>
@@ -446,7 +446,7 @@ export default function MapPage() {
         </div>
       </div>
 
-      <p className="text-center text-zinc-600 text-xs">
+      <p className="text-center text-neutral-600 text-xs">
         Click routes to highlight · Hover provinces for details
       </p>
     </div>

@@ -238,7 +238,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "9d149a62a6f2ab74520b5c5d7d87f3236ed259a5f56158ebd45a87152dc60731.zip"
+     "S3Key": "a57561a08cdeb4041fdd5f78bc5d5441f9fda646974b8998e0dd1f6131bf0e71.zip"
     },
     "Environment": {
      "Variables": {
@@ -272,7 +272,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/WebhookHandler/Resource",
-    "aws:asset:path": "asset.9d149a62a6f2ab74520b5c5d7d87f3236ed259a5f56158ebd45a87152dc60731",
+    "aws:asset:path": "asset.a57561a08cdeb4041fdd5f78bc5d5441f9fda646974b8998e0dd1f6131bf0e71",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -349,6 +349,29 @@
          "Arn"
         ]
        }
+      },
+      {
+       "Action": [
+        "dynamodb:BatchGetItem",
+        "dynamodb:BatchWriteItem",
+        "dynamodb:ConditionCheckItem",
+        "dynamodb:DeleteItem",
+        "dynamodb:DescribeTable",
+        "dynamodb:GetItem",
+        "dynamodb:GetRecords",
+        "dynamodb:GetShardIterator",
+        "dynamodb:PutItem",
+        "dynamodb:Query",
+        "dynamodb:Scan",
+        "dynamodb:UpdateItem"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::GetAtt": [
+         "ConversationsTableCD91EB96",
+         "Arn"
+        ]
+       }
       }
      ],
      "Version": "2012-10-17"
@@ -369,11 +392,12 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "9cf35f755fcb0b11a225fb4123755bdf0ce05447bf008ee9965c6ff64ef8f6b7.zip"
+     "S3Key": "849903bbb7c5803ad38252f33ac7290768d66e574d6385bb4088f083e22fb9ee.zip"
     },
     "Environment": {
      "Variables": {
-      "NODE_OPTIONS": "--enable-source-maps"
+      "NODE_OPTIONS": "--enable-source-maps",
+      "CONVERSATIONS_TABLE": "turkish-logistics-conversations"
      }
     },
     "FunctionName": "turkish-logistics-processor",
@@ -397,7 +421,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/ProcessorHandler/Resource",
-    "aws:asset:path": "asset.9cf35f755fcb0b11a225fb4123755bdf0ce05447bf008ee9965c6ff64ef8f6b7",
+    "aws:asset:path": "asset.849903bbb7c5803ad38252f33ac7290768d66e574d6385bb4088f083e22fb9ee",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -595,7 +619,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "495f3423850e61c42411c56272270135010e03de2255f3bda1d18fd4d85c09d1.zip"
+     "S3Key": "f3eb24ab738174706f41a906a5ed399303120287b9dd47faf124bd32b4709e65.zip"
     },
     "Environment": {
      "Variables": {
@@ -627,7 +651,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/QueryHandler/Resource",
-    "aws:asset:path": "asset.495f3423850e61c42411c56272270135010e03de2255f3bda1d18fd4d85c09d1",
+    "aws:asset:path": "asset.f3eb24ab738174706f41a906a5ed399303120287b9dd47faf124bd32b4709e65",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }

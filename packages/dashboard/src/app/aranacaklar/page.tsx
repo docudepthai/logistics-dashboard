@@ -167,21 +167,21 @@ export default function AranacaklarPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-semibold text-white">Aranacaklar</h1>
-          <p className="text-zinc-500 text-sm mt-1">Aranması gereken kullanıcılar listesi</p>
+          <p className="text-neutral-500 text-sm mt-1">Aranması gereken kullanıcılar listesi</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-            <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
+          <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
             <div className="text-2xl font-semibold text-white mt-1">{items.length}</div>
           </div>
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-            <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Aranacak</div>
+          <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Aranacak</div>
             <div className="text-2xl font-semibold text-amber-400 mt-1">{uncalledCount}</div>
           </div>
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-4">
-            <div className="text-zinc-500 text-xs font-medium uppercase tracking-wider">Arandı</div>
+          <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
+            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Arandı</div>
             <div className="text-2xl font-semibold text-emerald-400 mt-1">{calledCount}</div>
           </div>
         </div>
@@ -193,39 +193,39 @@ export default function AranacaklarPage() {
               type="checkbox"
               checked={showCalled}
               onChange={(e) => setShowCalled(e.target.checked)}
-              className="w-4 h-4 rounded border-zinc-600 bg-zinc-800 text-emerald-500"
+              className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500"
             />
-            <span className="text-sm text-zinc-400">Aranmış olanları da göster</span>
+            <span className="text-sm text-neutral-400">Aranmış olanları da göster</span>
           </label>
         </div>
 
         {loading ? (
           <div className="flex items-center justify-center h-64">
-            <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
           </div>
         ) : error ? (
           <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 text-red-400">
             {error}
           </div>
         ) : (
-          <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg overflow-hidden">
+          <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-zinc-800/50">
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12">Arandı</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Arama Nedeni</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Notlar</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Aranma Tarihi</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
-                    <th className="text-left text-xs font-medium text-zinc-500 uppercase tracking-wider px-4 py-3 w-12"></th>
+                  <tr className="border-b border-neutral-800/50">
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12">Arandı</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Telefon</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Arama Nedeni</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Notlar</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Aranma Tarihi</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12"></th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredItems.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-zinc-500">
+                      <td colSpan={7} className="px-4 py-8 text-center text-neutral-500">
                         {showCalled ? 'Liste boş' : 'Aranacak kimse yok'}
                       </td>
                     </tr>
@@ -233,7 +233,7 @@ export default function AranacaklarPage() {
                     filteredItems.map((item) => (
                       <tr
                         key={item.phoneNumber}
-                        className={`border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors ${
+                        className={`border-b border-neutral-800/30 hover:bg-neutral-800/30 transition-colors ${
                           item.calledAt ? 'opacity-60' : ''
                         }`}
                       >
@@ -244,7 +244,7 @@ export default function AranacaklarPage() {
                             checked={!!item.calledAt}
                             onChange={() => toggleCalled(item.phoneNumber, item.calledAt)}
                             disabled={updatingPhone === item.phoneNumber}
-                            className="w-5 h-5 rounded border-zinc-600 bg-zinc-800 text-emerald-500 cursor-pointer"
+                            className="w-5 h-5 rounded border-neutral-600 bg-neutral-800 text-emerald-500 cursor-pointer"
                           />
                         </td>
 
@@ -270,7 +270,7 @@ export default function AranacaklarPage() {
                               onChange={(e) => updateReason(item.phoneNumber, e.target.value)}
                               autoFocus
                               onBlur={() => setEditingReason(null)}
-                              className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white w-full"
+                              className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white w-full"
                             >
                               <option value="">Seçiniz...</option>
                               {CALL_REASONS.map((reason) => (
@@ -285,7 +285,7 @@ export default function AranacaklarPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.reason || (
-                                <span className="text-zinc-500 italic">Neden seç...</span>
+                                <span className="text-neutral-500 italic">Neden seç...</span>
                               )}
                             </button>
                           )}
@@ -307,7 +307,7 @@ export default function AranacaklarPage() {
                                   }
                                 }}
                                 autoFocus
-                                className="bg-zinc-800 border border-zinc-700 rounded px-2 py-1 text-sm text-white flex-1"
+                                className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white flex-1"
                                 placeholder="Not ekle..."
                               />
                               <button
@@ -326,23 +326,23 @@ export default function AranacaklarPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.notes || (
-                                <span className="text-zinc-500 italic">Not ekle...</span>
+                                <span className="text-neutral-500 italic">Not ekle...</span>
                               )}
                             </button>
                           )}
                         </td>
 
                         {/* Called At */}
-                        <td className="px-4 py-3 text-zinc-400 text-sm">
+                        <td className="px-4 py-3 text-neutral-400 text-sm">
                           {item.calledAt ? (
                             <span className="text-emerald-400">{formatDate(item.calledAt)}</span>
                           ) : (
-                            <span className="text-zinc-600">-</span>
+                            <span className="text-neutral-600">-</span>
                           )}
                         </td>
 
                         {/* Added At */}
-                        <td className="px-4 py-3 text-zinc-500 text-sm">
+                        <td className="px-4 py-3 text-neutral-500 text-sm">
                           {formatDate(item.addedAt)}
                         </td>
 

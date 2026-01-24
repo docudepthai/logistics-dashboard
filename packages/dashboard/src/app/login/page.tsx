@@ -41,12 +41,12 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-semibold text-white tracking-tight">Logistics Dashboard</h1>
-          <p className="text-zinc-500 text-sm mt-2">Sign in to continue</p>
+          <p className="text-neutral-500 text-sm mt-2">Sign in to continue</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="username" className="block text-xs text-zinc-500 uppercase tracking-wider mb-2">
+            <label htmlFor="username" className="block text-xs text-neutral-500 uppercase tracking-wider mb-2">
               Username
             </label>
             <input
@@ -54,7 +54,7 @@ export default function LoginPage() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
               placeholder="Enter username"
               required
               autoComplete="username"
@@ -62,7 +62,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-xs text-zinc-500 uppercase tracking-wider mb-2">
+            <label htmlFor="password" className="block text-xs text-neutral-500 uppercase tracking-wider mb-2">
               Password
             </label>
             <input
@@ -70,7 +70,7 @@ export default function LoginPage() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-800 rounded-lg px-4 py-3 text-white placeholder-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+              className="w-full bg-neutral-900 border border-neutral-800 rounded-lg px-4 py-3 text-white placeholder-neutral-600 focus:outline-none focus:border-neutral-600 transition-colors"
               placeholder="Enter password"
               required
               autoComplete="current-password"
@@ -86,7 +86,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-white text-black font-medium rounded-lg px-4 py-3 hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-white text-black font-medium rounded-lg px-4 py-3 hover:bg-neutral-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -99,7 +99,7 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-zinc-600 text-xs mt-8">
+        <p className="text-center text-neutral-600 text-xs mt-8">
           Turkish Logistics Monitoring System
         </p>
       </div>

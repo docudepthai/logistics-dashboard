@@ -45,12 +45,12 @@ export default function HealthPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-5 h-5 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
-  if (!health) return <div className="text-zinc-500 text-center py-20">Failed to load</div>;
+  if (!health) return <div className="text-neutral-500 text-center py-20">Failed to load</div>;
 
   const statusColors = {
     operational: 'bg-emerald-400',
@@ -70,11 +70,11 @@ export default function HealthPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Health</h1>
-          <p className="text-zinc-500 text-sm mt-1">Service status and metrics</p>
+          <p className="text-neutral-500 text-sm mt-1">Service status and metrics</p>
         </div>
-        <div className="flex items-center space-x-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2">
+        <div className="flex items-center space-x-2 bg-neutral-900/50 border border-neutral-800/50 rounded-lg px-3 py-2">
           <div className={`w-2 h-2 rounded-full ${statusColors[health.status as keyof typeof statusColors] || statusColors.down}`} />
-          <span className="text-zinc-400 text-sm">
+          <span className="text-neutral-400 text-sm">
             {health.status === 'operational' ? 'All systems operational' : 'Issues detected'}
           </span>
         </div>
@@ -83,11 +83,11 @@ export default function HealthPage() {
       {/* Services Grid */}
       <div className="grid grid-cols-4 gap-4">
         {health.services.map((service) => (
-          <div key={service.name} className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6 card-hover">
+          <div key={service.name} className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6 card-hover">
             <div className="flex items-start justify-between">
               <div>
                 <h3 className="text-white font-medium">{service.name}</h3>
-                <p className="text-zinc-500 text-sm mt-1">{service.details}</p>
+                <p className="text-neutral-500 text-sm mt-1">{service.details}</p>
               </div>
               <div className="flex items-center space-x-2">
                 <div className={`w-2 h-2 rounded-full ${statusColors[service.status]} pulse-glow`} />
@@ -101,20 +101,20 @@ export default function HealthPage() {
             </div>
 
             {service.latency && (
-              <div className="mt-4 pt-4 border-t border-zinc-800/50">
+              <div className="mt-4 pt-4 border-t border-neutral-800/50">
                 <div className="flex items-center justify-between">
-                  <span className="text-zinc-500 text-xs">Latency</span>
+                  <span className="text-neutral-500 text-xs">Latency</span>
                   <span className="text-white font-mono text-sm">{service.latency}ms</span>
                 </div>
               </div>
             )}
 
             {service.metrics && (
-              <div className="mt-4 pt-4 border-t border-zinc-800/50 space-y-2">
+              <div className="mt-4 pt-4 border-t border-neutral-800/50 space-y-2">
                 {Object.entries(service.metrics).slice(0, 3).map(([key, value]) => (
                   <div key={key} className="flex items-center justify-between">
-                    <span className="text-zinc-500 text-xs capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
-                    <span className="text-zinc-300 font-mono text-sm">{value.toLocaleString()}</span>
+                    <span className="text-neutral-500 text-xs capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
+                    <span className="text-neutral-300 font-mono text-sm">{value.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
@@ -131,16 +131,16 @@ export default function HealthPage() {
           { label: 'Jobs Processed', value: health.processing.jobsProcessed24h.toLocaleString(), sub: 'last 24 hours' },
           { label: 'Errors', value: health.processing.errorsLast24h.toString(), sub: 'last 24 hours' },
         ].map((stat) => (
-          <div key={stat.label} className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-5">
-            <p className="text-zinc-500 text-xs uppercase tracking-wider">{stat.label}</p>
+          <div key={stat.label} className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-5">
+            <p className="text-neutral-500 text-xs uppercase tracking-wider">{stat.label}</p>
             <p className="text-2xl font-semibold text-white mt-2 font-mono">{stat.value}</p>
-            <p className="text-zinc-600 text-xs mt-1">{stat.sub}</p>
+            <p className="text-neutral-600 text-xs mt-1">{stat.sub}</p>
           </div>
         ))}
       </div>
 
       {/* Activity by Source */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-6">Recent Activity by Source</h2>
         <div className="space-y-3">
           {health.recentActivity.slice(0, 8).map((activity) => {
@@ -150,10 +150,10 @@ export default function HealthPage() {
             const kamyoonPct = total > 0 ? (activity.kamyoon / total) * 100 : 34;
             return (
               <div key={activity.hour} className="flex items-center space-x-4">
-                <span className="text-zinc-500 text-xs font-mono w-12">{activity.hour}</span>
-                <div className="flex-1 h-2 bg-zinc-800 rounded-full overflow-hidden flex">
+                <span className="text-neutral-500 text-xs font-mono w-12">{activity.hour}</span>
+                <div className="flex-1 h-2 bg-neutral-800 rounded-full overflow-hidden flex">
                   <div
-                    className="h-full bg-zinc-400"
+                    className="h-full bg-neutral-400"
                     style={{ width: `${evolutionPct}%` }}
                     title={`Evolution: ${activity.evolution}`}
                   />
@@ -163,39 +163,39 @@ export default function HealthPage() {
                     title={`Evolution 2: ${activity.evolution2}`}
                   />
                   <div
-                    className="h-full bg-zinc-600"
+                    className="h-full bg-neutral-600"
                     style={{ width: `${kamyoonPct}%` }}
                     title={`Kamyoon: ${activity.kamyoon}`}
                   />
                 </div>
                 <div className="flex items-center space-x-3 text-xs">
-                  <span className="text-zinc-400 font-mono">{activity.evolution}</span>
+                  <span className="text-neutral-400 font-mono">{activity.evolution}</span>
                   <span className="text-blue-400 font-mono">{activity.evolution2}</span>
-                  <span className="text-zinc-600 font-mono">{activity.kamyoon}</span>
+                  <span className="text-neutral-600 font-mono">{activity.kamyoon}</span>
                 </div>
               </div>
             );
           })}
         </div>
-        <div className="flex items-center space-x-6 mt-4 pt-4 border-t border-zinc-800/50">
+        <div className="flex items-center space-x-6 mt-4 pt-4 border-t border-neutral-800/50">
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-2 bg-zinc-400 rounded-sm" />
-            <span className="text-zinc-500 text-xs">Evolution</span>
+            <div className="w-3 h-2 bg-neutral-400 rounded-sm" />
+            <span className="text-neutral-500 text-xs">Evolution</span>
           </div>
           <div className="flex items-center space-x-2">
             <div className="w-3 h-2 bg-blue-400 rounded-sm" />
-            <span className="text-zinc-500 text-xs">Evolution 2</span>
+            <span className="text-neutral-500 text-xs">Evolution 2</span>
           </div>
           <div className="flex items-center space-x-2">
-            <div className="w-3 h-2 bg-zinc-600 rounded-sm" />
-            <span className="text-zinc-500 text-xs">Kamyoon</span>
+            <div className="w-3 h-2 bg-neutral-600 rounded-sm" />
+            <span className="text-neutral-500 text-xs">Kamyoon</span>
           </div>
         </div>
       </div>
 
       {/* Last Updated */}
       <div className="text-center">
-        <p className="text-zinc-600 text-xs">
+        <p className="text-neutral-600 text-xs">
           Last checked: {new Date(health.timestamp).toLocaleString('tr-TR')}
         </p>
       </div>

@@ -15,7 +15,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
   if (status === 'loading') {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-6 h-6 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }

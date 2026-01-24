@@ -59,14 +59,14 @@ export default function TopBar() {
   }, []);
 
   return (
-    <header className="h-14 border-b border-zinc-800/50 bg-zinc-950/50 backdrop-blur-sm flex items-center px-6">
+    <header className="h-14 border-b border-neutral-800/50 bg-neutral-950/50 backdrop-blur-sm flex items-center px-6">
       {/* Spacer for centering */}
       <div className="flex-1" />
 
       {/* Motivational Quote - Centered */}
       <div className="flex-[2] flex justify-center px-4 overflow-hidden">
         <span
-          className={`text-zinc-500 text-sm italic transition-opacity duration-300 whitespace-nowrap truncate max-w-full ${
+          className={`text-neutral-500 text-sm italic transition-opacity duration-300 whitespace-nowrap truncate max-w-full ${
             isVisible ? 'opacity-100' : 'opacity-0'
           }`}
         >
@@ -79,16 +79,16 @@ export default function TopBar() {
         {session?.user && (
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
-              <div className="w-7 h-7 bg-zinc-800 rounded-full flex items-center justify-center">
-                <span className="text-zinc-400 text-xs font-medium">
+              <div className="w-7 h-7 bg-neutral-800 rounded-full flex items-center justify-center">
+                <span className="text-neutral-400 text-xs font-medium">
                   {displayName.charAt(0).toUpperCase()}
                 </span>
               </div>
-              <span className="text-zinc-400 text-sm">{displayName}</span>
+              <span className="text-neutral-400 text-sm">{displayName}</span>
             </div>
             <button
               onClick={() => signOut({ callbackUrl: '/login' })}
-              className="text-zinc-500 hover:text-white text-xs font-medium transition-colors px-3 py-1.5 rounded-md hover:bg-zinc-800"
+              className="text-neutral-500 hover:text-white text-xs font-medium transition-colors px-3 py-1.5 rounded-md hover:bg-neutral-800"
             >
               Logout
             </button>

@@ -105,7 +105,7 @@ export default function UserAnalyticsPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="w-8 h-8 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -127,11 +127,11 @@ export default function UserAnalyticsPage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">User Analytics</h1>
-        <p className="text-zinc-500 text-sm mt-1">Engagement metrics, retention, and conversion analysis</p>
+        <p className="text-neutral-500 text-sm mt-1">Engagement metrics, retention, and conversion analysis</p>
       </div>
 
       {/* Traffic Sources */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-6">Traffic Sources</h2>
         <div className="grid grid-cols-4 gap-6">
           {/* Instagram */}
@@ -144,20 +144,20 @@ export default function UserAnalyticsPage() {
               </div>
               <div>
                 <div className="text-white font-medium">Instagram</div>
-                <div className="text-zinc-500 text-xs">From ads</div>
+                <div className="text-neutral-500 text-xs">From ads</div>
               </div>
             </div>
             <div className="flex items-end justify-between">
               <div>
                 <div className="text-3xl font-bold text-white">{trafficSources.instagram.count}</div>
-                <div className="text-zinc-500 text-sm">{trafficSources.instagram.percentage}% of users</div>
+                <div className="text-neutral-500 text-sm">{trafficSources.instagram.percentage}% of users</div>
               </div>
               <div className="text-right">
                 <div className="text-lg font-semibold text-purple-400">{trafficSources.instagram.conversionRate}%</div>
-                <div className="text-zinc-600 text-xs">conversion</div>
+                <div className="text-neutral-600 text-xs">conversion</div>
               </div>
             </div>
-            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
                 style={{ width: `${trafficSources.instagram.percentage}%` }}
@@ -175,20 +175,20 @@ export default function UserAnalyticsPage() {
               </div>
               <div>
                 <div className="text-white font-medium">Organic</div>
-                <div className="text-zinc-500 text-xs">Direct / referral</div>
+                <div className="text-neutral-500 text-xs">Direct / referral</div>
               </div>
             </div>
             <div className="flex items-end justify-between">
               <div>
                 <div className="text-3xl font-bold text-white">{trafficSources.organic.count}</div>
-                <div className="text-zinc-500 text-sm">{trafficSources.organic.percentage}% of users</div>
+                <div className="text-neutral-500 text-sm">{trafficSources.organic.percentage}% of users</div>
               </div>
               <div className="text-right">
                 <div className="text-lg font-semibold text-emerald-400">{trafficSources.organic.conversionRate}%</div>
-                <div className="text-zinc-600 text-xs">conversion</div>
+                <div className="text-neutral-600 text-xs">conversion</div>
               </div>
             </div>
-            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-emerald-500 rounded-full"
                 style={{ width: `${trafficSources.organic.percentage}%` }}
@@ -206,20 +206,20 @@ export default function UserAnalyticsPage() {
               </div>
               <div>
                 <div className="text-white font-medium">Atakan</div>
-                <div className="text-zinc-500 text-xs">NAZPX referral</div>
+                <div className="text-neutral-500 text-xs">NAZPX referral</div>
               </div>
             </div>
             <div className="flex items-end justify-between">
               <div>
                 <div className="text-3xl font-bold text-white">{trafficSources.atakan.count}</div>
-                <div className="text-zinc-500 text-sm">{trafficSources.atakan.percentage}% of users</div>
+                <div className="text-neutral-500 text-sm">{trafficSources.atakan.percentage}% of users</div>
               </div>
               <div className="text-right">
                 <div className="text-lg font-semibold text-amber-400">{trafficSources.atakan.conversionRate}%</div>
-                <div className="text-zinc-600 text-xs">conversion</div>
+                <div className="text-neutral-600 text-xs">conversion</div>
               </div>
             </div>
-            <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+            <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
               <div
                 className="h-full bg-amber-500 rounded-full"
                 style={{ width: `${trafficSources.atakan.percentage}%` }}
@@ -228,15 +228,15 @@ export default function UserAnalyticsPage() {
           </div>
 
           {/* Comparison */}
-          <div className="bg-zinc-800/50 rounded-lg p-4 space-y-3">
+          <div className="bg-neutral-800/50 rounded-lg p-4 space-y-3">
             <div className="text-sm font-medium text-white">Conversion Comparison</div>
             <div className="space-y-2">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-zinc-400 text-xs">Instagram</span>
+                  <span className="text-neutral-400 text-xs">Instagram</span>
                   <span className="text-purple-400 font-mono text-xs">{trafficSources.instagram.conversionRate}%</span>
                 </div>
-                <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-neutral-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-purple-500 rounded-full"
                     style={{ width: `${Math.min(trafficSources.instagram.conversionRate * 5, 100)}%` }}
@@ -245,10 +245,10 @@ export default function UserAnalyticsPage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-zinc-400 text-xs">Organic</span>
+                  <span className="text-neutral-400 text-xs">Organic</span>
                   <span className="text-emerald-400 font-mono text-xs">{trafficSources.organic.conversionRate}%</span>
                 </div>
-                <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-neutral-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-emerald-500 rounded-full"
                     style={{ width: `${Math.min(trafficSources.organic.conversionRate * 5, 100)}%` }}
@@ -257,10 +257,10 @@ export default function UserAnalyticsPage() {
               </div>
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-zinc-400 text-xs">Atakan</span>
+                  <span className="text-neutral-400 text-xs">Atakan</span>
                   <span className="text-amber-400 font-mono text-xs">{trafficSources.atakan.conversionRate}%</span>
                 </div>
-                <div className="h-1.5 bg-zinc-700 rounded-full overflow-hidden">
+                <div className="h-1.5 bg-neutral-700 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-amber-500 rounded-full"
                     style={{ width: `${Math.min(trafficSources.atakan.conversionRate * 5, 100)}%` }}
@@ -268,17 +268,17 @@ export default function UserAnalyticsPage() {
                 </div>
               </div>
             </div>
-            <div className="pt-2 border-t border-zinc-700 space-y-1">
+            <div className="pt-2 border-t border-neutral-700 space-y-1">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-zinc-500">Premium IG</span>
+                <span className="text-neutral-500">Premium IG</span>
                 <span className="text-white font-mono">{trafficSources.instagram.premiumCount}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-zinc-500">Premium Organic</span>
+                <span className="text-neutral-500">Premium Organic</span>
                 <span className="text-white font-mono">{trafficSources.organic.premiumCount}</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-zinc-500">Premium Atakan</span>
+                <span className="text-neutral-500">Premium Atakan</span>
                 <span className="text-white font-mono">{trafficSources.atakan.premiumCount}</span>
               </div>
             </div>
@@ -287,10 +287,10 @@ export default function UserAnalyticsPage() {
       </div>
 
       {/* Search Analysis */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-sm font-medium text-white">Search Analysis</h2>
-          <div className="flex items-center space-x-4 text-xs text-zinc-500">
+          <div className="flex items-center space-x-4 text-xs text-neutral-500">
             <span>{searchAnalysis.totalSearches} users searched</span>
             <span>•</span>
             <span>{searchAnalysis.uniqueOrigins} unique origins</span>
@@ -301,23 +301,23 @@ export default function UserAnalyticsPage() {
         <div className="grid grid-cols-3 gap-6">
           {/* Top Origins */}
           <div>
-            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Top Origins (From)</h3>
+            <h3 className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-3">Top Origins (From)</h3>
             <div className="space-y-2">
               {searchAnalysis.topOrigins.length === 0 ? (
-                <div className="text-zinc-600 text-sm">No data yet</div>
+                <div className="text-neutral-600 text-sm">No data yet</div>
               ) : (
                 searchAnalysis.topOrigins.slice(0, 7).map((item, index) => {
                   const maxCount = searchAnalysis.topOrigins[0]?.count || 1;
                   const percentage = (item.count / maxCount) * 100;
                   return (
                     <div key={item.name} className="flex items-center space-x-3">
-                      <span className="text-zinc-600 text-xs font-mono w-4">{index + 1}</span>
+                      <span className="text-neutral-600 text-xs font-mono w-4">{index + 1}</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-white text-sm">{item.name}</span>
-                          <span className="text-zinc-400 font-mono text-xs">{item.count}</span>
+                          <span className="text-neutral-400 font-mono text-xs">{item.count}</span>
                         </div>
-                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-cyan-500 rounded-full"
                             style={{ width: `${percentage}%` }}
@@ -333,23 +333,23 @@ export default function UserAnalyticsPage() {
 
           {/* Top Destinations */}
           <div>
-            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Top Destinations (To)</h3>
+            <h3 className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-3">Top Destinations (To)</h3>
             <div className="space-y-2">
               {searchAnalysis.topDestinations.length === 0 ? (
-                <div className="text-zinc-600 text-sm">No data yet</div>
+                <div className="text-neutral-600 text-sm">No data yet</div>
               ) : (
                 searchAnalysis.topDestinations.slice(0, 7).map((item, index) => {
                   const maxCount = searchAnalysis.topDestinations[0]?.count || 1;
                   const percentage = (item.count / maxCount) * 100;
                   return (
                     <div key={item.name} className="flex items-center space-x-3">
-                      <span className="text-zinc-600 text-xs font-mono w-4">{index + 1}</span>
+                      <span className="text-neutral-600 text-xs font-mono w-4">{index + 1}</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-white text-sm">{item.name}</span>
-                          <span className="text-zinc-400 font-mono text-xs">{item.count}</span>
+                          <span className="text-neutral-400 font-mono text-xs">{item.count}</span>
                         </div>
-                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-orange-500 rounded-full"
                             style={{ width: `${percentage}%` }}
@@ -365,23 +365,23 @@ export default function UserAnalyticsPage() {
 
           {/* Top Routes */}
           <div>
-            <h3 className="text-xs font-medium text-zinc-400 uppercase tracking-wider mb-3">Top Routes</h3>
+            <h3 className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-3">Top Routes</h3>
             <div className="space-y-2">
               {searchAnalysis.topRoutes.length === 0 ? (
-                <div className="text-zinc-600 text-sm">No data yet</div>
+                <div className="text-neutral-600 text-sm">No data yet</div>
               ) : (
                 searchAnalysis.topRoutes.slice(0, 7).map((item, index) => {
                   const maxCount = searchAnalysis.topRoutes[0]?.count || 1;
                   const percentage = (item.count / maxCount) * 100;
                   return (
                     <div key={item.route} className="flex items-center space-x-3">
-                      <span className="text-zinc-600 text-xs font-mono w-4">{index + 1}</span>
+                      <span className="text-neutral-600 text-xs font-mono w-4">{index + 1}</span>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-white text-sm truncate" title={item.route}>{item.route}</span>
-                          <span className="text-zinc-400 font-mono text-xs ml-2">{item.count}</span>
+                          <span className="text-neutral-400 font-mono text-xs ml-2">{item.count}</span>
                         </div>
-                        <div className="h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                           <div
                             className="h-full bg-gradient-to-r from-cyan-500 to-orange-500 rounded-full"
                             style={{ width: `${percentage}%` }}
@@ -399,60 +399,60 @@ export default function UserAnalyticsPage() {
 
       {/* User Distribution */}
       {userStats && (
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">User Distribution</h2>
           <div className="grid grid-cols-4 gap-6">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-400 text-sm">Total Users</span>
+                <span className="text-neutral-400 text-sm">Total Users</span>
                 <span className="text-white font-mono text-lg">{userStats.total}</span>
               </div>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
                 <div className="h-full bg-white rounded-full" style={{ width: '100%' }} />
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-400 text-sm">Free Trial</span>
+                <span className="text-neutral-400 text-sm">Free Trial</span>
                 <span className="text-blue-400 font-mono text-lg">{userStats.freeTrial}</span>
               </div>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-blue-500 rounded-full"
                   style={{ width: `${userStats.total > 0 ? (userStats.freeTrial / userStats.total) * 100 : 0}%` }}
                 />
               </div>
-              <div className="text-zinc-600 text-xs mt-1">
+              <div className="text-neutral-600 text-xs mt-1">
                 {userStats.total > 0 ? Math.round((userStats.freeTrial / userStats.total) * 100) : 0}% of total
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-400 text-sm">Premium</span>
+                <span className="text-neutral-400 text-sm">Premium</span>
                 <span className="text-emerald-400 font-mono text-lg">{userStats.premium}</span>
               </div>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-500 rounded-full"
                   style={{ width: `${userStats.total > 0 ? (userStats.premium / userStats.total) * 100 : 0}%` }}
                 />
               </div>
-              <div className="text-zinc-600 text-xs mt-1">
+              <div className="text-neutral-600 text-xs mt-1">
                 {userStats.total > 0 ? Math.round((userStats.premium / userStats.total) * 100) : 0}% of total
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-400 text-sm">Expired</span>
+                <span className="text-neutral-400 text-sm">Expired</span>
                 <span className="text-red-400 font-mono text-lg">{userStats.expired}</span>
               </div>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-red-500 rounded-full"
                   style={{ width: `${userStats.total > 0 ? (userStats.expired / userStats.total) * 100 : 0}%` }}
                 />
               </div>
-              <div className="text-zinc-600 text-xs mt-1">
+              <div className="text-neutral-600 text-xs mt-1">
                 {userStats.total > 0 ? Math.round((userStats.expired / userStats.total) * 100) : 0}% of total
               </div>
             </div>
@@ -462,83 +462,83 @@ export default function UserAnalyticsPage() {
 
       {/* Activity Metrics */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h3 className="text-sm font-medium text-white mb-4">Active Users</h3>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-zinc-400 text-sm">Last 24 hours</span>
+              <span className="text-neutral-400 text-sm">Last 24 hours</span>
               <span className="text-2xl font-semibold text-cyan-400">{engagement.active24h}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-zinc-400 text-sm">Last 7 days</span>
+              <span className="text-neutral-400 text-sm">Last 7 days</span>
               <span className="text-2xl font-semibold text-cyan-400">{engagement.active7d}</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-zinc-400 text-sm">Last 30 days</span>
+              <span className="text-neutral-400 text-sm">Last 30 days</span>
               <span className="text-2xl font-semibold text-cyan-400">{engagement.active30d}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h3 className="text-sm font-medium text-white mb-4">Engagement</h3>
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-zinc-400 text-sm">Total Messages</span>
+                <span className="text-neutral-400 text-sm">Total Messages</span>
                 <span className="text-white font-mono">{engagement.totalMessages.toLocaleString()}</span>
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-zinc-400 text-sm">Avg per User</span>
+                <span className="text-neutral-400 text-sm">Avg per User</span>
                 <span className="text-purple-400 font-mono text-xl">{engagement.avgMessagesPerUser}</span>
               </div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-1">
-                <span className="text-zinc-400 text-sm">Users Who Searched</span>
+                <span className="text-neutral-400 text-sm">Users Who Searched</span>
                 <span className="text-white font-mono">{engagement.usersWhoSearched}</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h3 className="text-sm font-medium text-white mb-4">Retention</h3>
           <div className="space-y-4">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-400 text-sm">Return Rate</span>
+                <span className="text-neutral-400 text-sm">Return Rate</span>
                 <span className="text-amber-400 font-mono text-xl">{engagement.returnRate}%</span>
               </div>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-amber-500 rounded-full"
                   style={{ width: `${engagement.returnRate}%` }}
                 />
               </div>
-              <div className="text-zinc-600 text-xs mt-1">Users who came back again</div>
+              <div className="text-neutral-600 text-xs mt-1">Users who came back again</div>
             </div>
             <div>
               <div className="flex items-center justify-between mb-2">
-                <span className="text-zinc-400 text-sm">Search Rate</span>
+                <span className="text-neutral-400 text-sm">Search Rate</span>
                 <span className="text-purple-400 font-mono text-xl">{engagement.searchRate}%</span>
               </div>
-              <div className="h-2 bg-zinc-800 rounded-full overflow-hidden">
+              <div className="h-2 bg-neutral-800 rounded-full overflow-hidden">
                 <div
                   className="h-full bg-purple-500 rounded-full"
                   style={{ width: `${engagement.searchRate}%` }}
                 />
               </div>
-              <div className="text-zinc-600 text-xs mt-1">Users who used search</div>
+              <div className="text-neutral-600 text-xs mt-1">Users who used search</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Conversion Funnel */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-6">Conversion Funnel</h2>
         <div className="space-y-4">
           {conversion.funnel.map((step, index) => {
@@ -551,11 +551,11 @@ export default function UserAnalyticsPage() {
               <div key={step.step}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-3">
-                    <span className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-400 text-xs font-mono">
+                    <span className="w-6 h-6 rounded-full bg-neutral-800 flex items-center justify-center text-neutral-400 text-xs font-mono">
                       {index + 1}
                     </span>
                     <span className="text-white text-sm font-medium">{step.step}</span>
-                    <span className="text-zinc-600 text-xs">{step.description}</span>
+                    <span className="text-neutral-600 text-xs">{step.description}</span>
                   </div>
                   <div className="flex items-center space-x-4">
                     <span className="text-white font-mono text-sm">{step.count.toLocaleString()}</span>
@@ -567,7 +567,7 @@ export default function UserAnalyticsPage() {
                     </span>
                   </div>
                 </div>
-                <div className="ml-9 h-3 bg-zinc-800 rounded-full overflow-hidden">
+                <div className="ml-9 h-3 bg-neutral-800 rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full transition-all duration-500 ${
                       step.percentage >= 50 ? 'bg-emerald-500' :
@@ -578,10 +578,10 @@ export default function UserAnalyticsPage() {
                 </div>
                 {!isLast && dropoff > 0 && (
                   <div className="ml-9 mt-2 mb-4 flex items-center space-x-2 text-xs">
-                    <svg className="w-4 h-4 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                     </svg>
-                    <span className="text-zinc-500">
+                    <span className="text-neutral-500">
                       -{dropoff.toLocaleString()} users ({dropoffPct}% dropoff)
                     </span>
                   </div>
@@ -594,88 +594,88 @@ export default function UserAnalyticsPage() {
 
       {/* Conversion Rates */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-white">Trial → Premium</h3>
             <span className="text-3xl font-bold text-emerald-400">{conversion.trialToPremiumRate}%</span>
           </div>
-          <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
+          <div className="h-2 bg-neutral-800 rounded-full overflow-hidden mb-2">
             <div
               className="h-full bg-emerald-500 rounded-full"
               style={{ width: `${conversion.trialToPremiumRate}%` }}
             />
           </div>
-          <p className="text-zinc-600 text-xs">
+          <p className="text-neutral-600 text-xs">
             {conversion.premiumUsers} users converted to premium
           </p>
         </div>
 
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-white">Trial → Expired</h3>
             <span className="text-3xl font-bold text-red-400">{conversion.trialToExpiredRate}%</span>
           </div>
-          <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
+          <div className="h-2 bg-neutral-800 rounded-full overflow-hidden mb-2">
             <div
               className="h-full bg-red-500 rounded-full"
               style={{ width: `${conversion.trialToExpiredRate}%` }}
             />
           </div>
-          <p className="text-zinc-600 text-xs">
+          <p className="text-neutral-600 text-xs">
             {conversion.expiredUsers} users let trial expire
           </p>
         </div>
 
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-medium text-white">Active Trials</h3>
             <span className="text-3xl font-bold text-blue-400">{conversion.activeTrialUsers}</span>
           </div>
-          <div className="h-2 bg-zinc-800 rounded-full overflow-hidden mb-2">
+          <div className="h-2 bg-neutral-800 rounded-full overflow-hidden mb-2">
             <div
               className="h-full bg-blue-500 rounded-full"
               style={{ width: `${conversion.totalUsers > 0 ? (conversion.activeTrialUsers / conversion.totalUsers) * 100 : 0}%` }}
             />
           </div>
-          <p className="text-zinc-600 text-xs">
+          <p className="text-neutral-600 text-xs">
             Currently in free trial period
           </p>
         </div>
       </div>
 
       {/* Summary Stats */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-4">Key Insights</h2>
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-400 text-sm">Users with multiple active days</span>
+            <div className="flex items-center justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-400 text-sm">Users with multiple active days</span>
               <span className="text-white font-mono">{engagement.usersWithMultipleDays}</span>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-400 text-sm">Users who performed searches</span>
+            <div className="flex items-center justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-400 text-sm">Users who performed searches</span>
               <span className="text-white font-mono">{engagement.usersWhoSearched}</span>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-zinc-400 text-sm">Total messages sent</span>
+              <span className="text-neutral-400 text-sm">Total messages sent</span>
               <span className="text-white font-mono">{engagement.totalMessages.toLocaleString()}</span>
             </div>
           </div>
           <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-400 text-sm">7-day active rate</span>
+            <div className="flex items-center justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-400 text-sm">7-day active rate</span>
               <span className="text-white font-mono">
                 {conversion.totalUsers > 0 ? Math.round((engagement.active7d / conversion.totalUsers) * 100) : 0}%
               </span>
             </div>
-            <div className="flex items-center justify-between py-2 border-b border-zinc-800/50">
-              <span className="text-zinc-400 text-sm">Paying user ratio</span>
+            <div className="flex items-center justify-between py-2 border-b border-neutral-800/50">
+              <span className="text-neutral-400 text-sm">Paying user ratio</span>
               <span className="text-white font-mono">
                 {conversion.totalUsers > 0 ? Math.round((conversion.premiumUsers / conversion.totalUsers) * 100) : 0}%
               </span>
             </div>
             <div className="flex items-center justify-between py-2">
-              <span className="text-zinc-400 text-sm">Churn rate (expired/total)</span>
+              <span className="text-neutral-400 text-sm">Churn rate (expired/total)</span>
               <span className="text-white font-mono">
                 {conversion.totalUsers > 0 ? Math.round((conversion.expiredUsers / conversion.totalUsers) * 100) : 0}%
               </span>

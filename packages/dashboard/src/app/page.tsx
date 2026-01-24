@@ -43,7 +43,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
-        <div className="w-5 h-5 border-2 border-zinc-700 border-t-white rounded-full animate-spin" />
+        <div className="w-5 h-5 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
@@ -51,7 +51,7 @@ export default function Dashboard() {
   if (error || !stats) {
     return (
       <div className="text-center py-20">
-        <p className="text-zinc-500">{error || 'No data'}</p>
+        <p className="text-neutral-500">{error || 'No data'}</p>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export default function Dashboard() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">Overview</h1>
-        <p className="text-zinc-500 text-sm mt-1">Real-time logistics monitoring</p>
+        <p className="text-neutral-500 text-sm mt-1">Real-time logistics monitoring</p>
       </div>
 
       {/* Stats Grid */}
@@ -77,8 +77,8 @@ export default function Dashboard() {
           { label: 'Groups', value: stats.overview.uniqueGroups },
           { label: 'Conversations', value: stats.overview.conversations },
         ].map((stat) => (
-          <div key={stat.label} className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-5 card-hover">
-            <p className="text-zinc-500 text-xs uppercase tracking-wider">{stat.label}</p>
+          <div key={stat.label} className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-5 card-hover">
+            <p className="text-neutral-500 text-xs uppercase tracking-wider">{stat.label}</p>
             <p className="text-3xl font-semibold text-white mt-2 font-mono">{stat.value.toLocaleString()}</p>
           </div>
         ))}
@@ -87,7 +87,7 @@ export default function Dashboard() {
       {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-4">
         {/* Sources */}
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Sources</h2>
           {(() => {
             const total = stats.sources.reduce((sum, s) => sum + s.count, 0) || 1;
@@ -100,7 +100,7 @@ export default function Dashboard() {
             return (
               <div className="space-y-4">
                 {/* Progress bar */}
-                <div className="w-full h-4 bg-zinc-800 rounded-full overflow-hidden flex">
+                <div className="w-full h-4 bg-neutral-800 rounded-full overflow-hidden flex">
                   <div
                     className="h-full bg-white transition-all duration-500"
                     style={{ width: `${evolutionPct}%` }}
@@ -110,7 +110,7 @@ export default function Dashboard() {
                     style={{ width: `${evolution2Pct}%` }}
                   />
                   <div
-                    className="h-full bg-zinc-500 transition-all duration-500"
+                    className="h-full bg-neutral-500 transition-all duration-500"
                     style={{ width: `${kamyoonPct}%` }}
                   />
                 </div>
@@ -118,41 +118,41 @@ export default function Dashboard() {
                 {/* Three columns for each source */}
                 <div className="grid grid-cols-3 gap-3">
                   {/* Evolution */}
-                  <div className="bg-zinc-800/30 rounded-lg p-3">
+                  <div className="bg-neutral-800/30 rounded-lg p-3">
                     <div className="flex items-center space-x-2 mb-2">
                       <div className="w-2 h-2 bg-white rounded-full" />
-                      <span className="text-zinc-300 text-xs font-medium">Evolution</span>
+                      <span className="text-neutral-300 text-xs font-medium">Evolution</span>
                     </div>
                     <p className="text-xl font-semibold text-white font-mono">{evolution.toLocaleString()}</p>
-                    <p className="text-zinc-500 text-xs mt-1">{evolutionPct.toFixed(1)}%</p>
+                    <p className="text-neutral-500 text-xs mt-1">{evolutionPct.toFixed(1)}%</p>
                   </div>
 
                   {/* Evolution 2 */}
-                  <div className="bg-zinc-800/30 rounded-lg p-3">
+                  <div className="bg-neutral-800/30 rounded-lg p-3">
                     <div className="flex items-center space-x-2 mb-2">
                       <div className="w-2 h-2 bg-blue-400 rounded-full" />
-                      <span className="text-zinc-300 text-xs font-medium">Evolution 2</span>
+                      <span className="text-neutral-300 text-xs font-medium">Evolution 2</span>
                     </div>
                     <p className="text-xl font-semibold text-white font-mono">{evolution2.toLocaleString()}</p>
-                    <p className="text-zinc-500 text-xs mt-1">{evolution2Pct.toFixed(1)}%</p>
+                    <p className="text-neutral-500 text-xs mt-1">{evolution2Pct.toFixed(1)}%</p>
                   </div>
 
                   {/* Kamyoon */}
-                  <div className="bg-zinc-800/30 rounded-lg p-3">
+                  <div className="bg-neutral-800/30 rounded-lg p-3">
                     <div className="flex items-center space-x-2 mb-2">
-                      <div className="w-2 h-2 bg-zinc-500 rounded-full" />
-                      <span className="text-zinc-300 text-xs font-medium">Kamyoon</span>
+                      <div className="w-2 h-2 bg-neutral-500 rounded-full" />
+                      <span className="text-neutral-300 text-xs font-medium">Kamyoon</span>
                     </div>
                     <p className="text-xl font-semibold text-white font-mono">{kamyoon.toLocaleString()}</p>
-                    <p className="text-zinc-500 text-xs mt-1">{kamyoonPct.toFixed(1)}%</p>
+                    <p className="text-neutral-500 text-xs mt-1">{kamyoonPct.toFixed(1)}%</p>
                   </div>
                 </div>
 
                 {/* Total */}
-                <div className="text-center pt-2 border-t border-zinc-800/50">
-                  <span className="text-zinc-500 text-sm">Total: </span>
+                <div className="text-center pt-2 border-t border-neutral-800/50">
+                  <span className="text-neutral-500 text-sm">Total: </span>
                   <span className="text-white font-mono">{total.toLocaleString()}</span>
-                  <span className="text-zinc-500 text-sm"> jobs (24h)</span>
+                  <span className="text-neutral-500 text-sm"> jobs (24h)</span>
                 </div>
               </div>
             );
@@ -160,7 +160,7 @@ export default function Dashboard() {
         </div>
 
         {/* Vehicle Body Types */}
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Vehicle Body Types</h2>
           <div className="space-y-3">
             {stats.bodyTypes.slice(0, 6).map((bt) => {
@@ -168,12 +168,12 @@ export default function Dashboard() {
               return (
                 <div key={bt.bodyType}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-zinc-400 text-sm">{bt.bodyType || 'Unspecified'}</span>
+                    <span className="text-neutral-400 text-sm">{bt.bodyType || 'Unspecified'}</span>
                     <span className="text-white font-mono text-sm">{bt.count}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-zinc-500 rounded-full transition-all duration-500"
+                      className="h-full bg-neutral-500 rounded-full transition-all duration-500"
                       style={{ width: `${percentage}%` }}
                     />
                   </div>
@@ -187,25 +187,25 @@ export default function Dashboard() {
       {/* Top Routes and Cargo Types - Side by Side */}
       <div className="grid grid-cols-2 gap-4">
         {/* Top Routes */}
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Top Routes</h2>
           <div className="space-y-2">
             {stats.topRoutes.slice(0, 6).map((route, i) => (
-              <div key={i} className="flex items-center justify-between py-2 border-b border-zinc-800/30">
+              <div key={i} className="flex items-center justify-between py-2 border-b border-neutral-800/30">
                 <div className="flex items-center space-x-3">
-                  <span className="text-zinc-600 text-xs font-mono w-4">{i + 1}</span>
-                  <span className="text-zinc-300 text-sm">{route.origin}</span>
-                  <span className="text-zinc-600">→</span>
-                  <span className="text-zinc-400 text-sm">{route.destination || 'Any'}</span>
+                  <span className="text-neutral-600 text-xs font-mono w-4">{i + 1}</span>
+                  <span className="text-neutral-300 text-sm">{route.origin}</span>
+                  <span className="text-neutral-600">→</span>
+                  <span className="text-neutral-400 text-sm">{route.destination || 'Any'}</span>
                 </div>
-                <span className="text-zinc-500 font-mono text-sm">{route.count}</span>
+                <span className="text-neutral-500 font-mono text-sm">{route.count}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Cargo Types */}
-        <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
           <h2 className="text-sm font-medium text-white mb-4">Cargo Types</h2>
           <div className="space-y-3">
             {stats.cargoTypes.slice(0, 6).map((ct) => {
@@ -214,10 +214,10 @@ export default function Dashboard() {
               return (
                 <div key={ct.cargoType}>
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-zinc-400 text-sm">{ct.cargoType || 'Unspecified'}</span>
+                    <span className="text-neutral-400 text-sm">{ct.cargoType || 'Unspecified'}</span>
                     <span className="text-white font-mono text-sm">{ct.count}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-blue-500 rounded-full transition-all duration-500"
                       style={{ width: `${percentage}%` }}
@@ -231,7 +231,7 @@ export default function Dashboard() {
       </div>
 
       {/* Hourly Activity */}
-      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
         <h2 className="text-sm font-medium text-white mb-6">Daily Activity</h2>
         <div className="flex items-end gap-1" style={{ height: '128px' }}>
           {stats.hourly.map((h, i) => {
@@ -241,11 +241,11 @@ export default function Dashboard() {
               <div key={i} className="flex-1 group relative flex flex-col justify-end h-full">
                 <div
                   className={`w-full rounded-sm transition-all duration-300 ${
-                    isNow ? 'bg-white' : 'bg-zinc-600 group-hover:bg-zinc-500'
+                    isNow ? 'bg-white' : 'bg-neutral-600 group-hover:bg-neutral-500'
                   }`}
                   style={{ height: `${heightPx}px` }}
                 />
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-zinc-800 px-2 py-1 rounded text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-neutral-800 px-2 py-1 rounded text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
                   {h.hour}: {h.count}
                 </div>
               </div>
@@ -257,7 +257,7 @@ export default function Dashboard() {
           {stats.hourly.map((h, i) => (
             <div key={i} className="flex-1 text-center">
               {i % 6 === 0 && (
-                <span className="text-xs text-zinc-600">{h.hour.split(':')[0]}</span>
+                <span className="text-xs text-neutral-600">{h.hour.split(':')[0]}</span>
               )}
             </div>
           ))}
