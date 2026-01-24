@@ -34,8 +34,8 @@ const navigation: NavGroup[] = [
   {
     name: 'CRM',
     items: [
-      { name: 'Pasif Kullanicilar', href: '/crm/pasif-kullanicilar', icon: 'clock' },
-      { name: 'Iletisim Listesi', href: '/crm/iletisim-listesi', icon: 'phone' },
+      { name: 'Inactive Users', href: '/crm/pasif-kullanicilar', icon: 'clock' },
+      { name: 'Contact List', href: '/crm/iletisim-listesi', icon: 'phone' },
     ],
   },
   {

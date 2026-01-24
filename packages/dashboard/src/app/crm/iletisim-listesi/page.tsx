@@ -13,13 +13,13 @@ interface CallListItem {
 }
 
 const CALL_REASONS = [
-  'Sistem arizasi olusmus ve duzeltildi',
-  'Su arac var mi diyor ama bizde yok',
-  'Deneme suresi ile ilgili soru',
-  'Bilgilendirme icin ara',
-  'Yurtdisina sevkiyat var mi sorusu',
-  'Sehir ici var mi sorusu',
-  'Marketing icin yazmis',
+  'System error occurred and was fixed',
+  'Asking for vehicle we don\'t have',
+  'Question about trial period',
+  'Call for information',
+  'Question about international shipping',
+  'Question about intra-city shipping',
+  'Marketing inquiry',
 ];
 
 const ITEMS_PER_PAGE = 50;
@@ -154,7 +154,7 @@ export default function IletisimListesiPage() {
   };
 
   const removeFromList = async (phoneNumber: string) => {
-    if (!confirm('Bu kullaniciyi listeden silmek istediginize emin misiniz?')) return;
+    if (!confirm('Are you sure you want to remove this user from the list?')) return;
 
     setUpdatingPhone(phoneNumber);
     try {
@@ -191,22 +191,22 @@ export default function IletisimListesiPage() {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-semibold text-white tracking-tight">Iletisim Listesi</h1>
-        <p className="text-neutral-500 text-sm mt-1">Aranmasi veya iletisime gecilmesi gereken kullanicilar</p>
+        <h1 className="text-2xl font-semibold text-white tracking-tight">Contact List</h1>
+        <p className="text-neutral-500 text-sm mt-1">Users that need to be called or contacted</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
-          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Total</div>
           <div className="text-2xl font-semibold text-white mt-1">{items.length}</div>
         </div>
         <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
-          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Bekleyen</div>
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Pending</div>
           <div className="text-2xl font-semibold text-amber-400 mt-1">{pendingCount}</div>
         </div>
         <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
-          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Iletisime Gecildi</div>
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Contacted</div>
           <div className="text-2xl font-semibold text-emerald-400 mt-1">{contactedCount}</div>
         </div>
       </div>
@@ -220,11 +220,11 @@ export default function IletisimListesiPage() {
             onChange={(e) => setShowContacted(e.target.checked)}
             className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500"
           />
-          <span className="text-sm text-neutral-400">Iletisime gecilmis olanlari da goster</span>
+          <span className="text-sm text-neutral-400">Show contacted users</span>
         </label>
         {totalPages > 1 && (
           <div className="text-sm text-neutral-500">
-            Sayfa {currentPage} / {totalPages} ({filteredItems.length} kayit)
+            Page {currentPage} / {totalPages} ({filteredItems.length} records)
           </div>
         )}
       </div>
@@ -244,12 +244,12 @@ export default function IletisimListesiPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-neutral-800/50">
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12">Tamamlandi</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Iletisim Nedeni</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Notlar</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Iletisim Tarihi</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12">Completed</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Phone</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Contact Reason</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Notes</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Contacted At</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Added</th>
                     <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12"></th>
                   </tr>
                 </thead>
@@ -257,7 +257,7 @@ export default function IletisimListesiPage() {
                   {paginatedItems.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-8 text-center text-neutral-500">
-                        {showContacted ? 'Liste bos' : 'Iletisime gecilecek kimse yok'}
+                        {showContacted ? 'List is empty' : 'No one to contact'}
                       </td>
                     </tr>
                   ) : (
@@ -287,7 +287,7 @@ export default function IletisimListesiPage() {
                             </Link>
                             {item.autoAdded && (
                               <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
-                                Oto
+                                Auto
                               </span>
                             )}
                           </div>
@@ -301,7 +301,7 @@ export default function IletisimListesiPage() {
                               onBlur={() => setEditingReason(null)}
                               className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white w-full"
                             >
-                              <option value="">Seciniz...</option>
+                              <option value="">Select...</option>
                               {CALL_REASONS.map((reason) => (
                                 <option key={reason} value={reason}>
                                   {reason}
@@ -314,7 +314,7 @@ export default function IletisimListesiPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.reason || (
-                                <span className="text-neutral-500 italic">Neden sec...</span>
+                                <span className="text-neutral-500 italic">Select reason...</span>
                               )}
                             </button>
                           )}
@@ -335,13 +335,13 @@ export default function IletisimListesiPage() {
                                 }}
                                 autoFocus
                                 className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white flex-1"
-                                placeholder="Not ekle..."
+                                placeholder="Add note..."
                               />
                               <button
                                 onClick={() => saveNotes(item.phoneNumber)}
                                 className="text-emerald-400 hover:text-emerald-300 text-sm"
                               >
-                                Kaydet
+                                Save
                               </button>
                             </div>
                           ) : (
@@ -353,7 +353,7 @@ export default function IletisimListesiPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.notes || (
-                                <span className="text-neutral-500 italic">Not ekle...</span>
+                                <span className="text-neutral-500 italic">Add note...</span>
                               )}
                             </button>
                           )}
@@ -373,7 +373,7 @@ export default function IletisimListesiPage() {
                             onClick={() => removeFromList(item.phoneNumber)}
                             disabled={updatingPhone === item.phoneNumber}
                             className="text-red-400 hover:text-red-300 text-sm"
-                            title="Listeden sil"
+                            title="Remove from list"
                           >
                             x
                           </button>
@@ -394,7 +394,7 @@ export default function IletisimListesiPage() {
                 disabled={currentPage === 1}
                 className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
               >
-                Onceki
+                Previous
               </button>
               <div className="flex items-center space-x-1">
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -428,7 +428,7 @@ export default function IletisimListesiPage() {
                 disabled={currentPage === totalPages}
                 className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
               >
-                Sonraki
+                Next
               </button>
             </div>
           )}

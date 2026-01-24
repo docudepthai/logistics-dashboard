@@ -342,7 +342,7 @@ export default function UserProfilePage() {
                         <span className="text-neutral-500 text-xs w-5">{idx + 1}.</span>
                         <span className="text-cyan-400 text-sm">{fixProvinceName(route.origin)}</span>
                         <span className="text-neutral-600">→</span>
-                        <span className="text-orange-400 text-sm">{route.destination ? fixProvinceName(route.destination) : 'herhangi'}</span>
+                        <span className="text-orange-400 text-sm">{route.destination ? fixProvinceName(route.destination) : 'any'}</span>
                       </div>
                       <div className="flex items-center space-x-4">
                         <span className="text-white text-sm font-medium">{route.count}x</span>

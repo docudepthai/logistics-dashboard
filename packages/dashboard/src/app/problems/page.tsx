@@ -9,8 +9,8 @@ function ConfirmModal({
   onConfirm,
   title,
   message,
-  confirmText = 'Onayla',
-  cancelText = 'Iptal',
+  confirmText = 'Confirm',
+  cancelText = 'Cancel',
   confirmColor = 'blue',
 }: {
   isOpen: boolean;
@@ -146,7 +146,7 @@ const severityConfig = {
   },
 };
 
-const SUPPORT_MESSAGE = 'sistem ile ilgili daha fazla bilgi ve destek almak icin bu numaraya mesaj atip veya yazabilirsiniz +90 533 208 9867';
+const SUPPORT_MESSAGE = 'For more information and support about the system, you can message or call this number +90 533 208 9867';
 
 export default function ProblemsPage() {
   const [data, setData] = useState<ApiResponse | null>(null);
@@ -196,9 +196,9 @@ export default function ProblemsPage() {
   const handleRemove = (userId: string) => {
     setModalConfig({
       isOpen: true,
-      title: 'Konusmayi Kaldir',
-      message: 'Bu konusmayi problem listesinden kaldirmak istediginize emin misiniz?',
-      confirmText: 'Kaldir',
+      title: 'Remove Conversation',
+      message: 'Are you sure you want to remove this conversation from the problem list?',
+      confirmText: 'Remove',
       confirmColor: 'red',
       onConfirm: async () => {
         setRemoving(userId);
@@ -229,9 +229,9 @@ export default function ProblemsPage() {
   const handleSendSupport = (userId: string) => {
     setModalConfig({
       isOpen: true,
-      title: 'Destek Numarasi Gonder',
-      message: `Bu mesaji gondermek istediginize emin misiniz?\n\nMesaj:\n"${SUPPORT_MESSAGE}"`,
-      confirmText: 'Gonder',
+      title: 'Send Support Number',
+      message: `Are you sure you want to send this message?\n\nMessage:\n"${SUPPORT_MESSAGE}"`,
+      confirmText: 'Send',
       confirmColor: 'blue',
       onConfirm: async () => {
         setSendingSupport(userId);
@@ -250,11 +250,11 @@ export default function ProblemsPage() {
             // Show error modal
             setModalConfig({
               isOpen: true,
-              title: 'Hata',
+              title: 'Error',
               message: result.windowExpired
-                ? `Mesaj gonderilemedi:\n\n${result.error}`
-                : `Hata: ${result.error || 'Mesaj gonderilemedi'}`,
-              confirmText: 'Tamam',
+                ? `Failed to send message:\n\n${result.error}`
+                : `Error: ${result.error || 'Failed to send message'}`,
+              confirmText: 'OK',
               confirmColor: 'red',
               onConfirm: () => {},
             });
@@ -263,9 +263,9 @@ export default function ProblemsPage() {
           console.error('Send support error:', error);
           setModalConfig({
             isOpen: true,
-            title: 'Hata',
-            message: 'Bir hata olustu. Lutfen tekrar deneyin.',
-            confirmText: 'Tamam',
+            title: 'Error',
+            message: 'An error occurred. Please try again.',
+            confirmText: 'OK',
             confirmColor: 'red',
             onConfirm: () => {},
           });
@@ -465,17 +465,17 @@ export default function ProblemsPage() {
                         }`}
                       >
                         {sendingSupport === conv.userId
-                          ? 'Gonderiliyor...'
+                          ? 'Sending...'
                           : supportSent.has(conv.userId)
-                          ? 'Destek No Gonderildi'
-                          : 'Destek No Gonder'}
+                          ? 'Support # Sent'
+                          : 'Send Support #'}
                       </button>
                       <button
                         onClick={() => handleRemove(conv.userId)}
                         disabled={removing === conv.userId}
                         className="px-3 py-1.5 text-xs bg-red-500/20 text-red-400 rounded hover:bg-red-500/30 transition-colors disabled:opacity-50"
                       >
-                        {removing === conv.userId ? 'Kaldiriliyor...' : 'Kaldir'}
+                        {removing === conv.userId ? 'Removing...' : 'Remove'}
                       </button>
                     </div>
                   </div>

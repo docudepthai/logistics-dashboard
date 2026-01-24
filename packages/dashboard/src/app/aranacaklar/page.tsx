@@ -12,13 +12,13 @@ interface CallListItem {
 }
 
 const CALL_REASONS = [
-  'Sistem arızası oluşmuş ve düzeltildi',
-  'Şu araç var mı diyor ama bizde yok',
-  'Deneme süresi ile ilgili soru',
-  'Bilgilendirme için ara',
-  'Yurtdışına sevkiyat var mı sorusu',
-  'Şehir içi var mı sorusu',
-  'Marketing için yazmış',
+  'System error occurred and was fixed',
+  'Asking for vehicle we don\'t have',
+  'Question about trial period',
+  'Call for information',
+  'Question about international shipping',
+  'Question about intra-city shipping',
+  'Marketing inquiry',
 ];
 
 function formatDate(dateStr: string): string {
@@ -138,7 +138,7 @@ export default function AranacaklarPage() {
   };
 
   const removeFromList = async (phoneNumber: string) => {
-    if (!confirm('Bu kullanıcıyı listeden silmek istediğinize emin misiniz?')) return;
+    if (!confirm('Are you sure you want to remove this user from the list?')) return;
 
     setUpdatingPhone(phoneNumber);
     try {
@@ -166,22 +166,22 @@ export default function AranacaklarPage() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-semibold text-white">Aranacaklar</h1>
-          <p className="text-neutral-500 text-sm mt-1">Aranması gereken kullanıcılar listesi</p>
+          <h1 className="text-2xl font-semibold text-white">Call List</h1>
+          <p className="text-neutral-500 text-sm mt-1">Users that need to be called</p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
-            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
+            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Total</div>
             <div className="text-2xl font-semibold text-white mt-1">{items.length}</div>
           </div>
           <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
-            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Aranacak</div>
+            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">To Call</div>
             <div className="text-2xl font-semibold text-amber-400 mt-1">{uncalledCount}</div>
           </div>
           <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
-            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Arandı</div>
+            <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Called</div>
             <div className="text-2xl font-semibold text-emerald-400 mt-1">{calledCount}</div>
           </div>
         </div>
@@ -195,7 +195,7 @@ export default function AranacaklarPage() {
               onChange={(e) => setShowCalled(e.target.checked)}
               className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500"
             />
-            <span className="text-sm text-neutral-400">Aranmış olanları da göster</span>
+            <span className="text-sm text-neutral-400">Show called users</span>
           </label>
         </div>
 
@@ -213,12 +213,12 @@ export default function AranacaklarPage() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-neutral-800/50">
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12">Arandı</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Arama Nedeni</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Notlar</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Aranma Tarihi</th>
-                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Eklenme</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12">Called</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Phone</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Call Reason</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Notes</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Called At</th>
+                    <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Added</th>
                     <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3 w-12"></th>
                   </tr>
                 </thead>
@@ -226,7 +226,7 @@ export default function AranacaklarPage() {
                   {filteredItems.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="px-4 py-8 text-center text-neutral-500">
-                        {showCalled ? 'Liste boş' : 'Aranacak kimse yok'}
+                        {showCalled ? 'List is empty' : 'No one to call'}
                       </td>
                     </tr>
                   ) : (
@@ -256,7 +256,7 @@ export default function AranacaklarPage() {
                             </span>
                             {item.autoAdded && (
                               <span className="text-xs px-1.5 py-0.5 bg-blue-500/20 text-blue-400 rounded">
-                                Oto
+                                Auto
                               </span>
                             )}
                           </div>
@@ -272,7 +272,7 @@ export default function AranacaklarPage() {
                               onBlur={() => setEditingReason(null)}
                               className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white w-full"
                             >
-                              <option value="">Seçiniz...</option>
+                              <option value="">Select...</option>
                               {CALL_REASONS.map((reason) => (
                                 <option key={reason} value={reason}>
                                   {reason}
@@ -285,7 +285,7 @@ export default function AranacaklarPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.reason || (
-                                <span className="text-neutral-500 italic">Neden seç...</span>
+                                <span className="text-neutral-500 italic">Select reason...</span>
                               )}
                             </button>
                           )}
@@ -308,13 +308,13 @@ export default function AranacaklarPage() {
                                 }}
                                 autoFocus
                                 className="bg-neutral-800 border border-neutral-700 rounded px-2 py-1 text-sm text-white flex-1"
-                                placeholder="Not ekle..."
+                                placeholder="Add note..."
                               />
                               <button
                                 onClick={() => saveNotes(item.phoneNumber)}
                                 className="text-emerald-400 hover:text-emerald-300 text-sm"
                               >
-                                Kaydet
+                                Save
                               </button>
                             </div>
                           ) : (
@@ -326,7 +326,7 @@ export default function AranacaklarPage() {
                               className="text-sm text-left hover:text-white transition-colors w-full"
                             >
                               {item.notes || (
-                                <span className="text-neutral-500 italic">Not ekle...</span>
+                                <span className="text-neutral-500 italic">Add note...</span>
                               )}
                             </button>
                           )}
@@ -352,7 +352,7 @@ export default function AranacaklarPage() {
                             onClick={() => removeFromList(item.phoneNumber)}
                             disabled={updatingPhone === item.phoneNumber}
                             className="text-red-400 hover:text-red-300 text-sm"
-                            title="Listeden sil"
+                            title="Remove from list"
                           >
                             ✕
                           </button>

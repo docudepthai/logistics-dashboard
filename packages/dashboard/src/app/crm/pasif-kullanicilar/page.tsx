@@ -155,11 +155,11 @@ export default function PasifKullanicilarPage() {
         }));
       } else {
         const error = await res.json();
-        alert(`Mesaj gonderilemedi: ${error.error || 'Bilinmeyen hata'}`);
+        alert(`Failed to send message: ${error.error || 'Unknown error'}`);
       }
     } catch (err) {
       console.error('Failed to send nudge:', err);
-      alert('Mesaj gonderilemedi');
+      alert('Failed to send message');
     } finally {
       setSendingNudge(null);
     }
@@ -182,14 +182,14 @@ export default function PasifKullanicilarPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight">Pasif Kullanicilar</h1>
+          <h1 className="text-2xl font-semibold text-white tracking-tight">Inactive Users</h1>
           <p className="text-neutral-500 text-sm mt-1">
-            Henuz arama yapmamis kullanicilar (24s penceresi)
+            Users who haven't searched yet (24h window)
             <span className="mx-2">·</span>
             <span className={settings.mode === 'automatic' ? 'text-emerald-400' : 'text-amber-400'}>
-              {settings.mode === 'automatic' ? 'Otomatik' : 'Manuel'}
+              {settings.mode === 'automatic' ? 'Automatic' : 'Manual'}
             </span>
-            <span className="text-neutral-600"> ({settings.triggerHours}s kala)</span>
+            <span className="text-neutral-600"> ({settings.triggerHours}h remaining)</span>
           </p>
         </div>
         <button
@@ -200,26 +200,26 @@ export default function PasifKullanicilarPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <span>Ayarlar</span>
+          <span>Settings</span>
         </button>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">
         <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-4">
-          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Toplam</div>
+          <div className="text-neutral-500 text-xs font-medium uppercase tracking-wider">Total</div>
           <div className="text-2xl font-semibold text-white mt-1">{stats.total}</div>
         </div>
         <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-          <div className="text-red-400/70 text-xs font-medium uppercase tracking-wider">Acil (&lt;6s)</div>
+          <div className="text-red-400/70 text-xs font-medium uppercase tracking-wider">Urgent (&lt;6h)</div>
           <div className="text-2xl font-semibold text-red-400 mt-1">{stats.urgent}</div>
         </div>
         <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-4">
-          <div className="text-amber-400/70 text-xs font-medium uppercase tracking-wider">Bekliyor</div>
+          <div className="text-amber-400/70 text-xs font-medium uppercase tracking-wider">Pending</div>
           <div className="text-2xl font-semibold text-amber-400 mt-1">{stats.pending}</div>
         </div>
         <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-4">
-          <div className="text-emerald-400/70 text-xs font-medium uppercase tracking-wider">Gonderildi</div>
+          <div className="text-emerald-400/70 text-xs font-medium uppercase tracking-wider">Sent</div>
           <div className="text-2xl font-semibold text-emerald-400 mt-1">{stats.nudgeSent}</div>
         </div>
       </div>
@@ -233,11 +233,11 @@ export default function PasifKullanicilarPage() {
             onChange={(e) => setShowSent(e.target.checked)}
             className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500"
           />
-          <span className="text-sm text-neutral-400">Mesaj gonderilenleri de goster</span>
+          <span className="text-sm text-neutral-400">Show users who received messages</span>
         </label>
         {totalPages > 1 && (
           <div className="text-sm text-neutral-500">
-            Sayfa {currentPage} / {totalPages} ({filteredUsers.length} kayit)
+            Page {currentPage} / {totalPages} ({filteredUsers.length} records)
           </div>
         )}
       </div>
@@ -249,7 +249,7 @@ export default function PasifKullanicilarPage() {
         </div>
       ) : filteredUsers.length === 0 ? (
         <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-8 text-center text-neutral-500">
-          {showSent ? 'Henuz kullanici yok' : 'Mesaj gonderilecek kullanici yok'}
+          {showSent ? 'No users yet' : 'No users to send message to'}
         </div>
       ) : (
         <>
@@ -258,12 +258,12 @@ export default function PasifKullanicilarPage() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-neutral-800/50">
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Telefon</th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Kalan Sure</th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Mesaj Sayisi</th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Ilk Mesaj</th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Durum</th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Islem</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Phone</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Time Left</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Messages</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">First Message</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Status</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -296,11 +296,11 @@ export default function PasifKullanicilarPage() {
                     <td className="px-4 py-3">
                       {user.nudgeSent ? (
                         <span className="text-xs px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded">
-                          Gonderildi
+                          Sent
                         </span>
                       ) : (
                         <span className="text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded">
-                          Bekliyor
+                          Pending
                         </span>
                       )}
                     </td>
@@ -312,7 +312,7 @@ export default function PasifKullanicilarPage() {
                             disabled={sendingNudge === user.phoneNumber}
                             className="text-xs px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors disabled:opacity-50"
                           >
-                            {sendingNudge === user.phoneNumber ? 'Gonderiliyor...' : 'Sablon Gonder'}
+                            {sendingNudge === user.phoneNumber ? 'Sending...' : 'Send Template'}
                           </button>
                         )}
                         <a
@@ -321,7 +321,7 @@ export default function PasifKullanicilarPage() {
                           rel="noopener noreferrer"
                           className="text-xs px-2 py-1 bg-neutral-700/50 text-neutral-400 hover:bg-neutral-700 rounded transition-colors"
                         >
-                          WA Ac
+                          Open WA
                         </a>
                       </div>
                     </td>
@@ -340,7 +340,7 @@ export default function PasifKullanicilarPage() {
               disabled={currentPage === 1}
               className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
             >
-              Onceki
+              Prev
             </button>
             <div className="flex items-center space-x-1">
               {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
@@ -374,7 +374,7 @@ export default function PasifKullanicilarPage() {
               disabled={currentPage === totalPages}
               className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
             >
-              Sonraki
+              Next
             </button>
           </div>
         )}
@@ -386,7 +386,7 @@ export default function PasifKullanicilarPage() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-lg mx-4 overflow-hidden">
             <div className="px-6 py-4 border-b border-neutral-800 flex items-center justify-between">
-              <h3 className="text-lg font-medium text-white">Pasif Kullanicilar Ayarlari</h3>
+              <h3 className="text-lg font-medium text-white">Inactive Users Settings</h3>
               <button
                 onClick={() => setShowSettingsModal(false)}
                 className="text-neutral-500 hover:text-white transition-colors"
@@ -400,7 +400,7 @@ export default function PasifKullanicilarPage() {
             <div className="px-6 py-5 space-y-6">
               {/* Mode Selection */}
               <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-3">Mesaj Gonderme Modu</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-3">Message Sending Mode</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => saveSettings({ mode: 'manual' })}
@@ -411,8 +411,8 @@ export default function PasifKullanicilarPage() {
                         : 'bg-neutral-800/50 border-neutral-700 text-neutral-400 hover:border-neutral-600'
                     }`}
                   >
-                    <div className="text-lg font-medium mb-1">Manuel</div>
-                    <div className="text-xs opacity-70">Mesajlari kendiniz gonderin</div>
+                    <div className="text-lg font-medium mb-1">Manual</div>
+                    <div className="text-xs opacity-70">Send messages yourself</div>
                   </button>
                   <button
                     onClick={() => saveSettings({ mode: 'automatic' })}
@@ -423,8 +423,8 @@ export default function PasifKullanicilarPage() {
                         : 'bg-neutral-800/50 border-neutral-700 text-neutral-400 hover:border-neutral-600'
                     }`}
                   >
-                    <div className="text-lg font-medium mb-1">Otomatik</div>
-                    <div className="text-xs opacity-70">Sistem otomatik gonderir</div>
+                    <div className="text-lg font-medium mb-1">Automatic</div>
+                    <div className="text-xs opacity-70">System sends automatically</div>
                   </button>
                 </div>
               </div>
@@ -432,8 +432,8 @@ export default function PasifKullanicilarPage() {
               {/* Trigger Time */}
               <div>
                 <label className="block text-sm font-medium text-neutral-400 mb-3">
-                  Mesaj Gonderim Zamani
-                  <span className="text-neutral-600 font-normal ml-2">(24 saat dolmadan kac saat once)</span>
+                  Message Send Time
+                  <span className="text-neutral-600 font-normal ml-2">(hours before 24h window expires)</span>
                 </label>
                 <div className="flex items-center space-x-3">
                   <input
@@ -444,27 +444,27 @@ export default function PasifKullanicilarPage() {
                     onChange={(e) => saveSettings({ triggerHours: parseInt(e.target.value) })}
                     className="flex-1 h-2 bg-neutral-700 rounded-lg appearance-none cursor-pointer accent-emerald-500"
                   />
-                  <span className="text-white font-medium w-16 text-right">{settings.triggerHours} saat</span>
+                  <span className="text-white font-medium w-16 text-right">{settings.triggerHours} hours</span>
                 </div>
               </div>
 
               {/* Message Template */}
               <div>
-                <label className="block text-sm font-medium text-neutral-400 mb-2">Mesaj Sablonu</label>
+                <label className="block text-sm font-medium text-neutral-400 mb-2">Message Template</label>
                 <textarea
                   value={settings.messageTemplate}
                   onChange={(e) => setSettings(prev => ({ ...prev, messageTemplate: e.target.value }))}
                   onBlur={() => saveSettings({ messageTemplate: settings.messageTemplate })}
                   rows={4}
                   className="w-full bg-neutral-800/50 border border-neutral-700 rounded-lg p-4 text-sm text-neutral-300 resize-none focus:outline-none focus:border-neutral-600"
-                  placeholder="Mesaj sablonunu girin..."
+                  placeholder="Enter message template..."
                 />
-                <p className="text-xs text-neutral-500 mt-2">Duzenleme bitince otomatik kaydedilir</p>
+                <p className="text-xs text-neutral-500 mt-2">Auto-saves when you finish editing</p>
               </div>
 
               {settings.lastUpdated && (
                 <div className="text-xs text-neutral-600">
-                  Son guncelleme: {formatDate(settings.lastUpdated)}
+                  Last updated: {formatDate(settings.lastUpdated)}
                 </div>
               )}
             </div>
@@ -474,7 +474,7 @@ export default function PasifKullanicilarPage() {
                 onClick={() => setShowSettingsModal(false)}
                 className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
               >
-                Kapat
+                Close
               </button>
             </div>
           </div>
@@ -486,15 +486,15 @@ export default function PasifKullanicilarPage() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
             <div className="px-6 py-4 border-b border-neutral-800">
-              <h3 className="text-lg font-medium text-white">Sablon Mesaji Gonder</h3>
+              <h3 className="text-lg font-medium text-white">Send Template Message</h3>
             </div>
             <div className="px-6 py-5">
               <p className="text-neutral-400 mb-4">
-                <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasina
-                sablon mesaji gondermek istediginize emin misiniz?
+                Are you sure you want to send the template message to
+                <span className="font-mono text-white"> {formatPhoneNumber(confirmModal.phone)}</span>?
               </p>
               <div className="bg-neutral-800/50 border border-neutral-700 rounded-lg p-3 text-sm text-neutral-300">
-                {settings.messageTemplate || 'Sablon yukleniyor...'}
+                {settings.messageTemplate || 'Loading template...'}
               </div>
             </div>
             <div className="px-6 py-4 border-t border-neutral-800 flex justify-end space-x-3">
@@ -502,13 +502,13 @@ export default function PasifKullanicilarPage() {
                 onClick={() => setConfirmModal(null)}
                 className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
               >
-                Iptal
+                Cancel
               </button>
               <button
                 onClick={handleConfirmStep1}
                 className="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-400 rounded-lg transition-colors"
               >
-                Devam Et
+                Continue
               </button>
             </div>
           </div>
@@ -520,15 +520,15 @@ export default function PasifKullanicilarPage() {
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
           <div className="bg-neutral-900 border border-neutral-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
             <div className="px-6 py-4 border-b border-amber-500/30 bg-amber-500/10">
-              <h3 className="text-lg font-medium text-amber-400">Son Onay</h3>
+              <h3 className="text-lg font-medium text-amber-400">Final Confirmation</h3>
             </div>
             <div className="px-6 py-5">
               <p className="text-neutral-400 mb-4">
-                Bu islem geri alinamaz. Mesaj <span className="font-mono text-white">{formatPhoneNumber(confirmModal.phone)}</span> numarasina
-                hemen gonderilecektir.
+                This action cannot be undone. Message will be sent immediately to
+                <span className="font-mono text-white"> {formatPhoneNumber(confirmModal.phone)}</span>.
               </p>
               <p className="text-amber-400 text-sm">
-                Gondermek istediginizden emin misiniz?
+                Are you sure you want to send?
               </p>
             </div>
             <div className="px-6 py-4 border-t border-neutral-800 flex justify-end space-x-3">
@@ -536,13 +536,13 @@ export default function PasifKullanicilarPage() {
                 onClick={() => setConfirmModal(null)}
                 className="px-4 py-2 bg-neutral-800 hover:bg-neutral-700 text-white rounded-lg transition-colors"
               >
-                Iptal
+                Cancel
               </button>
               <button
                 onClick={handleConfirmStep2}
                 className="px-4 py-2 bg-green-500/20 hover:bg-green-500/30 text-green-400 rounded-lg transition-colors"
               >
-                Gonder
+                Send
               </button>
             </div>
           </div>

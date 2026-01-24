@@ -27,13 +27,13 @@ interface CallListItem {
 }
 
 const CALL_REASONS = [
-  'Sistem arızası oluşmuş ve düzeltildi',
-  'Şu araç var mı diyor ama bizde yok',
-  'Deneme süresi ile ilgili soru',
-  'Bilgilendirme için ara',
-  'Yurtdışına sevkiyat var mı sorusu',
-  'Şehir içi var mı sorusu',
-  'Marketing için yazmış',
+  'System error occurred and was fixed',
+  'Asking for vehicle we don\'t have',
+  'Question about trial period',
+  'Call for information',
+  'Question about international shipping',
+  'Question about intra-city shipping',
+  'Marketing inquiry',
 ];
 
 export default function ConversationsPage() {
@@ -212,13 +212,13 @@ export default function ConversationsPage() {
                   <div className="flex items-center space-x-3 ml-4">
                     {inCallList ? (
                       <span className="text-xs text-amber-400 bg-amber-400/10 px-2 py-1 rounded">
-                        İletişime geçileceklere eklendi
+                        Added to contact list
                       </span>
                     ) : (
                       <div className="relative">
                         {showReasonDropdown === convo.userId ? (
                           <div className="absolute right-0 top-full mt-1 z-50 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl p-2 min-w-[280px]">
-                            <div className="text-xs text-neutral-400 px-2 py-1 mb-1">İletişim nedeni seçin:</div>
+                            <div className="text-xs text-neutral-400 px-2 py-1 mb-1">Select contact reason:</div>
                             {CALL_REASONS.map((reason) => (
                               <button
                                 key={reason}
@@ -233,7 +233,7 @@ export default function ConversationsPage() {
                               onClick={() => setShowReasonDropdown(null)}
                               className="w-full text-left px-3 py-2 text-sm text-neutral-500 hover:bg-neutral-700 rounded mt-1 border-t border-neutral-700"
                             >
-                              İptal
+                              Cancel
                             </button>
                           </div>
                         ) : (
@@ -241,7 +241,7 @@ export default function ConversationsPage() {
                             onClick={() => setShowReasonDropdown(convo.userId)}
                             className="text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-400/10 hover:bg-emerald-400/20 px-3 py-1.5 rounded transition-colors"
                           >
-                            + İletişime Geçileceklere Ekle
+                            + Add to Contact List
                           </button>
                         )}
                       </div>
