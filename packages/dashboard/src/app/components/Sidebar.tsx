@@ -58,6 +58,11 @@ const navigation: NavGroup[] = [
   },
 ];
 
+// Items that don't require permissions - shown to everyone
+const personalNavigation: NavItem[] = [
+  { name: 'Notes', href: '/notes', icon: 'notes', id: 'notes' },
+];
+
 const icons: Record<string, React.ReactNode> = {
   chart: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,6 +117,11 @@ const icons: Record<string, React.ReactNode> = {
   map: (
     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+    </svg>
+  ),
+  notes: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
     </svg>
   ),
 };
@@ -196,6 +206,36 @@ export default function Sidebar() {
             </div>
           </div>
         ))}
+
+        {/* Personal section - no permissions needed */}
+        {loaded && (
+          <div className="mb-6">
+            <h3 className="px-3 text-[10px] font-semibold text-neutral-500 uppercase tracking-wider mb-2">
+              Personal
+            </h3>
+            <div className="space-y-1">
+              {personalNavigation.map((item) => {
+                const isActive = pathname === item.href;
+                return (
+                  <Link
+                    key={item.name}
+                    href={item.href}
+                    className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-all duration-150 ${
+                      isActive
+                        ? 'bg-neutral-800 text-white'
+                        : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                    }`}
+                  >
+                    <span className={isActive ? 'text-white' : 'text-neutral-500'}>
+                      {icons[item.icon]}
+                    </span>
+                    <span>{item.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Status Footer */}
