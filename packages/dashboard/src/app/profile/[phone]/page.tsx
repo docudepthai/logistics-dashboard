@@ -77,6 +77,24 @@ function getTimeAgo(dateStr: string): string {
   return `${Math.floor(seconds / 86400)}d ago`;
 }
 
+// Fix truncated province names from old data (before suffix stripping bug was fixed)
+const TRUNCATED_NAMES: Record<string, string> = {
+  'ankar': 'ankara',
+  'ispart': 'isparta',
+  'antaly': 'antalya',
+  'adан': 'adana',
+  'malatyac': 'malatya',
+  'samsun': 'samsun', // not truncated but keep for consistency
+  'kony': 'konya',
+  'afyonkarahisa': 'afyonkarahisar',
+};
+
+function fixProvinceName(name: string): string {
+  if (!name) return name;
+  const lower = name.toLowerCase();
+  return TRUNCATED_NAMES[lower] || name;
+}
+
 function getHoursRemaining(lastMessageAt: string): number {
   const lastMsg = new Date(lastMessageAt).getTime();
   const now = Date.now();
@@ -202,7 +220,7 @@ export default function UserProfilePage() {
           <div className="text-zinc-500 text-xs uppercase tracking-wider">Last Route</div>
           <div className="text-lg font-semibold text-white mt-1 truncate">
             {conversation?.context?.lastOrigin
-              ? `${conversation.context.lastOrigin} → ${conversation.context.lastDestination || '?'}`
+              ? `${fixProvinceName(conversation.context.lastOrigin)} → ${conversation.context.lastDestination ? fixProvinceName(conversation.context.lastDestination) : '?'}`
               : '-'}
           </div>
         </div>
@@ -262,11 +280,11 @@ export default function UserProfilePage() {
             <div className="space-y-3">
               <div className="flex justify-between py-2 border-b border-zinc-800/50">
                 <span className="text-zinc-500 text-sm">Last Origin</span>
-                <span className="text-cyan-400 text-sm">{conversation?.context?.lastOrigin || '-'}</span>
+                <span className="text-cyan-400 text-sm">{conversation?.context?.lastOrigin ? fixProvinceName(conversation.context.lastOrigin) : '-'}</span>
               </div>
               <div className="flex justify-between py-2 border-b border-zinc-800/50">
                 <span className="text-zinc-500 text-sm">Last Destination</span>
-                <span className="text-orange-400 text-sm">{conversation?.context?.lastDestination || '-'}</span>
+                <span className="text-orange-400 text-sm">{conversation?.context?.lastDestination ? fixProvinceName(conversation.context.lastDestination) : '-'}</span>
               </div>
               {conversation?.context?.lastBodyType && (
                 <div className="flex justify-between py-2 border-b border-zinc-800/50">
@@ -322,9 +340,9 @@ export default function UserProfilePage() {
                     >
                       <div className="flex items-center space-x-2">
                         <span className="text-zinc-500 text-xs w-5">{idx + 1}.</span>
-                        <span className="text-cyan-400 text-sm">{route.origin}</span>
+                        <span className="text-cyan-400 text-sm">{fixProvinceName(route.origin)}</span>
                         <span className="text-zinc-600">→</span>
-                        <span className="text-orange-400 text-sm">{route.destination || 'herhangi'}</span>
+                        <span className="text-orange-400 text-sm">{route.destination ? fixProvinceName(route.destination) : 'herhangi'}</span>
                       </div>
                       <div className="flex items-center space-x-4">
                         <span className="text-white text-sm font-medium">{route.count}x</span>
