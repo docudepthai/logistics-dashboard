@@ -105,14 +105,29 @@ export const PROVINCE_NEIGHBORS: Record<string, string[]> = {
   sirnak: ['mardin', 'siirt', 'hakkari'],
 };
 
+import { getProvinceByName } from './provinces.js';
+
 /**
  * Get neighboring provinces for a given province.
- * @param provinceName - The normalized province name
+ * Supports aliases (e.g., "afyon" -> "afyonkarahisar", "antep" -> "gaziantep")
+ * @param provinceName - The province name (can be alias or full name)
  * @returns Array of neighboring province names, or empty array if not found
  */
 export function getNeighboringProvinces(provinceName: string): string[] {
   const normalized = provinceName.toLowerCase();
-  return PROVINCE_NEIGHBORS[normalized] || [];
+
+  // First try direct lookup
+  if (PROVINCE_NEIGHBORS[normalized]) {
+    return PROVINCE_NEIGHBORS[normalized];
+  }
+
+  // If not found, resolve alias to full name
+  const province = getProvinceByName(normalized);
+  if (province) {
+    return PROVINCE_NEIGHBORS[province.normalized] || [];
+  }
+
+  return [];
 }
 
 /**

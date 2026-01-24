@@ -412,8 +412,12 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
     if (CITY_ABBREVIATIONS[stem]) {
       return { province: CITY_ABBREVIATIONS[stem] };
     }
-    // Check if it's a province
-    if (PROVINCE_NAMES.has(stem) || getProvinceByName(stem)) {
+    // Check if it's a province - return normalized name (handles aliases like "afyon" → "afyonkarahisar")
+    const province = getProvinceByName(stem);
+    if (province) {
+      return { province: province.normalized };
+    }
+    if (PROVINCE_NAMES.has(stem)) {
       return { province: stem };
     }
     // Check if it's a district - resolve to parent province AND keep district name
