@@ -4,12 +4,21 @@ import {
   GetCommand,
   PutCommand,
   DeleteCommand,
+  QueryCommand,
 } from '@aws-sdk/lib-dynamodb';
 
 export interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: string;
+}
+
+/** Route with search count for learning */
+export interface FrequentRoute {
+  origin: string;
+  destination?: string;  // undefined means "anywhere from origin"
+  count: number;
+  lastSearched: string;  // ISO timestamp
 }
 
 export interface ConversationContext {
@@ -27,6 +36,25 @@ export interface ConversationContext {
   lastShownCount?: number;
   // Foul language warning
   swearWarned?: boolean;
+
+  // === LEARNING FIELDS ===
+  /** Most frequently searched routes (top 10) */
+  frequentRoutes?: FrequentRoute[];
+  /** Total number of searches by this user */
+  totalSearches?: number;
+  /** Preferred vehicle type based on search history */
+  preferredVehicle?: string;
+  /** First interaction timestamp */
+  firstSeen?: string;
+  /** Flag to indicate we suggested a vehicle filter and await confirmation */
+  pendingVehicleSuggestion?: boolean;
+  /** Pending nearby search suggestion with original search params */
+  pendingNearbySuggestion?: {
+    origin?: string;
+    destination?: string;
+    neighboringOrigins?: string[];
+    neighboringDestinations?: string[];
+  };
 }
 
 export interface Conversation {
@@ -35,6 +63,17 @@ export interface Conversation {
   context: ConversationContext;
   createdAt: string;
   updatedAt: string;
+}
+
+/** Pending notification for empty search results */
+export interface PendingNotification {
+  pk: string;           // PENDING_ROUTE#{origin}
+  sk: string;           // {destination|ANY}#{userId}#{timestamp}
+  userId: string;
+  origin: string;
+  destination?: string; // undefined = any destination from origin
+  createdAt: string;
+  ttl: number;          // Unix timestamp for DynamoDB TTL (3 hours from creation)
 }
 
 export class ConversationStore {
@@ -166,5 +205,97 @@ export class ConversationStore {
       content: m.content,
       timestamp: m.timestamp,
     }));
+  }
+
+  // === PENDING NOTIFICATION METHODS ===
+
+  /**
+   * Create a pending notification when user searches but finds no results.
+   * Will be notified if a matching job appears within 3 hours.
+   */
+  async createPendingNotification(
+    userId: string,
+    origin: string,
+    destination?: string
+  ): Promise<void> {
+    const now = new Date();
+    const timestamp = now.getTime();
+    const threeHoursLater = timestamp + (3 * 60 * 60 * 1000); // 3 hours in ms
+
+    const dest = destination || 'ANY';
+
+    await this.client.send(
+      new PutCommand({
+        TableName: this.tableName,
+        Item: {
+          pk: `PENDING_ROUTE#${origin}`,
+          sk: `${dest}#${userId}#${timestamp}`,
+          userId,
+          origin,
+          destination: destination || null,
+          createdAt: now.toISOString(),
+          ttl: Math.floor(threeHoursLater / 1000), // DynamoDB TTL in seconds
+        },
+      })
+    );
+
+    console.log(`[PendingNotification] Created for ${userId}: ${origin} → ${dest}`);
+  }
+
+  /**
+   * Get all pending notifications that match a job's route.
+   * Called by processor when a new job is inserted.
+   */
+  async getPendingNotificationsByRoute(
+    origin: string,
+    destination?: string
+  ): Promise<PendingNotification[]> {
+    const results: PendingNotification[] = [];
+
+    // Query 1: Exact route match (origin → destination)
+    if (destination) {
+      const exactMatch = await this.client.send(
+        new QueryCommand({
+          TableName: this.tableName,
+          KeyConditionExpression: 'pk = :pk AND begins_with(sk, :skPrefix)',
+          ExpressionAttributeValues: {
+            ':pk': `PENDING_ROUTE#${origin}`,
+            ':skPrefix': `${destination}#`,
+          },
+        })
+      );
+      if (exactMatch.Items) {
+        results.push(...(exactMatch.Items as PendingNotification[]));
+      }
+    }
+
+    // Query 2: Any destination from origin (origin → ANY)
+    const anyMatch = await this.client.send(
+      new QueryCommand({
+        TableName: this.tableName,
+        KeyConditionExpression: 'pk = :pk AND begins_with(sk, :skPrefix)',
+        ExpressionAttributeValues: {
+          ':pk': `PENDING_ROUTE#${origin}`,
+          ':skPrefix': 'ANY#',
+        },
+      })
+    );
+    if (anyMatch.Items) {
+      results.push(...(anyMatch.Items as PendingNotification[]));
+    }
+
+    return results;
+  }
+
+  /**
+   * Delete a pending notification after sending the notification.
+   */
+  async deletePendingNotification(pk: string, sk: string): Promise<void> {
+    await this.client.send(
+      new DeleteCommand({
+        TableName: this.tableName,
+        Key: { pk, sk },
+      })
+    );
   }
 }

@@ -20,13 +20,28 @@ interface UserProfile {
   paymentId?: string;
 }
 
+interface FrequentRoute {
+  origin: string;
+  destination?: string;
+  count: number;
+  lastSearched: string;
+}
+
+interface ConversationContext {
+  lastOrigin?: string;
+  lastDestination?: string;
+  lastBodyType?: string;
+  lastVehicleType?: string;
+  // Learning fields
+  frequentRoutes?: FrequentRoute[];
+  totalSearches?: number;
+  preferredVehicle?: string;
+  firstSeen?: string;
+}
+
 interface Conversation {
   messages: Message[];
-  context: {
-    lastOrigin?: string;
-    lastDestination?: string;
-    lastBodyType?: string;
-  };
+  context: ConversationContext;
   createdAt: string;
   updatedAt: string;
 }
@@ -266,6 +281,66 @@ export default function UserProfilePage() {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Learned Preferences */}
+      <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-lg p-6">
+        <h2 className="text-sm font-medium text-white mb-4">Learned Preferences</h2>
+        {conversation?.context?.totalSearches || conversation?.context?.preferredVehicle || conversation?.context?.frequentRoutes?.length ? (
+          <div className="space-y-4">
+            {/* Stats Row */}
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-zinc-800/50 rounded-lg p-3">
+                <div className="text-zinc-500 text-xs uppercase tracking-wider">Total Searches</div>
+                <div className="text-xl font-semibold text-white mt-1">
+                  {conversation?.context?.totalSearches || 0}
+                </div>
+              </div>
+              <div className="bg-zinc-800/50 rounded-lg p-3">
+                <div className="text-zinc-500 text-xs uppercase tracking-wider">Preferred Vehicle</div>
+                <div className="text-xl font-semibold text-purple-400 mt-1">
+                  {conversation?.context?.preferredVehicle || '-'}
+                </div>
+              </div>
+              <div className="bg-zinc-800/50 rounded-lg p-3">
+                <div className="text-zinc-500 text-xs uppercase tracking-wider">First Seen</div>
+                <div className="text-sm font-medium text-white mt-1">
+                  {conversation?.context?.firstSeen ? formatDate(conversation.context.firstSeen) : '-'}
+                </div>
+              </div>
+            </div>
+
+            {/* Frequent Routes */}
+            {conversation?.context?.frequentRoutes && conversation.context.frequentRoutes.length > 0 && (
+              <div>
+                <div className="text-zinc-500 text-xs uppercase tracking-wider mb-2">Frequent Routes</div>
+                <div className="space-y-2">
+                  {conversation.context.frequentRoutes.slice(0, 5).map((route, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center justify-between bg-zinc-800/30 rounded px-3 py-2"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <span className="text-zinc-500 text-xs w-5">{idx + 1}.</span>
+                        <span className="text-cyan-400 text-sm">{route.origin}</span>
+                        <span className="text-zinc-600">→</span>
+                        <span className="text-orange-400 text-sm">{route.destination || 'herhangi'}</span>
+                      </div>
+                      <div className="flex items-center space-x-4">
+                        <span className="text-white text-sm font-medium">{route.count}x</span>
+                        <span className="text-zinc-500 text-xs">{getTimeAgo(route.lastSearched)}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="text-zinc-500 text-sm py-8 text-center">
+            No learned preferences yet - user needs to search more
+          </div>
+        )}
       </div>
 
       {/* Conversation History */}

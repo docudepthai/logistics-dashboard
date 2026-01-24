@@ -34,3 +34,11 @@ export {
   getVehicleTypeByPattern,
   getBodyTypeByPattern,
 } from './vehicles.js';
+
+// Province Neighbors
+export {
+  PROVINCE_NEIGHBORS,
+  getNeighboringProvinces,
+  areNeighbors,
+  getNeighborsSummary,
+} from './neighbors.js';

@@ -1,7 +1,7 @@
 import OpenAI from 'openai';
 import postgres from 'postgres';
 import type { ChatCompletionMessageParam, ChatCompletionTool } from 'openai/resources/chat/completions';
-import { ConversationStore, type Conversation, type ConversationContext } from './conversation.js';
+import { ConversationStore, type Conversation, type ConversationContext, type FrequentRoute } from './conversation.js';
 import {
   searchJobs,
   getJobById,
@@ -19,6 +19,7 @@ import {
   getProvinceByName,
   DISTRICT_NAMES,
   getDistrictsByName,
+  getNeighboringProvinces,
 } from '@turkish-logistics/shared/constants';
 
 /**
@@ -50,6 +51,9 @@ interface ParsedLocations {
   // Multi-destination support: "Samsundan istanbul ankara izmir varmi"
   // = origin: samsun, destinations: [istanbul, ankara, izmir]
   destinations?: string[];       // Multiple destinations when origin has explicit suffix
+  // Multi-origin support: "istanbuldan veya ankaradan mersine"
+  // = origins: [istanbul, ankara], destination: mersin
+  origins?: string[];            // Multiple origins when connected by "veya/yada"
   // Region support: "istanbuldan ege bolgesine"
   // = origin: istanbul, destinationRegion: ege, destinations: [izmir, aydin, ...]
   originRegion?: string;         // Region name if origin is a region
@@ -205,20 +209,32 @@ const REGION_ALIASES: Record<string, string> = {
 
 /**
  * Detect region from text and return the region key
+ * IMPORTANT: Use word boundaries to avoid false positives like "yegenim" matching "ege"
  */
 function detectRegion(text: string): string | null {
   const normalized = normalizeToAscii(text).toLowerCase();
 
-  // Check direct region names first
+  // Turkish suffixes for regions: -den, -dan, -ye, -ya, -de, -da, -nin, etc.
+  const suffixes = '(den|dan|ye|ya|ne|na|nin|de|da|si)?';
+
+  // Check direct region names first - use word boundaries!
   for (const regionName of Object.keys(TURKISH_REGIONS)) {
-    if (normalized.includes(regionName)) {
+    // Pattern 1: Just the region name with optional suffix: "egeden", "egeye"
+    const regionPattern = new RegExp(`\\b${regionName}${suffixes}\\b`, 'i');
+    // Pattern 2: Region + bolgesi: "ege bolgesi", "ege bolgesine"
+    const bolgePattern = new RegExp(`\\b${regionName}\\s*bolge(si|sine|sinden|sini)?\\b`, 'i');
+
+    if (regionPattern.test(normalized) || bolgePattern.test(normalized)) {
       return regionName;
     }
   }
 
-  // Check aliases
+  // Check aliases with word boundaries
   for (const [alias, regionKey] of Object.entries(REGION_ALIASES)) {
-    if (normalized.includes(alias)) {
+    const aliasPattern = new RegExp(`\\b${alias}${suffixes}\\b`, 'i');
+    const bolgePatttern = new RegExp(`\\b${alias}\\s*bolge(si|sine|sinden|sini)?\\b`, 'i');
+
+    if (aliasPattern.test(normalized) || bolgePatttern.test(normalized)) {
       return regionKey;
     }
   }
@@ -262,6 +278,32 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
     // Match: word + space + apostrophe? + suffix (as standalone word)
     const pattern = new RegExp(`(\\w+)\\s+'?${suffix}(?=\\s|$)`, 'gi');
     normalized = normalized.replace(pattern, `$1${suffix}`);
+  }
+
+  // VEYA/YADA DETECTION: Handle "X veya Y" or "X yada Y" patterns
+  // When two cities are connected by "or", they should be treated as same direction
+  // Example: "adana veya mersine" = both are destinations
+  // Example: "istanbuldan veya ankaradan" = both are origins
+  const veyaCities: { city: string; suffix: 'origin' | 'destination' | 'none' }[] = [];
+  const veyaPattern = /(\w+)\s+(?:veya|yada|ya\s+da)\s+(\w+)/gi;
+  let veyaMatch;
+  while ((veyaMatch = veyaPattern.exec(normalized)) !== null) {
+    const [, city1, city2] = veyaMatch;
+    if (city1 && city2) {
+      // Check suffixes for both cities
+      const { stem: stem1, isOrigin: isOrigin1, isDestination: isDest1 } = stripSuffix(city1);
+      const { stem: stem2, isOrigin: isOrigin2, isDestination: isDest2 } = stripSuffix(city2);
+
+      // Determine direction: if either has a suffix, apply to both
+      let direction: 'origin' | 'destination' | 'none' = 'none';
+      if (isDest1 || isDest2) direction = 'destination';
+      else if (isOrigin1 || isOrigin2) direction = 'origin';
+
+      console.log(`[Parser] Veya pattern detected: "${city1}" ${direction === 'origin' ? 'veya' : 'veya'} "${city2}" -> direction: ${direction}`);
+
+      veyaCities.push({ city: stem1, suffix: direction });
+      veyaCities.push({ city: stem2, suffix: direction });
+    }
   }
 
   // Split into tokens (including hyphen/dash as separator for "istanbul-gebze" format)
@@ -472,7 +514,8 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
   //
   if (result.origin && citiesWithoutSuffix.length >= 2) {
     // Pattern 1: Origin has explicit suffix, all others are destinations
-    result.destinations = citiesWithoutSuffix.map(c => c.province);
+    // Deduplicate destinations (e.g., "tekirdağ çorlu" both resolve to Tekirdağ province)
+    result.destinations = [...new Set(citiesWithoutSuffix.map(c => c.province))];
     result.destination = citiesWithoutSuffix[0].province;
     result.destinationProvince = citiesWithoutSuffix[0].province;
     if (citiesWithoutSuffix[0].district) {
@@ -486,7 +529,8 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
     if (first.district) {
       result.originDistrict = first.district;
     }
-    result.destinations = rest.map(c => c.province);
+    // Deduplicate destinations
+    result.destinations = [...new Set(rest.map(c => c.province))];
     result.destination = rest[0].province;
     result.destinationProvince = rest[0].province;
     if (rest[0].district) {
@@ -508,6 +552,54 @@ function parseLocationsFromMessage(text: string): ParsedLocations {
         result.destinationProvince = province;
         if (district) {
           result.destinationDistrict = district;
+        }
+      }
+    }
+  }
+
+  // VEYA PATTERN: Process cities connected by "veya/yada"
+  // If we detected "X veya Y" pattern where both are destinations, add both to destinations
+  if (veyaCities.length >= 2) {
+    const destCities = veyaCities.filter(c => c.suffix === 'destination');
+    const originCities = veyaCities.filter(c => c.suffix === 'origin');
+
+    if (destCities.length >= 2) {
+      // Resolve each city to province
+      const resolvedDests: string[] = [];
+      for (const { city } of destCities) {
+        const loc = resolveLocation(city);
+        if (loc) {
+          resolvedDests.push(loc.province);
+        }
+      }
+      if (resolvedDests.length >= 2) {
+        console.log(`[Parser] Veya destinations resolved:`, resolvedDests);
+        // Merge with existing destinations if any
+        const existingDests = result.destinations || (result.destination ? [result.destination] : []);
+        result.destinations = [...new Set([...existingDests, ...resolvedDests])];
+        // Set first destination if not set
+        if (!result.destination && result.destinations.length > 0) {
+          result.destination = result.destinations[0];
+          result.destinationProvince = result.destinations[0];
+        }
+      }
+    }
+
+    if (originCities.length >= 2) {
+      // Handle multiple origins (less common but possible)
+      const resolvedOrigins: string[] = [];
+      for (const { city } of originCities) {
+        const loc = resolveLocation(city);
+        if (loc) {
+          resolvedOrigins.push(loc.province);
+        }
+      }
+      if (resolvedOrigins.length >= 2) {
+        console.log(`[Parser] Veya origins resolved:`, resolvedOrigins);
+        result.origins = [...new Set(resolvedOrigins)];
+        if (!result.origin && result.origins.length > 0) {
+          result.origin = result.origins[0];
+          result.originProvince = result.origins[0];
         }
       }
     }
@@ -570,7 +662,7 @@ ARAC VE KASA TIPLERI:
 - "frigorifik", "frigo" → isRefrigerated: true
 - "damperli", "damper" → bodyType: DAMPERLI
 - "tenteli", "tente" → bodyType: TENTELI
-- "tir" → vehicleType: TIR
+- "tir", "13 60", "13:60", "1360" → vehicleType: TIR (13 60 = tir slang'i)
 - "kamyon" → vehicleType: KAMYON
 
 YUK TIPLERI (cargoType):
@@ -645,8 +737,15 @@ export class LogisticsAgent {
   }
 
   async processMessage(userId: string, userMessage: string): Promise<AgentResponse> {
-    const msg = userMessage.trim().toLowerCase();
-    console.log(`[Agent] Processing message from ${userId}: "${userMessage}"`);
+    // Preprocess: convert "13 60", "13:60", "1360" to "tir" (trucker slang)
+    // Pattern matches: "13 60", "13  60", "13:60", "13.60", "1360"
+    let processedMessage = userMessage.replace(/\b13\s*[:\.\s]?\s*60\b/gi, 'tir');
+    if (processedMessage !== userMessage) {
+      console.log(`[Agent] Preprocessed "13 60" slang: "${userMessage}" → "${processedMessage}"`);
+    }
+
+    const msg = processedMessage.trim().toLowerCase();
+    console.log(`[Agent] Processing message from ${userId}: "${processedMessage}"`);
 
     // Special case: "sa" greeting
     if (msg === 'sa') {
@@ -662,10 +761,26 @@ export class LogisticsAgent {
     // Handle other greetings - include Patron branding for first contact
     const conversation = await this.conversationStore.getConversation(userId);
     const isFirstMessage = !conversation || conversation.messages.length === 0;
+    const hasSearchHistory = conversation?.context?.frequentRoutes && conversation.context.frequentRoutes.length > 0;
+    const topRoute = hasSearchHistory ? conversation!.context.frequentRoutes![0] : null;
+
+    // Build personalized greeting for returning users with search history
+    const getPersonalizedGreeting = (baseGreeting: string): string => {
+      if (isFirstMessage) {
+        return `${baseGreeting}, ben patron. sana yuk bulmak icin buradayim. her gun yeni yukler geliyor, takipte kal. nerden nereye bakmami istersin?`;
+      }
+      if (topRoute) {
+        const routeStr = topRoute.destination
+          ? `${topRoute.origin}-${topRoute.destination}`
+          : topRoute.origin;
+        return `${baseGreeting} abi, ${routeStr} bakayim mi yine?`;
+      }
+      return baseGreeting;
+    };
 
     const greetingResponses: Record<string, string> = {
-      'merhaba': isFirstMessage ? 'merhaba, ben patron. sana yuk bulmak icin buradayim. her gun yeni yukler geliyor, takipte kal. nerden nereye bakmami istersin?' : 'merhaba',
-      'selam': isFirstMessage ? 'selam, ben patron. sana yuk bulmak icin buradayim. her gun yeni yukler geliyor, takipte kal. nerden nereye bakmami istersin?' : 'selam',
+      'merhaba': getPersonalizedGreeting('merhaba'),
+      'selam': getPersonalizedGreeting('selam'),
       'hey': 'hey',
       'hello': 'hello',
       'hi': 'hi',
@@ -682,7 +797,7 @@ export class LogisticsAgent {
         return {
           message: response,
           jobIds: [],
-          context: {} as ConversationContext,
+          context: conversation?.context || {} as ConversationContext,
         };
       }
     }
@@ -740,6 +855,130 @@ export class LogisticsAgent {
       return {
         message: response,
         jobIds: [],
+        context: {} as ConversationContext,
+      };
+    }
+
+    // === VEHICLE SUGGESTION CONFIRMATION ===
+    // If we suggested a vehicle filter last message and user confirms, re-search with filter
+    const confirmPatterns = ['evet', 'olur', 'tamam', 'ok', 'oke', 'yes', 'olsun', 'bak', 'bakabilirsin'];
+    const isConfirmation = confirmPatterns.some(p => normalizedMsg === p || normalizedMsg.startsWith(p + ' '));
+    const pendingVehicle = conversation?.context?.pendingVehicleSuggestion;
+    const preferredVehicle = conversation?.context?.preferredVehicle;
+
+    if (isConfirmation && pendingVehicle && preferredVehicle) {
+      console.log(`[Agent] Vehicle suggestion confirmed: ${preferredVehicle}`);
+
+      // Re-search with vehicle filter using last search params
+      const lastOrigin = conversation?.context?.lastOrigin;
+      const lastDestination = conversation?.context?.lastDestination;
+
+      if (lastOrigin) {
+        const params: SearchJobsParams = {
+          origin: lastOrigin,
+          destination: lastDestination || undefined,
+          vehicleType: preferredVehicle,
+          limit: 10,
+        };
+
+        const result = await searchJobs(this.sql, params);
+        const formattedResults = this.formatJobsAsText(result.jobs, params);
+
+        let response = `${preferredVehicle} isleri:\n\n${formattedResults}`;
+        if (result.totalCount > result.jobs.length) {
+          response += `\n\nhint: ${result.totalCount} ${preferredVehicle} isi var, *"devam"* yaz daha fazla gosteririm.`;
+        }
+
+        await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
+        await this.conversationStore.addMessage(
+          userId,
+          { role: 'assistant', content: response },
+          {
+            lastVehicleType: preferredVehicle,
+            lastTotalCount: result.totalCount,
+            lastOffset: 0,
+            lastShownCount: result.jobs.length,
+            pendingVehicleSuggestion: false, // Clear the pending suggestion
+          }
+        );
+
+        return {
+          message: response,
+          jobIds: result.jobs.map(j => j.id),
+          context: {} as ConversationContext,
+        };
+      }
+    }
+
+    // === NEARBY SEARCH CONFIRMATION ===
+    // If we suggested a nearby search and user confirms, search in neighboring provinces
+    const pendingNearby = conversation?.context?.pendingNearbySuggestion;
+    if (isConfirmation && pendingNearby) {
+      console.log(`[Agent] Nearby search confirmed: origin=${pendingNearby.origin}, neighbors=${pendingNearby.neighboringOrigins?.join(',')}`);
+
+      // Search in neighboring origins (if available)
+      const allJobs: JobResult[] = [];
+      const searchedProvinces: string[] = [];
+
+      // Search in each neighboring origin
+      if (pendingNearby.neighboringOrigins && pendingNearby.neighboringOrigins.length > 0) {
+        for (const neighborOrigin of pendingNearby.neighboringOrigins) {
+          const params: SearchJobsParams = {
+            origin: neighborOrigin,
+            destination: pendingNearby.destination || undefined,
+            limit: 5, // Limit per province
+          };
+          const result = await searchJobs(this.sql, params);
+          if (result.jobs.length > 0) {
+            allJobs.push(...result.jobs);
+            searchedProvinces.push(neighborOrigin);
+          }
+        }
+      }
+
+      // Also search neighboring destinations if origin was specified
+      if (pendingNearby.origin && pendingNearby.neighboringDestinations && pendingNearby.neighboringDestinations.length > 0) {
+        for (const neighborDest of pendingNearby.neighboringDestinations) {
+          const params: SearchJobsParams = {
+            origin: pendingNearby.origin,
+            destination: neighborDest,
+            limit: 5, // Limit per province
+          };
+          const result = await searchJobs(this.sql, params);
+          if (result.jobs.length > 0) {
+            allJobs.push(...result.jobs);
+            if (!searchedProvinces.includes(neighborDest)) {
+              searchedProvinces.push(neighborDest);
+            }
+          }
+        }
+      }
+
+      // Deduplicate jobs by ID
+      const uniqueJobs = allJobs.filter((job, index, self) =>
+        index === self.findIndex(j => j.id === job.id)
+      ).slice(0, 10); // Max 10 jobs total
+
+      let response: string;
+      if (uniqueJobs.length > 0) {
+        const formattedResults = this.formatJobsAsText(uniqueJobs);
+        response = `civar iller (${searchedProvinces.join(', ')}):\n\n${formattedResults}`;
+      } else {
+        response = `civar illerde de (${pendingNearby.neighboringOrigins?.slice(0, 3).join(', ') || ''}) bulamadim abi. yuk gelirse haber veririm.`;
+      }
+
+      await this.conversationStore.addMessage(userId, { role: 'user', content: userMessage });
+      await this.conversationStore.addMessage(
+        userId,
+        { role: 'assistant', content: response },
+        {
+          pendingNearbySuggestion: undefined, // Clear the pending suggestion
+        }
+      );
+
+      return {
+        message: response,
+        jobIds: uniqueJobs.map(j => j.id),
         context: {} as ConversationContext,
       };
     }
@@ -889,7 +1128,7 @@ export class LogisticsAgent {
     // Handle "her yere" / "tüm iller" - search with origin only (no destination filter)
     if (isAllDestinations) {
       // Try to get origin from the message itself first (e.g., "istanbuldan her yere")
-      const parsedFromMsg = parseLocationsFromMessage(userMessage);
+      const parsedFromMsg = parseLocationsFromMessage(processedMessage);
       const origin = parsedFromMsg.origin || conversation?.context.lastOrigin;
 
       if (origin) {
@@ -958,7 +1197,7 @@ export class LogisticsAgent {
 
     // Pre-parse Turkish location suffixes to ensure correct origin/destination extraction
     // This fixes cases like "Kayseri'den İstanbul'a" where GPT might miss the destination
-    const parsedLocations = parseLocationsFromMessage(userMessage);
+    const parsedLocations = parseLocationsFromMessage(processedMessage);
 
     // Handle "X ici" / "X icinde" - intra-city search (same origin and destination)
     // IMPORTANT: Use word boundaries to avoid matching "için" (Turkish for "for")
@@ -966,7 +1205,15 @@ export class LogisticsAgent {
     const intraCityRegex = /\bici\b|\bicinde\b|\bicinden\b/i;
     const isIntraCitySearch = intraCityRegex.test(normalizedMsg);
 
-    if (isIntraCitySearch && (parsedLocations.origin || conversation?.context.lastOrigin)) {
+    // DEBUG: Log intra-city detection
+    console.log(`[Agent] IntraCity check: isIntraCitySearch=${isIntraCitySearch}, normalizedMsg="${normalizedMsg}", parsedLocations=`, JSON.stringify(parsedLocations));
+
+    // BUGFIX: If we have BOTH origin AND destination parsed and they're DIFFERENT provinces,
+    // this is NOT an intra-city search even if "ici" pattern somehow matches
+    const hasDistinctRoute = parsedLocations.origin && parsedLocations.destination &&
+      parsedLocations.originProvince !== parsedLocations.destinationProvince;
+
+    if (isIntraCitySearch && !hasDistinctRoute && (parsedLocations.origin || conversation?.context.lastOrigin)) {
       const city = parsedLocations.origin || conversation?.context.lastOrigin;
 
       // Search for jobs where origin = destination = same city
@@ -1334,7 +1581,7 @@ export class LogisticsAgent {
     }
 
     // Build messages with conversation history and parsed locations
-    const messages = this.buildMessages(conversation, userMessage, parsedLocations);
+    const messages = this.buildMessages(conversation, processedMessage, parsedLocations);
 
     // Call OpenAI with tools
     // Force search_jobs when location is detected to prevent GPT from making up "su an yok abi"
@@ -1373,7 +1620,8 @@ export class LogisticsAgent {
           JSON.parse(toolCall.function.arguments),
           collectedJobIds,
           contextUpdate,
-          parsedLocations // Pass pre-parsed locations to enforce correct values
+          parsedLocations, // Pass pre-parsed locations to enforce correct values
+          userId // For pending notifications on empty search
         );
 
         // If this was a search, capture the direct result
@@ -1521,7 +1769,8 @@ export class LogisticsAgent {
     args: Record<string, unknown>,
     collectedJobIds: string[],
     currentContext: Partial<ConversationContext>,
-    parsedLocations?: ParsedLocations
+    parsedLocations?: ParsedLocations,
+    userId?: string // For pending notifications on empty search
   ): Promise<{ data: unknown; contextUpdate: Partial<ConversationContext>; directResponse?: string }> {
     const contextUpdate: Partial<ConversationContext> = {};
     console.log(`[Agent] executeTool: ${name}`, { args, currentContext, parsedLocations });
@@ -1595,12 +1844,21 @@ export class LogisticsAgent {
       const sameRouteNoFilters = !locationChanged && (parsedLocations?.origin || parsedLocations?.destination) && !hasFiltersInCurrentMessage;
       const isNewSearch = locationChanged || sameRouteNoFilters;
 
-      // Apply context from previous search ONLY if doing a follow-up (not a new search)
-      if (!params.origin && currentContext.lastOrigin) {
-        params.origin = currentContext.lastOrigin;
-      }
-      if (!params.destination && currentContext.lastDestination) {
-        params.destination = currentContext.lastDestination;
+      // Apply context from previous search ONLY if:
+      // 1. User didn't provide any location at all (follow-up query like "kamyon var mi?")
+      // 2. NOT when user provided only origin or only destination (single-city query)
+      const userProvidedOnlyOrigin = parsedLocations?.origin && !parsedLocations?.destination;
+      const userProvidedOnlyDestination = parsedLocations?.destination && !parsedLocations?.origin;
+      const isSingleCityQuery = userProvidedOnlyOrigin || userProvidedOnlyDestination;
+
+      // Only inherit from context if user didn't provide any location
+      if (!isSingleCityQuery) {
+        if (!params.origin && currentContext.lastOrigin) {
+          params.origin = currentContext.lastOrigin;
+        }
+        if (!params.destination && currentContext.lastDestination) {
+          params.destination = currentContext.lastDestination;
+        }
       }
 
       // Only apply vehicle/body filters from context if NOT a new search
@@ -1671,6 +1929,56 @@ export class LogisticsAgent {
         }
       }
 
+      // === PENDING NOTIFICATION: Create when no results found ===
+      // If still no results after all fallbacks, create a pending notification
+      // User will be notified if a matching job appears within 3 hours
+      if (result.jobs.length === 0 && userId && params.origin) {
+        try {
+          await this.conversationStore.createPendingNotification(
+            userId,
+            params.origin,
+            params.destination // undefined = any destination from origin
+          );
+        } catch (err) {
+          console.error('[Agent] Failed to create pending notification:', err);
+          // Don't fail the search if notification creation fails
+        }
+
+        // === NEARBY SUGGESTION: Suggest searching in neighboring provinces ===
+        const neighboringOrigins = params.origin ? getNeighboringProvinces(params.origin) : [];
+        const neighboringDestinations = params.destination ? getNeighboringProvinces(params.destination) : [];
+
+        if (neighboringOrigins.length > 0 || neighboringDestinations.length > 0) {
+          // Build suggestion text - show exactly what we'll search (up to 3 each)
+          let nearbySuggestion = '';
+          const originsToSearch = neighboringOrigins.slice(0, 3);
+          const destsToSearch = neighboringDestinations.slice(0, 3);
+
+          if (originsToSearch.length > 0 && destsToSearch.length > 0) {
+            // Both have neighbors - show all that we'll search
+            const originHint = originsToSearch.join(', ');
+            const destHint = destsToSearch.join(', ');
+            nearbySuggestion = `\n\n*civarinda bakayim mi?* (cikis: ${originHint} / varis: ${destHint}) - bakmami istiyorsan *"evet"* yaz`;
+          } else if (originsToSearch.length > 0) {
+            // Only origin has neighbors
+            nearbySuggestion = `\n\n*${params.origin} civarinda bakayim mi?* (${originsToSearch.join(', ')}) - bakmami istiyorsan *"evet"* yaz`;
+          } else if (destsToSearch.length > 0) {
+            // Only destination has neighbors
+            nearbySuggestion = `\n\n*${params.destination} civarinda bakayim mi?* (${destsToSearch.join(', ')}) - bakmami istiyorsan *"evet"* yaz`;
+          }
+
+          if (nearbySuggestion) {
+            contextUpdate.pendingNearbySuggestion = {
+              origin: params.origin,
+              destination: params.destination,
+              neighboringOrigins: originsToSearch,
+              neighboringDestinations: destsToSearch,
+            };
+            console.log(`[Agent] Suggesting nearby search: origin neighbors=${originsToSearch.join(',')}, dest neighbors=${destsToSearch.join(',')}`);
+          }
+        }
+      }
+
       // Update context - use empty string to clear values (DynamoDB doesn't accept undefined)
       contextUpdate.lastOrigin = params.origin || '';
       contextUpdate.lastDestination = params.destination || '';
@@ -1683,6 +1991,15 @@ export class LogisticsAgent {
       contextUpdate.lastTotalCount = result.totalCount;
       contextUpdate.lastOffset = 0;
       contextUpdate.lastShownCount = result.jobs.length;
+
+      // === LEARNING: Track search patterns ===
+      const learningUpdates = this.updateFrequentRoutes(
+        currentContext as ConversationContext,
+        params.origin,
+        params.destination,
+        params.vehicleType
+      );
+      Object.assign(contextUpdate, learningUpdates);
 
       // Collect job IDs
       for (const job of result.jobs) {
@@ -1709,6 +2026,36 @@ export class LogisticsAgent {
       // Show hint with total unique count and pagination option
       if (result.totalCount > shownCount) {
         directResponse += `\n\nhint: toplamda ${result.totalCount} is var, ${shownCount} tane gosteriyorum. *"devam"* yaz daha fazla gosteririm.`;
+      }
+
+      // === VEHICLE SUGGESTION ===
+      // If user has preferredVehicle and didn't specify a vehicle type, suggest filtering
+      const userPreferredVehicle = (currentContext as ConversationContext)?.preferredVehicle;
+      if (userPreferredVehicle && !params.vehicleType && result.jobs.length > 0) {
+        directResponse += `\n\n*${userPreferredVehicle} mi bakayim?* (evet de filtrelerim)`;
+        contextUpdate.pendingVehicleSuggestion = true;
+      } else {
+        // Clear pending suggestion if not applicable
+        contextUpdate.pendingVehicleSuggestion = false;
+      }
+
+      // === NEARBY SUGGESTION ===
+      // If no results and we have neighbors, add suggestion to response
+      if (result.jobs.length === 0 && contextUpdate.pendingNearbySuggestion) {
+        const nearby = contextUpdate.pendingNearbySuggestion;
+        if (nearby.neighboringOrigins && nearby.neighboringOrigins.length > 0 && nearby.neighboringDestinations && nearby.neighboringDestinations.length > 0) {
+          // Show all neighbors we'll actually search
+          const originHint = nearby.neighboringOrigins.join(', ');
+          const destHint = nearby.neighboringDestinations.join(', ');
+          directResponse += `\n\n*civarinda bakayim mi?* (cikis: ${originHint} / varis: ${destHint}) - bakmami istiyorsan *"evet"* yaz`;
+        } else if (nearby.neighboringOrigins && nearby.neighboringOrigins.length > 0) {
+          directResponse += `\n\n*${nearby.origin} civarinda bakayim mi?* (${nearby.neighboringOrigins.join(', ')}) - bakmami istiyorsan *"evet"* yaz`;
+        } else if (nearby.neighboringDestinations && nearby.neighboringDestinations.length > 0) {
+          directResponse += `\n\n*${nearby.destination} civarinda bakayim mi?* (${nearby.neighboringDestinations.join(', ')}) - bakmami istiyorsan *"evet"* yaz`;
+        }
+      } else if (result.jobs.length > 0) {
+        // Clear nearby suggestion if we found results
+        contextUpdate.pendingNearbySuggestion = undefined;
       }
 
       // Return with directResponse - this bypasses GPT entirely for the response
@@ -1852,6 +2199,70 @@ export class LogisticsAgent {
   }
 
   /**
+   * Update frequent routes in context based on a search.
+   * Tracks top 10 most searched routes for personalization.
+   */
+  private updateFrequentRoutes(
+    context: ConversationContext,
+    origin?: string,
+    destination?: string,
+    vehicleType?: string
+  ): Partial<ConversationContext> {
+    const now = new Date().toISOString();
+    const updates: Partial<ConversationContext> = {};
+
+    // Only track if we have at least an origin
+    if (!origin) return updates;
+
+    // Initialize or get existing routes
+    const routes: FrequentRoute[] = context.frequentRoutes ? [...context.frequentRoutes] : [];
+
+    // Normalize for comparison
+    const normOrigin = normalizeToAscii(origin.toLowerCase());
+    const normDest = destination ? normalizeToAscii(destination.toLowerCase()) : undefined;
+
+    // Find existing route
+    const existingIndex = routes.findIndex(r =>
+      normalizeToAscii(r.origin.toLowerCase()) === normOrigin &&
+      ((!r.destination && !normDest) ||
+       (r.destination && normDest && normalizeToAscii(r.destination.toLowerCase()) === normDest))
+    );
+
+    if (existingIndex >= 0) {
+      // Update existing route
+      routes[existingIndex].count++;
+      routes[existingIndex].lastSearched = now;
+    } else {
+      // Add new route
+      routes.push({
+        origin,
+        destination,
+        count: 1,
+        lastSearched: now,
+      });
+    }
+
+    // Sort by count (descending) and keep top 10
+    routes.sort((a, b) => b.count - a.count);
+    updates.frequentRoutes = routes.slice(0, 10);
+
+    // Update total searches
+    updates.totalSearches = (context.totalSearches || 0) + 1;
+
+    // Update preferred vehicle if specified
+    if (vehicleType) {
+      updates.preferredVehicle = vehicleType;
+    }
+
+    // Set firstSeen if not already set
+    if (!context.firstSeen) {
+      updates.firstSeen = now;
+    }
+
+    return updates;
+  }
+
+  /**
    * Format jobs as ready-to-display text to prevent GPT hallucination.
    * This generates the exact output that should be shown to the user.
    * When no results, provides specific message based on search filters.
@@ -1984,7 +2395,7 @@ export class LogisticsAgent {
       message = parts[0];
     }
 
-    // Add hint that jobs are constantly updated
-    return `${message}, isler surekli guncelleniyor sonradan tekrar deneyebilirsin.`;
+    // Add hint that we'll notify them if a matching job appears
+    return `${message}. yuk gelirse 3 saat icinde haber veririm.`;
   }
 }

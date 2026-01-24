@@ -63,8 +63,9 @@ function looksLikePlateCode(token: string, originalText: string): boolean {
     return false;
   }
 
-  // Skip if followed by measurement units (km, m, cm, mm, ton, kg, etc.)
-  const measurementPattern = new RegExp(`${token}\\s*(km|m|cm|mm|mt|metre|meter|ton|kg|lt|saat|dakika|gun|arac|tir|uzunluk|genislik|yukseklik)`);
+  // Skip if followed by measurement units (km, m, cm, mm, ton, kg, teker/wheels, etc.)
+  // Also skip vehicle counts: "10 araba", "5 kamyon", "3 dorse"
+  const measurementPattern = new RegExp(`${token}\\s*(km|m|cm|mm|mt|metre|meter|ton|kg|lt|saat|dakika|gun|arac|araba|kamyon|dorse|tir|teker|uzunluk|genislik|yukseklik)`, 'i');
   if (measurementPattern.test(context)) {
     return false;
   }
@@ -76,9 +77,30 @@ function looksLikePlateCode(token: string, originalText: string): boolean {
   }
 
   // Skip if preceded by "saat" (hour) - e.g., "saat 20"
-  const hourPattern = new RegExp(`saat\\s*${token}`);
+  const hourPattern = new RegExp(`saat\\s*${token}`, 'i');
   if (hourPattern.test(context)) {
     return false;
+  }
+
+  // Skip if preceded by "park" (parking fee) - e.g., "Park 60 Nakliye"
+  const parkPattern = new RegExp(`park\\s*${token}`, 'i');
+  if (parkPattern.test(context)) {
+    return false;
+  }
+
+  // Skip if token has leading zero (like "010", "060") - not a valid plate code format
+  const leadingZeroPattern = new RegExp(`0${token}\\b`);
+  if (leadingZeroPattern.test(context)) {
+    return false;
+  }
+
+  // Skip trailer dimensions like "13 60", "13.60", "1360" (13.60 meters trailer length)
+  // Common formats: "13 60 tir", "13.60 açık", "1360 kapalı"
+  if (token === '60') {
+    const trailerPattern = /13\s*[\.,]?\s*60|1360/i;
+    if (trailerPattern.test(context)) {
+      return false;
+    }
   }
 
   // Skip if it's in a range pattern like "20:00 - 12:00" or "20-12"
@@ -88,14 +110,28 @@ function looksLikePlateCode(token: string, originalText: string): boolean {
   }
 
   // Skip if part of phone number pattern (e.g., "0532 684 15 56", "05xx xxx xx xx")
-  // Turkish mobile numbers: 05XX XXX XX XX
+  // Turkish mobile numbers: 05XX XXX XX XX or +90 5XX XXX XX XX
   const phonePatterns = [
     new RegExp(`05\\d{2}\\s*\\d{3}\\s*\\d{2}\\s*${token}`),  // End of phone
     new RegExp(`05\\d{2}\\s*\\d{3}\\s*${token}\\s*\\d{2}`),   // Middle of phone (15 in 05xx xxx 15 56)
     new RegExp(`05\\d{2}\\s*${token}\\s*\\d{2}\\s*\\d{2}`),   // After area code
     new RegExp(`${token}\\s*\\d{3}\\s*\\d{2}\\s*\\d{2}`),     // Start of phone-like sequence
+    // Handle +90 format: +90 543 977 72 96
+    new RegExp(`\\+?90\\s*5\\d{2}\\s*\\d{3}\\s*\\d{2}\\s*${token}`),  // End of +90 format
+    new RegExp(`\\+?90\\s*5\\d{2}\\s*\\d{3}\\s*${token}\\s*\\d{2}`),  // Middle of +90 format
+    // Handle cases where plate code is preceded by 2 digits (like "72 96" or "09 67")
+    new RegExp(`\\d{2}\\s+${token}\\s*$`),  // Token at very end after 2 digits
+    new RegExp(`\\d{3}\\s+${token}\\s+\\d{2}`),  // Token between 3 digits and 2 digits (xxx YY zz pattern)
+    new RegExp(`\\d{2}\\s+${token}\\s+\\d{2}`),  // Token between 2 digits and 2 digits (xx YY zz pattern)
   ];
   if (phonePatterns.some(p => p.test(context))) {
+    return false;
+  }
+
+  // Additional check: if the full text contains a phone number that includes this token
+  // This catches edge cases where the token is embedded in various phone formats
+  const fullPhoneCheck = new RegExp(`(?:0|\\+?90)\\s*5\\d{2}[\\s\\-\\.]*\\d{3}[\\s\\-\\.]*\\d{2}[\\s\\-\\.]*${token}(?:\\s|$|[^0-9])`);
+  if (fullPhoneCheck.test(normalizedText)) {
     return false;
   }
 
@@ -434,6 +470,243 @@ export function extractAllRoutes(text: string): ExtractedRoute[] {
 
           routes.push(route);
         }
+      }
+    }
+  }
+
+  // If no explicit routes found, check for "one origin, multiple destinations" pattern
+  // e.g., "Çerkezköyden yükleme\nErzurum\nKars\nAğrı\nIğdır"
+  if (routes.length === 0) {
+    const multiDestRoutes = extractOneOriginMultipleDestinations(normalizedText);
+    for (const route of multiDestRoutes) {
+      const routeKey = `${route.origin}-${route.destination}`;
+      if (!seenRoutes.has(routeKey)) {
+        seenRoutes.add(routeKey);
+        routes.push(route);
+      }
+    }
+  }
+
+  // Check for "CITY YÜKLER" header pattern (e.g., "*ÇORLU YÜKLER*\nELAZIĞ TIR\nBAŞAKŞEHİR TIR")
+  if (routes.length === 0) {
+    const yuklerRoutes = extractYuklerHeaderRoutes(text);
+    for (const route of yuklerRoutes) {
+      const routeKey = `${route.origin}-${route.destination}`;
+      if (!seenRoutes.has(routeKey)) {
+        seenRoutes.add(routeKey);
+        routes.push(route);
+      }
+    }
+  }
+
+  // Check for "(Çıkış:CITY)" format (e.g., "(Çıkış:AYDIN) 🏁 ORDU")
+  if (routes.length === 0) {
+    const cikisRoutes = extractCikisFormatRoutes(text);
+    for (const route of cikisRoutes) {
+      const routeKey = `${route.origin}-${route.destination}`;
+      if (!seenRoutes.has(routeKey)) {
+        seenRoutes.add(routeKey);
+        routes.push(route);
+      }
+    }
+  }
+
+  return routes;
+}
+
+/**
+ * Extract routes when there's one origin (with -den/-dan suffix) and multiple destinations
+ * on separate lines or comma-separated.
+ * e.g., "Çerkezköyden yükleme açık araç 26 ton\nErzurum\nKars\nAğrı\nIğdır"
+ */
+function extractOneOriginMultipleDestinations(text: string): ExtractedRoute[] {
+  const routes: ExtractedRoute[] = [];
+
+  // Find origin with -den/-dan/-ten/-tan suffix
+  const originPattern = /([A-Za-z\u00C0-\u017F]+)[''']?(?:dan|den|tan|ten)\b/gi;
+  let originMatch;
+  let origin: { provinceName: string; provinceCode: number } | null = null;
+
+  while ((originMatch = originPattern.exec(text)) !== null) {
+    const originPart = originMatch[1];
+    if (originPart) {
+      const resolved = resolveLocation(originPart.toLowerCase());
+      if (resolved) {
+        origin = resolved;
+        break; // Use first valid origin found
+      }
+    }
+  }
+
+  if (!origin) {
+    return routes;
+  }
+
+  // Find all other locations in the text (potential destinations)
+  const allLocations = extractLocations(text);
+  const destinations: { provinceName: string; provinceCode: number }[] = [];
+
+  for (const loc of allLocations) {
+    // Skip if it's the same as origin
+    if (loc.provinceName === origin.provinceName) {
+      continue;
+    }
+
+    // Check if this location has origin suffix (-den/-dan) - skip those
+    const locPattern = new RegExp(
+      `${escapeRegex(loc.originalText)}[''']?(?:dan|den|tan|ten)\\b`,
+      'i'
+    );
+    if (locPattern.test(text)) {
+      continue; // This is another origin, not a destination
+    }
+
+    // Check if already added
+    if (!destinations.some(d => d.provinceName === loc.provinceName)) {
+      destinations.push({
+        provinceName: loc.provinceName,
+        provinceCode: loc.provinceCode,
+      });
+    }
+  }
+
+  // Create routes from origin to each destination
+  for (const dest of destinations) {
+    routes.push({
+      origin: origin.provinceName,
+      destination: dest.provinceName,
+      originCode: origin.provinceCode,
+      destinationCode: dest.provinceCode,
+    });
+  }
+
+  return routes;
+}
+
+/**
+ * Extract routes from "CITY YÜKLER" header format
+ * e.g., "*ÇORLU YÜKLER*\nELAZIĞ TIR\nBAŞAKŞEHİR TIR\nTUZLA TIR"
+ * Origin = ÇORLU, Destinations = [ELAZIĞ, BAŞAKŞEHİR, TUZLA]
+ */
+function extractYuklerHeaderRoutes(text: string): ExtractedRoute[] {
+  const routes: ExtractedRoute[] = [];
+  const normalizedText = normalizeToAscii(text);
+
+  // Pattern: *?CITY YÜKLER*? followed by list of destinations
+  // Matches: "*ÇORLU YÜKLER*", "GEBZE YÜKLER", "İSTANBUL YÜKLERİ" etc.
+  const yuklerPattern = /\*?([A-Za-z\u00C0-\u017F]+)\s+Y[UÜ]KLER[İI]?\*?/gi;
+
+  let match;
+  while ((match = yuklerPattern.exec(normalizedText)) !== null) {
+    const originPart = match[1];
+    if (!originPart) continue;
+
+    const origin = resolveLocation(originPart.toLowerCase());
+    if (!origin) continue;
+
+    // Find the section after this header until the next header or end
+    const headerEnd = match.index + match[0].length;
+    const nextHeaderMatch = normalizedText.slice(headerEnd).match(/\*?[A-Za-z\u00C0-\u017F]+\s+Y[UÜ]KLER[İI]?\*?/i);
+    const sectionEnd = nextHeaderMatch
+      ? headerEnd + (nextHeaderMatch.index ?? normalizedText.length)
+      : normalizedText.length;
+
+    const section = normalizedText.slice(headerEnd, sectionEnd);
+
+    // Extract destinations from this section (each line typically has a city name)
+    const lines = section.split(/\n/);
+    for (const line of lines) {
+      // Skip empty lines and lines that are just separators
+      if (!line.trim() || /^[-─➖═]+$/.test(line.trim())) continue;
+
+      // Extract first word/location from the line
+      const lineMatch = line.match(/([A-Za-z\u00C0-\u017F]+)/);
+      if (lineMatch && lineMatch[1]) {
+        const destPart = lineMatch[1];
+        const dest = resolveLocation(destPart.toLowerCase());
+
+        if (dest && dest.provinceName !== origin.provinceName) {
+          routes.push({
+            origin: origin.provinceName,
+            destination: dest.provinceName,
+            originCode: origin.provinceCode,
+            destinationCode: dest.provinceCode,
+          });
+        }
+      }
+    }
+  }
+
+  return routes;
+}
+
+/**
+ * Extract routes from "(Çıkış:CITY)" format
+ * e.g., "(Çıkış:AYDIN) 🏁 ORDU" or "(Çıkış:DÜZCE+BOLU)"
+ * Origin = city after Çıkış:, Destination = city after 🏁 or other markers
+ */
+function extractCikisFormatRoutes(text: string): ExtractedRoute[] {
+  const routes: ExtractedRoute[] = [];
+  const normalizedText = normalizeToAscii(text);
+
+  // Pattern for "(Çıkış:CITY)" - explicit origin marker
+  const cikisPattern = /\(?\s*[CÇ][IİI]K[IİI][SŞ]\s*:\s*([A-Za-z\u00C0-\u017F]+)/gi;
+
+  // Find all origins marked with Çıkış
+  const origins: { provinceName: string; provinceCode: number }[] = [];
+  let match;
+  while ((match = cikisPattern.exec(normalizedText)) !== null) {
+    const originPart = match[1];
+    if (originPart) {
+      const origin = resolveLocation(originPart.toLowerCase());
+      if (origin && !origins.some(o => o.provinceName === origin.provinceName)) {
+        origins.push(origin);
+      }
+    }
+  }
+
+  if (origins.length === 0) return routes;
+
+  // Find destinations - look for 🏁 marker or standalone city names
+  // 🏁 typically marks the destination/finish point
+  const finishPattern = /🏁\s*([A-Za-z\u00C0-\u017F]+)/gi;
+  const destinations: { provinceName: string; provinceCode: number }[] = [];
+
+  while ((match = finishPattern.exec(text)) !== null) {
+    const destPart = match[1];
+    if (destPart) {
+      const dest = resolveLocation(normalizeToAscii(destPart).toLowerCase());
+      if (dest && !destinations.some(d => d.provinceName === dest.provinceName)) {
+        destinations.push(dest);
+      }
+    }
+  }
+
+  // If no 🏁 marker found, try to find other locations that aren't origins
+  if (destinations.length === 0) {
+    const allLocations = extractLocations(text);
+    for (const loc of allLocations) {
+      if (!origins.some(o => o.provinceName === loc.provinceName)) {
+        if (!destinations.some(d => d.provinceName === loc.provinceName)) {
+          destinations.push({
+            provinceName: loc.provinceName,
+            provinceCode: loc.provinceCode,
+          });
+        }
+      }
+    }
+  }
+
+  // Create routes from each origin to each destination
+  for (const origin of origins) {
+    for (const dest of destinations) {
+      if (origin.provinceName !== dest.provinceName) {
+        routes.push({
+          origin: origin.provinceName,
+          destination: dest.provinceName,
+          originCode: origin.provinceCode,
+          destinationCode: dest.provinceCode,
+        });
       }
     }
   }

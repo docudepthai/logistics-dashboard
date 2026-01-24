@@ -4,6 +4,7 @@ export {
   type Conversation,
   type ConversationContext,
   type Message,
+  type PendingNotification,
 } from './conversation.js';
 export {
   UserStore,

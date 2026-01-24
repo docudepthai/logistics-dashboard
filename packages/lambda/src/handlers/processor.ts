@@ -1,6 +1,7 @@
 /**
  * Message processor Lambda function.
  * Processes queued messages, parses them, and stores results in database.
+ * Also sends proactive notifications when new jobs match pending user searches.
  */
 
 import type { SQSEvent, SQSRecord, Context } from 'aws-lambda';
@@ -12,6 +13,7 @@ import {
   jobs,
   eq,
 } from '@turkish-logistics/database';
+import { ConversationStore, type PendingNotification } from '@turkish-logistics/agent';
 
 interface QueuedMessage {
   instanceName: string;
@@ -67,6 +69,116 @@ function getDbClient(): DatabaseClient {
   return dbClient;
 }
 
+// Singleton ConversationStore for pending notifications
+let conversationStore: ConversationStore | null = null;
+
+function getConversationStore(): ConversationStore {
+  if (!conversationStore) {
+    conversationStore = new ConversationStore({
+      tableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
+      region: process.env.AWS_REGION || 'eu-central-1',
+    });
+  }
+  return conversationStore;
+}
+
+/**
+ * Send a WhatsApp notification to a user about a matching job
+ */
+async function sendWhatsAppNotification(phoneNumber: string, message: string): Promise<boolean> {
+  const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+  const accessToken = process.env.WHATSAPP_ACCESS_TOKEN;
+
+  if (!phoneNumberId || !accessToken) {
+    console.warn('[Notification] WhatsApp credentials not configured');
+    return false;
+  }
+
+  try {
+    const response = await fetch(
+      `https://graph.facebook.com/v18.0/${phoneNumberId}/messages`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messaging_product: 'whatsapp',
+          to: phoneNumber,
+          type: 'text',
+          text: { body: message },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`[Notification] WhatsApp API error: ${response.status} - ${errorText}`);
+      return false;
+    }
+
+    console.log(`[Notification] Sent to ${phoneNumber}`);
+    return true;
+  } catch (error) {
+    console.error('[Notification] Failed to send WhatsApp message:', error);
+    return false;
+  }
+}
+
+/**
+ * Check for pending notifications matching a new job and send notifications
+ */
+async function notifyMatchingUsers(
+  origin: string | null,
+  destination: string | null,
+  jobDetails: { weight?: string; vehicleType?: string; contactPhone?: string }
+): Promise<void> {
+  if (!origin) return;
+
+  const store = getConversationStore();
+  const originLower = origin.toLowerCase();
+  const destLower = destination?.toLowerCase();
+
+  try {
+    // Query pending notifications for this route
+    const pendingNotifications = await store.getPendingNotificationsByRoute(originLower, destLower);
+
+    if (pendingNotifications.length === 0) {
+      return;
+    }
+
+    console.log(`[Notification] Found ${pendingNotifications.length} pending notifications for ${originLower} → ${destLower || 'ANY'}`);
+
+    // Build notification message
+    const routeStr = destLower ? `${originLower}-${destLower}` : `${originLower}`;
+    const details: string[] = [];
+    if (jobDetails.weight) details.push(`${jobDetails.weight} ton`);
+    if (jobDetails.vehicleType) details.push(jobDetails.vehicleType);
+    const detailsStr = details.length > 0 ? `, ${details.join(', ')}` : '';
+    const phoneStr = jobDetails.contactPhone ? ` tel: ${jobDetails.contactPhone}` : '';
+
+    const message = `abi ${routeStr} yuku geldi!${detailsStr}${phoneStr}`;
+
+    // Send notification to each user and delete the pending record
+    for (const notification of pendingNotifications) {
+      try {
+        const sent = await sendWhatsAppNotification(notification.userId, message);
+        if (sent) {
+          // Delete the pending notification after successful send
+          await store.deletePendingNotification(notification.pk, notification.sk);
+          console.log(`[Notification] Notified ${notification.userId} and deleted pending record`);
+        }
+      } catch (err) {
+        console.error(`[Notification] Failed to process notification for ${notification.userId}:`, err);
+      }
+    }
+  } catch (error) {
+    console.error('[Notification] Error processing notifications:', error);
+    // Don't fail the job creation if notifications fail
+  }
+}
+
 async function processRecord(record: SQSRecord): Promise<void> {
   const message: QueuedMessage = JSON.parse(record.body);
   console.log(`Processing message: ${message.messageId}`);
@@ -94,7 +206,7 @@ async function processRecord(record: SQSRecord): Promise<void> {
 
   const { db } = getDbClient();
 
-  // Store raw message
+  // Store raw message (handle duplicates gracefully)
   const [rawMessage] = await db
     .insert(rawMessages)
     .values({
@@ -110,9 +222,25 @@ async function processRecord(record: SQSRecord): Promise<void> {
       isProcessed: false,
       messageTimestamp: timestamp ? new Date(timestamp * 1000) : null,
     })
+    .onConflictDoNothing({ target: rawMessages.messageId })
     .returning();
 
-  console.log(`Stored raw message: ${rawMessage?.id}`);
+  // If rawMessage is null, it means duplicate - check if already processed
+  if (!rawMessage) {
+    const existing = await db
+      .select({ isProcessed: rawMessages.isProcessed })
+      .from(rawMessages)
+      .where(eq(rawMessages.messageId, messageId))
+      .limit(1);
+
+    if (existing[0]?.isProcessed) {
+      console.log(`Message already processed: ${messageId}`);
+      return;
+    }
+    console.log(`Duplicate message, continuing to create jobs: ${messageId}`);
+  } else {
+    console.log(`Stored raw message: ${rawMessage.id}`);
+  }
 
   // Determine contact phone: prefer parsed phone, fallback to sender phone (if valid)
   const contactPhone = parsed.phones[0]?.original || senderPhone || null;
@@ -183,6 +311,13 @@ async function processRecord(record: SQSRecord): Promise<void> {
           .returning();
 
         console.log(`Created multi-route job ${i + 1}/${routes.length}: ${job?.id} (${route.origin} → ${route.destination})`);
+
+        // === PROACTIVE NOTIFICATION: Notify users who searched for this route ===
+        await notifyMatchingUsers(route.origin, route.destination, {
+          weight: parsed.weight?.value?.toString(),
+          vehicleType: route.vehicle || parsed.vehicle?.vehicleType || undefined,
+          contactPhone: contactPhone || undefined,
+        });
       }
     } else {
       // Single route - use original behavior
@@ -232,6 +367,17 @@ async function processRecord(record: SQSRecord): Promise<void> {
         .returning();
 
       console.log(`Created job: ${job?.id} (type: ${parsed.messageType})`);
+
+      // === PROACTIVE NOTIFICATION: Notify users who searched for this route ===
+      await notifyMatchingUsers(
+        parsed.origin?.provinceName || null,
+        parsed.destination?.provinceName || null,
+        {
+          weight: parsed.weight?.value?.toString(),
+          vehicleType: parsed.vehicle?.vehicleType || undefined,
+          contactPhone: contactPhone || undefined,
+        }
+      );
     }
   } else if (!hasValidConfidence) {
     console.log(`Skipped job creation: confidence too low (${parsed.confidenceLevel})`);
