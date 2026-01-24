@@ -1,0 +1,29 @@
+{
+  "name": "yukbul-scraper-service",
+  "version": "1.0.0",
+  "description": "YukBul logistics data scraper - sends to AWS Lambda for processing",
+  "main": "dist/index.js",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "test": "tsx src/test.ts"
+  },
+  "dependencies": {
+    "axios": "^1.6.7",
+    "cron": "^3.1.6",
+    "dotenv": "^16.4.1",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/cron": "^2.4.0",
+    "@types/node": "^20.11.16",
+    "@types/uuid": "^9.0.8",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

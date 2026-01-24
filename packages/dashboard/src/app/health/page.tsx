@@ -21,7 +21,7 @@ interface HealthData {
     errorsLast24h: number;
     jobsProcessed24h: number;
   };
-  recentActivity: { hour: string; evolution: number; evolution2: number; kamyoon: number }[];
+  recentActivity: { hour: string; evolution: number; evolution2: number; kamyoon: number; yukbul: number }[];
 }
 
 export default function HealthPage() {
@@ -144,10 +144,11 @@ export default function HealthPage() {
         <h2 className="text-sm font-medium text-white mb-6">Recent Activity by Source</h2>
         <div className="space-y-3">
           {health.recentActivity.slice(0, 8).map((activity) => {
-            const total = activity.evolution + activity.evolution2 + activity.kamyoon;
-            const evolutionPct = total > 0 ? (activity.evolution / total) * 100 : 33;
-            const evolution2Pct = total > 0 ? (activity.evolution2 / total) * 100 : 33;
-            const kamyoonPct = total > 0 ? (activity.kamyoon / total) * 100 : 34;
+            const total = activity.evolution + activity.evolution2 + activity.kamyoon + activity.yukbul;
+            const evolutionPct = total > 0 ? (activity.evolution / total) * 100 : 25;
+            const evolution2Pct = total > 0 ? (activity.evolution2 / total) * 100 : 25;
+            const kamyoonPct = total > 0 ? (activity.kamyoon / total) * 100 : 25;
+            const yukbulPct = total > 0 ? (activity.yukbul / total) * 100 : 25;
             return (
               <div key={activity.hour} className="flex items-center space-x-4">
                 <span className="text-neutral-500 text-xs font-mono w-12">{activity.hour}</span>
@@ -167,11 +168,17 @@ export default function HealthPage() {
                     style={{ width: `${kamyoonPct}%` }}
                     title={`Kamyoon: ${activity.kamyoon}`}
                   />
+                  <div
+                    className="h-full bg-emerald-400"
+                    style={{ width: `${yukbulPct}%` }}
+                    title={`Yukbul: ${activity.yukbul}`}
+                  />
                 </div>
                 <div className="flex items-center space-x-3 text-xs">
                   <span className="text-neutral-400 font-mono">{activity.evolution}</span>
                   <span className="text-blue-400 font-mono">{activity.evolution2}</span>
                   <span className="text-neutral-600 font-mono">{activity.kamyoon}</span>
+                  <span className="text-emerald-400 font-mono">{activity.yukbul}</span>
                 </div>
               </div>
             );
@@ -189,6 +196,10 @@ export default function HealthPage() {
           <div className="flex items-center space-x-2">
             <div className="w-3 h-2 bg-neutral-600 rounded-sm" />
             <span className="text-neutral-500 text-xs">Kamyoon</span>
+          </div>
+          <div className="flex items-center space-x-2">
+            <div className="w-3 h-2 bg-emerald-400 rounded-sm" />
+            <span className="text-neutral-500 text-xs">Yukbul</span>
           </div>
         </div>
       </div>

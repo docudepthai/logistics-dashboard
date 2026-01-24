@@ -58,6 +58,7 @@ export async function GET() {
           SELECT
             CASE
               WHEN MIN(j.source_group_jid) = 'kamyoon-loads@g.us' THEN 'kamyoon'
+              WHEN MIN(j.source_group_jid) = 'yukbul-loads@g.us' THEN 'yukbul'
               WHEN MIN(rm.instance_name) = 'turkish-logistics-2' THEN 'evolution-2'
               ELSE 'evolution'
             END as source

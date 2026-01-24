@@ -105,7 +105,7 @@ async function checkEvolutionAPI2(): Promise<ServiceHealth> {
   return checkEvolutionInstance('turkish-logistics-2', 'Evolution API 2');
 }
 
-async function checkKamyoon(): Promise<ServiceHealth> {
+async function checkScraperSource(sourceJid: string, displayName: string): Promise<ServiceHealth> {
   const start = Date.now();
   try {
     const result = await sql`
@@ -115,7 +115,7 @@ async function checkKamyoon(): Promise<ServiceHealth> {
         COUNT(*) FILTER (WHERE created_at > NOW() - INTERVAL '1 hour') as last_hour,
         MAX(created_at) as last_job_at
       FROM jobs
-      WHERE source_group_jid = 'kamyoon-loads@g.us'
+      WHERE source_group_jid = ${sourceJid}
     `;
 
     const data = result[0];
@@ -139,7 +139,7 @@ async function checkKamyoon(): Promise<ServiceHealth> {
     }
 
     return {
-      name: 'Kamyoon API',
+      name: displayName,
       status,
       latency: Date.now() - start,
       lastCheck: new Date().toISOString(),
@@ -153,12 +153,20 @@ async function checkKamyoon(): Promise<ServiceHealth> {
     };
   } catch (error) {
     return {
-      name: 'Kamyoon API',
+      name: displayName,
       status: 'down',
       lastCheck: new Date().toISOString(),
       details: error instanceof Error ? error.message : 'Check failed',
     };
   }
+}
+
+async function checkKamyoon(): Promise<ServiceHealth> {
+  return checkScraperSource('kamyoon-loads@g.us', 'Kamyoon API');
+}
+
+async function checkYukbul(): Promise<ServiceHealth> {
+  return checkScraperSource('yukbul-loads@g.us', 'Yukbul API');
 }
 
 async function checkOpenAI(): Promise<ServiceHealth> {
@@ -243,14 +251,16 @@ async function getRecentActivity(): Promise<{
   evolution: number;
   evolution2: number;
   kamyoon: number;
+  yukbul: number;
 }[]> {
   try {
     const result = await sql`
       SELECT
         TO_CHAR(j.created_at, 'HH24:00') as hour,
-        COUNT(*) FILTER (WHERE j.source_group_jid != 'kamyoon-loads@g.us' AND (rm.instance_name IS NULL OR rm.instance_name = 'turkish-logistics')) as evolution,
+        COUNT(*) FILTER (WHERE j.source_group_jid NOT IN ('kamyoon-loads@g.us', 'yukbul-loads@g.us') AND (rm.instance_name IS NULL OR rm.instance_name = 'turkish-logistics')) as evolution,
         COUNT(*) FILTER (WHERE rm.instance_name = 'turkish-logistics-2') as evolution2,
-        COUNT(*) FILTER (WHERE j.source_group_jid = 'kamyoon-loads@g.us') as kamyoon
+        COUNT(*) FILTER (WHERE j.source_group_jid = 'kamyoon-loads@g.us') as kamyoon,
+        COUNT(*) FILTER (WHERE j.source_group_jid = 'yukbul-loads@g.us') as yukbul
       FROM jobs j
       LEFT JOIN raw_messages rm ON j.message_id = rm.message_id
       WHERE j.created_at > NOW() - INTERVAL '12 hours'
@@ -264,6 +274,7 @@ async function getRecentActivity(): Promise<{
       evolution: Number(r.evolution),
       evolution2: Number(r.evolution2),
       kamyoon: Number(r.kamyoon),
+      yukbul: Number(r.yukbul),
     }));
   } catch {
     return [];
@@ -272,18 +283,19 @@ async function getRecentActivity(): Promise<{
 
 export async function GET() {
   try {
-    const [database, evolution, evolution2, kamyoon, openai, processingStats, recentActivity] = await Promise.all([
+    const [database, evolution, evolution2, kamyoon, yukbul, openai, processingStats, recentActivity] = await Promise.all([
       checkDatabase(),
       checkEvolutionAPI(),
       checkEvolutionAPI2(),
       checkKamyoon(),
+      checkYukbul(),
       checkOpenAI(),
       getProcessingStats(),
       getRecentActivity(),
     ]);
 
     // Calculate overall status (OpenAI excluded from critical path)
-    const coreServices = [database, evolution, evolution2, kamyoon];
+    const coreServices = [database, evolution, evolution2, kamyoon, yukbul];
     const services = [...coreServices, openai];
     const overallStatus = coreServices.every(s => s.status === 'operational')
       ? 'operational'

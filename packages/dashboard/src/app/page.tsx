@@ -94,9 +94,11 @@ export default function Dashboard() {
             const evolution = stats.sources.find(s => s.source === 'evolution')?.count || 0;
             const evolution2 = stats.sources.find(s => s.source === 'evolution-2')?.count || 0;
             const kamyoon = stats.sources.find(s => s.source === 'kamyoon')?.count || 0;
+            const yukbul = stats.sources.find(s => s.source === 'yukbul')?.count || 0;
             const evolutionPct = (evolution / total) * 100;
             const evolution2Pct = (evolution2 / total) * 100;
             const kamyoonPct = (kamyoon / total) * 100;
+            const yukbulPct = (yukbul / total) * 100;
             return (
               <div className="space-y-4">
                 {/* Progress bar */}
@@ -113,17 +115,21 @@ export default function Dashboard() {
                     className="h-full bg-neutral-500 transition-all duration-500"
                     style={{ width: `${kamyoonPct}%` }}
                   />
+                  <div
+                    className="h-full bg-emerald-400 transition-all duration-500"
+                    style={{ width: `${yukbulPct}%` }}
+                  />
                 </div>
 
-                {/* Three columns for each source */}
-                <div className="grid grid-cols-3 gap-3">
+                {/* Four columns for each source */}
+                <div className="grid grid-cols-4 gap-2">
                   {/* Evolution */}
                   <div className="bg-neutral-800/30 rounded-lg p-3">
                     <div className="flex items-center space-x-2 mb-2">
                       <div className="w-2 h-2 bg-white rounded-full" />
                       <span className="text-neutral-300 text-xs font-medium">Evolution</span>
                     </div>
-                    <p className="text-xl font-semibold text-white font-mono">{evolution.toLocaleString()}</p>
+                    <p className="text-lg font-semibold text-white font-mono">{evolution.toLocaleString()}</p>
                     <p className="text-neutral-500 text-xs mt-1">{evolutionPct.toFixed(1)}%</p>
                   </div>
 
@@ -133,7 +139,7 @@ export default function Dashboard() {
                       <div className="w-2 h-2 bg-blue-400 rounded-full" />
                       <span className="text-neutral-300 text-xs font-medium">Evolution 2</span>
                     </div>
-                    <p className="text-xl font-semibold text-white font-mono">{evolution2.toLocaleString()}</p>
+                    <p className="text-lg font-semibold text-white font-mono">{evolution2.toLocaleString()}</p>
                     <p className="text-neutral-500 text-xs mt-1">{evolution2Pct.toFixed(1)}%</p>
                   </div>
 
@@ -143,8 +149,18 @@ export default function Dashboard() {
                       <div className="w-2 h-2 bg-neutral-500 rounded-full" />
                       <span className="text-neutral-300 text-xs font-medium">Kamyoon</span>
                     </div>
-                    <p className="text-xl font-semibold text-white font-mono">{kamyoon.toLocaleString()}</p>
+                    <p className="text-lg font-semibold text-white font-mono">{kamyoon.toLocaleString()}</p>
                     <p className="text-neutral-500 text-xs mt-1">{kamyoonPct.toFixed(1)}%</p>
+                  </div>
+
+                  {/* Yukbul */}
+                  <div className="bg-neutral-800/30 rounded-lg p-3">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+                      <span className="text-neutral-300 text-xs font-medium">Yukbul</span>
+                    </div>
+                    <p className="text-lg font-semibold text-white font-mono">{yukbul.toLocaleString()}</p>
+                    <p className="text-neutral-500 text-xs mt-1">{yukbulPct.toFixed(1)}%</p>
                   </div>
                 </div>
 
