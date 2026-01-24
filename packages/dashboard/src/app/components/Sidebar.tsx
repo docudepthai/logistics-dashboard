@@ -144,7 +144,7 @@ export default function Sidebar() {
     }
   }, [session]);
 
-  // Filter navigation based on permissions
+  // Filter navigation based on permissions - show nothing until loaded
   const filteredNavigation = loaded
     ? navigation
         .map(group => ({
@@ -152,7 +152,7 @@ export default function Sidebar() {
           items: group.items.filter(item => allowedPages.includes(item.id)),
         }))
         .filter(group => group.items.length > 0)
-    : navigation;
+    : []; // Don't show any navigation until permissions are loaded
 
   return (
     <aside className="w-56 bg-neutral-950 border-r border-neutral-800/50 flex flex-col">
