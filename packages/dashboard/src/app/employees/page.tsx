@@ -263,7 +263,7 @@ export default function EmployeesPage() {
     if (!data) return;
 
     setSaving(username);
-    const allPageIds = data.allPages.map(p => p.id);
+    const allPageIds = (data.allPages || []).map(p => p.id);
 
     try {
       const res = await fetch('/api/employees', {
@@ -412,7 +412,7 @@ export default function EmployeesPage() {
               <div className="flex items-center space-x-3">
                 <div className="text-right mr-4">
                   <div className="text-sm text-neutral-400">
-                    {(employee.allowedPages || []).length} / {data.allPages.length} pages
+                    {(employee.allowedPages || []).length} / {(data.allPages || []).length} pages
                   </div>
                   <div className="text-xs text-neutral-600">
                     Created {formatDate(employee.createdAt)}
@@ -502,7 +502,7 @@ export default function EmployeesPage() {
 
                 {/* Permissions Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
-                  {data.allPages.map((page) => {
+                  {(data.allPages || []).map((page) => {
                     const isAllowed = (employee.allowedPages || []).includes(page.id);
                     return (
                       <button
