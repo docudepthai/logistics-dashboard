@@ -147,7 +147,7 @@ const severityConfig = {
   },
 };
 
-const SUPPORT_MESSAGE = 'For more information and support about the system, you can message or call this number +90 533 208 9867';
+const SUPPORT_MESSAGE = 'Sistem hakkında daha fazla bilgi ve destek için bu numaraya mesaj atabilir veya arayabilirsiniz: +90 533 208 9867';
 
 function ProblemsPageContent() {
   const [data, setData] = useState<ApiResponse | null>(null);
