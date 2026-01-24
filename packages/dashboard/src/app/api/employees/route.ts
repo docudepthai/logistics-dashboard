@@ -7,7 +7,7 @@ const ADMIN_USER = 'caglar.binici';
 const TABLE_NAME = process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
 
 // All available pages in the dashboard
-export const ALL_PAGES = [
+const ALL_PAGES = [
   { id: 'overview', name: 'Overview', href: '/' },
   { id: 'conversations', name: 'Conversations', href: '/conversations' },
   { id: 'crm', name: 'CRM', href: '/crm' },
