@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import PageGuard from '../../components/PageGuard';
 
 interface CallListItem {
   phoneNumber: string;
@@ -48,7 +49,7 @@ function isValidPhoneNumber(phone: string): boolean {
   return /^\d{10,}$/.test(phone);
 }
 
-export default function IletisimListesiPage() {
+function IletisimListesiPageContent() {
   const [items, setItems] = useState<CallListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -435,5 +436,13 @@ export default function IletisimListesiPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function IletisimListesiPage() {
+  return (
+    <PageGuard permissionId="iletisim-listesi">
+      <IletisimListesiPageContent />
+    </PageGuard>
   );
 }

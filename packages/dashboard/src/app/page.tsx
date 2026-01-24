@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PageGuard from './components/PageGuard';
 
 interface Stats {
   overview: {
@@ -17,7 +18,7 @@ interface Stats {
   cargoTypes: { cargoType: string; count: number }[];
 }
 
-export default function Dashboard() {
+function DashboardContent() {
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -280,5 +281,13 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function Dashboard() {
+  return (
+    <PageGuard permissionId="overview">
+      <DashboardContent />
+    </PageGuard>
   );
 }

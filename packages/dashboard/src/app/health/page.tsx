@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PageGuard from '../components/PageGuard';
 
 interface ServiceHealth {
   name: string;
@@ -24,7 +25,7 @@ interface HealthData {
   recentActivity: { hour: string; evolution: number; evolution2: number; kamyoon: number; yukbul: number }[];
 }
 
-export default function HealthPage() {
+function HealthPageContent() {
   const [health, setHealth] = useState<HealthData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -211,5 +212,13 @@ export default function HealthPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+export default function HealthPage() {
+  return (
+    <PageGuard permissionId="health">
+      <HealthPageContent />
+    </PageGuard>
   );
 }

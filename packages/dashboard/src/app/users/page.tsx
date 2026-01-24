@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import PageGuard from '../components/PageGuard';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -61,7 +62,7 @@ function getStatusBadge(user: User): { text: string; bgColor: string; textColor:
 
 type SortOrder = 'asc' | 'desc';
 
-export default function UsersPage() {
+function UsersPageContent() {
   const [data, setData] = useState<UsersData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -316,5 +317,13 @@ export default function UsersPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function UsersPage() {
+  return (
+    <PageGuard permissionId="users">
+      <UsersPageContent />
+    </PageGuard>
   );
 }

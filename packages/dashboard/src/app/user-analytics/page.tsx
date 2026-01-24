@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PageGuard from '../components/PageGuard';
 
 interface SourceData {
   count: number;
@@ -67,7 +68,7 @@ interface UserStats {
   premium: number;
 }
 
-export default function UserAnalyticsPage() {
+function UserAnalyticsPageContent() {
   const [behaviorData, setBehaviorData] = useState<BehaviorData | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -684,5 +685,13 @@ export default function UserAnalyticsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function UserAnalyticsPage() {
+  return (
+    <PageGuard permissionId="user-analytics">
+      <UserAnalyticsPageContent />
+    </PageGuard>
   );
 }

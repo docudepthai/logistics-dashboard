@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PageGuard from '../components/PageGuard';
 
 interface CallListItem {
   phoneNumber: string;
@@ -39,7 +40,7 @@ function formatPhoneNumber(phone: string): string {
   return `+${phone}`;
 }
 
-export default function AranacaklarPage() {
+function AranacaklarPageContent() {
   const [items, setItems] = useState<CallListItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -367,5 +368,13 @@ export default function AranacaklarPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AranacaklarPage() {
+  return (
+    <PageGuard permissionId="aranacaklar">
+      <AranacaklarPageContent />
+    </PageGuard>
   );
 }

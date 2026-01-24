@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import PageGuard from '../../components/PageGuard';
 
 interface Message {
   role: string;
@@ -102,7 +103,7 @@ function getHoursRemaining(lastMessageAt: string): number {
   return Math.max(0, 24 - hoursElapsed);
 }
 
-export default function UserProfilePage() {
+function UserProfilePageContent() {
   const params = useParams();
   const phone = params.phone as string;
 
@@ -393,5 +394,13 @@ export default function UserProfilePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function UserProfilePage() {
+  return (
+    <PageGuard permissionId="users">
+      <UserProfilePageContent />
+    </PageGuard>
   );
 }

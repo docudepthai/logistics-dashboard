@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import PageGuard from '../components/PageGuard';
 
 const ITEMS_PER_PAGE = 50;
 
@@ -36,7 +37,7 @@ const CALL_REASONS = [
   'Marketing inquiry',
 ];
 
-export default function ConversationsPage() {
+function ConversationsPageContent() {
   const searchParams = useSearchParams();
   const searchFromUrl = searchParams.get('search') || '';
 
@@ -354,5 +355,13 @@ export default function ConversationsPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function ConversationsPage() {
+  return (
+    <PageGuard permissionId="conversations">
+      <ConversationsPageContent />
+    </PageGuard>
   );
 }

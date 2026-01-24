@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PageGuard from '../components/PageGuard';
 
 interface AnalyticsData {
   dailyTrends: { date: string; jobs: number; senders: number }[];
@@ -18,7 +19,7 @@ interface AnalyticsData {
   thisWeekTotal: number;
 }
 
-export default function AnalyticsPage() {
+function AnalyticsPageContent() {
   const [data, setData] = useState<AnalyticsData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -168,5 +169,13 @@ export default function AnalyticsPage() {
       </div>
 
     </div>
+  );
+}
+
+export default function AnalyticsPage() {
+  return (
+    <PageGuard permissionId="analytics">
+      <AnalyticsPageContent />
+    </PageGuard>
   );
 }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PageGuard from '../components/PageGuard';
 import {
   AreaChart,
   Area,
@@ -134,7 +135,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-export default function FinancePage() {
+function FinancePageContent() {
   const [data, setData] = useState<FinanceData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -428,5 +429,13 @@ export default function FinancePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function FinancePage() {
+  return (
+    <PageGuard permissionId="finance">
+      <FinancePageContent />
+    </PageGuard>
   );
 }

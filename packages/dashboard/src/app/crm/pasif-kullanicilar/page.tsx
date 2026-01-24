@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import PageGuard from '../../components/PageGuard';
 
 interface NudgeEligibleUser {
   phoneNumber: string;
@@ -49,7 +50,7 @@ function formatHoursRemaining(hours: number): string {
 
 const ITEMS_PER_PAGE = 50;
 
-export default function PasifKullanicilarPage() {
+function PasifKullanicilarPageContent() {
   const [users, setUsers] = useState<NudgeEligibleUser[]>([]);
   const [stats, setStats] = useState({ total: 0, urgent: 0, nudgeSent: 0, pending: 0 });
   const [loading, setLoading] = useState(true);
@@ -549,5 +550,13 @@ export default function PasifKullanicilarPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PasifKullanicilarPage() {
+  return (
+    <PageGuard permissionId="pasif-kullanicilar">
+      <PasifKullanicilarPageContent />
+    </PageGuard>
   );
 }

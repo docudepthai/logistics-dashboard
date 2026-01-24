@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PageGuard from '../components/PageGuard';
 
 // Custom Modal Component
 function ConfirmModal({
@@ -148,7 +149,7 @@ const severityConfig = {
 
 const SUPPORT_MESSAGE = 'For more information and support about the system, you can message or call this number +90 533 208 9867';
 
-export default function ProblemsPage() {
+function ProblemsPageContent() {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'low'>('all');
@@ -486,5 +487,13 @@ export default function ProblemsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProblemsPage() {
+  return (
+    <PageGuard permissionId="problems">
+      <ProblemsPageContent />
+    </PageGuard>
   );
 }

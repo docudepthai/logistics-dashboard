@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef, useCallback, memo } from 'react';
 import { provinceCoordinates, normalizeProvinceName, provinceIdMap } from './turkey-paths';
 import { TURKEY_SVG } from './turkey-svg';
+import PageGuard from '../components/PageGuard';
 
 interface RouteData {
   origin: string;
@@ -40,7 +41,7 @@ const SvgContainer = memo(function SvgContainer({
   );
 });
 
-export default function MapPage() {
+function MapPageContent() {
   const [data, setData] = useState<MapData | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedRoute, setSelectedRoute] = useState<RouteData | null>(null);
@@ -450,5 +451,13 @@ export default function MapPage() {
         Click routes to highlight · Hover provinces for details
       </p>
     </div>
+  );
+}
+
+export default function MapPage() {
+  return (
+    <PageGuard permissionId="map">
+      <MapPageContent />
+    </PageGuard>
   );
 }
