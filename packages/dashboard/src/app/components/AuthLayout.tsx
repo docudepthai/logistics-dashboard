@@ -24,6 +24,21 @@ const PATH_TO_PERMISSION: Record<string, string> = {
   '/employees': 'admin', // Admin only
 };
 
+// Permission ID to path mapping (for finding fallback redirect)
+const PERMISSION_TO_PATH: Record<string, string> = {
+  'overview': '/',
+  'health': '/health',
+  'problems': '/problems',
+  'users': '/users',
+  'user-analytics': '/user-analytics',
+  'conversations': '/conversations',
+  'crm-inactive': '/crm/pasif-kullanicilar',
+  'crm-contacts': '/crm/iletisim-listesi',
+  'analytics': '/analytics',
+  'finance': '/finance',
+  'map': '/map',
+};
+
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -58,11 +73,23 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       return;
     }
 
-    // Admin-only pages
+    // Admin-only pages - fetch permissions to find redirect target
     if (permissionId === 'admin') {
-      setPermissionChecked(true);
-      setHasPermission(false);
-      router.push('/');
+      fetch('/api/user-permissions')
+        .then(res => res.json())
+        .then(data => {
+          const allowedPages = data.allowedPages || [];
+          const firstAllowedPermission = allowedPages.find((p: string) => PERMISSION_TO_PATH[p]);
+          const redirectPath = firstAllowedPermission ? PERMISSION_TO_PATH[firstAllowedPermission] : '/';
+          router.push(redirectPath);
+          setHasPermission(false);
+          setPermissionChecked(true);
+        })
+        .catch(() => {
+          router.push('/');
+          setHasPermission(false);
+          setPermissionChecked(true);
+        });
       return;
     }
 
@@ -75,7 +102,13 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           setHasPermission(true);
         } else {
           setHasPermission(false);
-          router.push('/');
+          // Find first allowed page to redirect to
+          const firstAllowedPermission = allowedPages.find((p: string) => PERMISSION_TO_PATH[p]);
+          const redirectPath = firstAllowedPermission ? PERMISSION_TO_PATH[firstAllowedPermission] : null;
+          if (redirectPath && redirectPath !== pathname) {
+            router.push(redirectPath);
+          }
+          // If no allowed pages or already on that page, will show "no access" message
         }
         setPermissionChecked(true);
       })
@@ -100,11 +133,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
     return null;
   }
 
-  // No permission - show access denied briefly while redirecting
+  // No permission - show access denied message
   if (!hasPermission && !isLoginPage) {
     return (
       <div className="min-h-screen bg-black flex items-center justify-center">
-        <div className="text-neutral-500">Access denied, redirecting...</div>
+        <div className="text-center">
+          <div className="text-neutral-500 mb-2">Bu sayfaya erişim izniniz yok</div>
+          <div className="text-neutral-600 text-sm">Yöneticinizle iletişime geçin</div>
+        </div>
       </div>
     );
   }
