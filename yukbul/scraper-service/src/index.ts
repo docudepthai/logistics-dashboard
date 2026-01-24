@@ -17,6 +17,7 @@ config();
 // Configuration
 const YUKBUL_API_KEY = process.env.YUKBUL_API_KEY || '';
 const YUKBUL_AUTH_TOKEN = process.env.YUKBUL_AUTH_TOKEN || '';
+const YUKBUL_REFRESH_TOKEN = process.env.YUKBUL_REFRESH_TOKEN || '';
 const WEBHOOK_URL = process.env.WEBHOOK_URL || 'https://t50lrx3amk.execute-api.eu-central-1.amazonaws.com/prod/webhook';
 const WEBHOOK_API_KEY = process.env.WEBHOOK_API_KEY || '';
 const FETCH_SIZE = parseInt(process.env.FETCH_SIZE || '100', 10);
@@ -36,6 +37,10 @@ function validateConfig(): boolean {
     errors.push('YUKBUL_AUTH_TOKEN is required');
   }
 
+  if (!YUKBUL_REFRESH_TOKEN) {
+    errors.push('YUKBUL_REFRESH_TOKEN is required (token auto-refresh needs this)');
+  }
+
   // WEBHOOK_API_KEY is optional - webhook may not require it
 
   if (errors.length > 0) {
@@ -48,7 +53,7 @@ function validateConfig(): boolean {
 }
 
 // Initialize services
-const yukbulClient = new YukbulClient(YUKBUL_API_KEY, YUKBUL_AUTH_TOKEN);
+const yukbulClient = new YukbulClient(YUKBUL_API_KEY, YUKBUL_AUTH_TOKEN, YUKBUL_REFRESH_TOKEN);
 const webhookSender = new WebhookSender({
   webhookUrl: WEBHOOK_URL,
   apiKey: WEBHOOK_API_KEY,
