@@ -3,21 +3,57 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 
 const tabs = [
-  { name: 'Overview', href: '/' },
-  { name: 'Conversations', href: '/conversations' },
-  { name: 'CRM', href: '/crm' },
-  { name: 'Routes', href: '/map' },
-  { name: 'Analytics', href: '/analytics' },
-  { name: 'Finance', href: '/finance' },
-  { name: 'Users', href: '/users' },
-  { name: 'Health', href: '/health' },
+  { name: 'Overview', href: '/', id: 'overview' },
+  { name: 'Conversations', href: '/conversations', id: 'conversations' },
+  { name: 'CRM', href: '/crm', id: 'crm' },
+  { name: 'Routes', href: '/map', id: 'map' },
+  { name: 'Analytics', href: '/analytics', id: 'analytics' },
+  { name: 'Finance', href: '/finance', id: 'finance' },
+  { name: 'Users', href: '/users', id: 'users' },
+  { name: 'Health', href: '/health', id: 'health' },
 ];
+
+const ADMIN_USER = 'caglar.binici';
 
 export default function Navigation() {
   const pathname = usePathname();
   const { data: session } = useSession();
+  const [allowedPages, setAllowedPages] = useState<string[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    if (session?.user?.name) {
+      // Admin always sees all tabs
+      if (session.user.name === ADMIN_USER) {
+        setIsAdmin(true);
+        setAllowedPages(tabs.map(t => t.id));
+        setLoaded(true);
+      } else {
+        // Fetch permissions for regular users
+        fetch('/api/user-permissions')
+          .then(res => res.json())
+          .then(data => {
+            setIsAdmin(data.isAdmin);
+            setAllowedPages(data.allowedPages || []);
+            setLoaded(true);
+          })
+          .catch(() => {
+            // On error, show all tabs (fail open)
+            setAllowedPages(tabs.map(t => t.id));
+            setLoaded(true);
+          });
+      }
+    }
+  }, [session]);
+
+  // Filter tabs based on permissions
+  const visibleTabs = loaded
+    ? tabs.filter(tab => allowedPages.includes(tab.id))
+    : tabs; // Show all while loading to prevent flicker
 
   return (
     <nav className="border-b border-neutral-800/50">
@@ -35,7 +71,7 @@ export default function Navigation() {
 
           {/* Tabs */}
           <div className="flex items-center space-x-1">
-            {tabs.map((tab) => {
+            {visibleTabs.map((tab) => {
               const isActive = pathname === tab.href;
               return (
                 <Link
