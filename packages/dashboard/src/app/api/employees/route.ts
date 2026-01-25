@@ -86,23 +86,32 @@ export async function GET() {
     console.log('[Employees API] Using credentials:', process.env.MY_AWS_ACCESS_KEY_ID ? 'Custom (MY_AWS_*)' : 'Default/IAM Role');
     console.log('[Employees API] Region:', process.env.REGION);
 
-    // Debug: Try a simple scan first to see what's in the table
-    const debugScan = await getDocClient().send(new ScanCommand({
-      TableName: TABLE_NAME,
-      Limit: 5,
-    }));
-    console.log('[Employees API] Debug scan (no filter) found:', debugScan.Items?.length, 'items');
-    console.log('[Employees API] Sample PKs:', debugScan.Items?.slice(0, 3).map(i => i.pk));
+    // Scan with pagination to find all EMPLOYEE# items
+    let allEmployeeItems: Record<string, unknown>[] = [];
+    let lastEvaluatedKey: Record<string, unknown> | undefined;
+    let scanCount = 0;
 
-    const employeesResult = await getDocClient().send(new ScanCommand({
-      TableName: TABLE_NAME,
-      FilterExpression: 'begins_with(pk, :pk) AND sk = :sk',
-      ExpressionAttributeValues: {
-        ':pk': 'EMPLOYEE#',
-        ':sk': 'PROFILE',
-      },
-    }));
-    console.log('[Employees API] DynamoDB scan found:', employeesResult.Items?.length, 'items');
+    do {
+      scanCount++;
+      const scanResult = await getDocClient().send(new ScanCommand({
+        TableName: TABLE_NAME,
+        FilterExpression: 'begins_with(pk, :pk) AND sk = :sk',
+        ExpressionAttributeValues: {
+          ':pk': 'EMPLOYEE#',
+          ':sk': 'PROFILE',
+        },
+        ExclusiveStartKey: lastEvaluatedKey,
+      }));
+
+      if (scanResult.Items) {
+        allEmployeeItems = [...allEmployeeItems, ...scanResult.Items];
+      }
+      lastEvaluatedKey = scanResult.LastEvaluatedKey;
+      console.log(`[Employees API] Scan page ${scanCount}: found ${scanResult.Items?.length || 0} items, hasMore: ${!!lastEvaluatedKey}`);
+    } while (lastEvaluatedKey && scanCount < 20); // Max 20 pages to prevent infinite loops
+
+    console.log('[Employees API] Total employees found:', allEmployeeItems.length);
+    const employeesResult = { Items: allEmployeeItems };
 
     // Get Cognito users for status
     let cognitoUsers: Map<string, { status: string; email: string }> = new Map();
