@@ -83,6 +83,8 @@ export async function GET() {
 
     // Get all employees from DynamoDB
     console.log('[Employees API] Scanning DynamoDB table:', TABLE_NAME);
+    console.log('[Employees API] Using credentials:', process.env.MY_AWS_ACCESS_KEY_ID ? 'Custom (MY_AWS_*)' : 'Default/IAM Role');
+    console.log('[Employees API] Region:', process.env.REGION);
     const employeesResult = await getDocClient().send(new ScanCommand({
       TableName: TABLE_NAME,
       FilterExpression: 'begins_with(pk, :pk) AND sk = :sk',
