@@ -1,6 +1,6 @@
 /**
  * Kamyoon Scraper Service
- * Fetches logistics data from Kamyoon API every 15 minutes
+ * Fetches logistics data from Kamyoon API every 5 minutes
  * and sends it to AWS Lambda webhook for processing
  */
 
@@ -18,8 +18,8 @@ config();
 const KAMYOON_TOKEN = process.env.KAMYOON_TOKEN || '';
 const WEBHOOK_URL = process.env.WEBHOOK_URL || 'https://t50lrx3amk.execute-api.eu-central-1.amazonaws.com/prod/webhook';
 const WEBHOOK_API_KEY = process.env.WEBHOOK_API_KEY || '';
-const FETCH_SIZE = parseInt(process.env.FETCH_SIZE || '50', 10);
-const CRON_SCHEDULE = process.env.CRON_SCHEDULE || '*/15 * * * *'; // Every 15 minutes
+const FETCH_SIZE = parseInt(process.env.FETCH_SIZE || '75', 10);
+const CRON_SCHEDULE = process.env.CRON_SCHEDULE || '*/5 * * * *'; // Every 5 minutes
 const INSTANCE_NAME = process.env.INSTANCE_NAME || 'kamyoon-scraper';
 const TIMEZONE = process.env.TIMEZONE || 'Europe/Istanbul';
 
