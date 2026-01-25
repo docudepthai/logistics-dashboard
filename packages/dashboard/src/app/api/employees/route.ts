@@ -30,24 +30,43 @@ const ALL_PAGES = [
   { id: 'map', name: 'Routes', href: '/map' },
 ];
 
-// DynamoDB client
-const dynamoClient = new DynamoDBClient({
-  region: process.env.REGION || 'eu-central-1',
-  credentials: process.env.MY_AWS_ACCESS_KEY_ID ? {
-    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY || '',
-  } : undefined,
-});
-const docClient = DynamoDBDocumentClient.from(dynamoClient);
+// Lazy-initialized clients to avoid module loading issues
+let _dynamoClient: DynamoDBClient | null = null;
+let _docClient: DynamoDBDocumentClient | null = null;
+let _cognitoClient: CognitoIdentityProviderClient | null = null;
 
-// Cognito client
-const cognitoClient = new CognitoIdentityProviderClient({
-  region: process.env.REGION || 'eu-central-1',
-  credentials: process.env.MY_AWS_ACCESS_KEY_ID ? {
-    accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
-    secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY || '',
-  } : undefined,
-});
+function getDynamoClient() {
+  if (!_dynamoClient) {
+    _dynamoClient = new DynamoDBClient({
+      region: process.env.REGION || 'eu-central-1',
+      credentials: process.env.MY_AWS_ACCESS_KEY_ID ? {
+        accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY || '',
+      } : undefined,
+    });
+  }
+  return _dynamoClient;
+}
+
+function getDocClient() {
+  if (!_docClient) {
+    _docClient = DynamoDBDocumentClient.from(getDynamoClient());
+  }
+  return _docClient;
+}
+
+function getCognitoClient() {
+  if (!_cognitoClient) {
+    _cognitoClient = new CognitoIdentityProviderClient({
+      region: process.env.REGION || 'eu-central-1',
+      credentials: process.env.MY_AWS_ACCESS_KEY_ID ? {
+        accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
+        secretAccessKey: process.env.MY_AWS_SECRET_ACCESS_KEY || '',
+      } : undefined,
+    });
+  }
+  return _cognitoClient;
+}
 
 export const dynamic = 'force-dynamic';
 
@@ -61,7 +80,7 @@ export async function GET() {
     }
 
     // Get all employees from DynamoDB
-    const employeesResult = await docClient.send(new ScanCommand({
+    const employeesResult = await getDocClient().send(new ScanCommand({
       TableName: TABLE_NAME,
       FilterExpression: 'begins_with(pk, :pk) AND sk = :sk',
       ExpressionAttributeValues: {
@@ -73,7 +92,7 @@ export async function GET() {
     // Get Cognito users for status
     let cognitoUsers: Map<string, { status: string; email: string }> = new Map();
     try {
-      const cognitoResult = await cognitoClient.send(new ListUsersCommand({
+      const cognitoResult = await getCognitoClient().send(new ListUsersCommand({
         UserPoolId: COGNITO_USER_POOL_ID,
         Limit: 60,
       }));
@@ -96,7 +115,7 @@ export async function GET() {
         // Get permissions
         let allowedPages = ALL_PAGES.map(p => p.id); // Default: all pages
         try {
-          const permResult = await docClient.send(new GetCommand({
+          const permResult = await getDocClient().send(new GetCommand({
             TableName: TABLE_NAME,
             Key: {
               pk: `EMPLOYEE#${username}`,
@@ -155,7 +174,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Save permissions
-    await docClient.send(new PutCommand({
+    await getDocClient().send(new PutCommand({
       TableName: TABLE_NAME,
       Item: {
         pk: `EMPLOYEE#${username}`,
@@ -192,7 +211,7 @@ export async function PUT(request: NextRequest) {
 
       // Create Cognito user
       try {
-        await cognitoClient.send(new AdminCreateUserCommand({
+        await getCognitoClient().send(new AdminCreateUserCommand({
           UserPoolId: COGNITO_USER_POOL_ID,
           Username: username,
           TemporaryPassword: tempPassword,
@@ -213,7 +232,7 @@ export async function PUT(request: NextRequest) {
       }
 
       // Save employee profile to DynamoDB
-      await docClient.send(new PutCommand({
+      await getDocClient().send(new PutCommand({
         TableName: TABLE_NAME,
         Item: {
           pk: `EMPLOYEE#${username}`,
@@ -227,7 +246,7 @@ export async function PUT(request: NextRequest) {
       }));
 
       // Set default permissions (all pages)
-      await docClient.send(new PutCommand({
+      await getDocClient().send(new PutCommand({
         TableName: TABLE_NAME,
         Item: {
           pk: `EMPLOYEE#${username}`,
@@ -246,7 +265,7 @@ export async function PUT(request: NextRequest) {
       }
 
       // Update DynamoDB profile
-      await docClient.send(new PutCommand({
+      await getDocClient().send(new PutCommand({
         TableName: TABLE_NAME,
         Item: {
           pk: `EMPLOYEE#${username}`,
@@ -270,7 +289,7 @@ export async function PUT(request: NextRequest) {
       const newTempPassword = `Temp${Math.random().toString(36).slice(2, 8)}!${Math.floor(Math.random() * 100)}`;
 
       try {
-        await cognitoClient.send(new AdminSetUserPasswordCommand({
+        await getCognitoClient().send(new AdminSetUserPasswordCommand({
           UserPoolId: COGNITO_USER_POOL_ID,
           Username: username,
           Password: newTempPassword,
@@ -315,7 +334,7 @@ export async function DELETE(request: NextRequest) {
 
     // Delete from Cognito
     try {
-      await cognitoClient.send(new AdminDeleteUserCommand({
+      await getCognitoClient().send(new AdminDeleteUserCommand({
         UserPoolId: COGNITO_USER_POOL_ID,
         Username: username,
       }));
@@ -329,14 +348,14 @@ export async function DELETE(request: NextRequest) {
 
     // Delete from DynamoDB - profile and permissions
     await Promise.all([
-      docClient.send(new DeleteCommand({
+      getDocClient().send(new DeleteCommand({
         TableName: TABLE_NAME,
         Key: {
           pk: `EMPLOYEE#${username}`,
           sk: 'PROFILE',
         },
       })),
-      docClient.send(new DeleteCommand({
+      getDocClient().send(new DeleteCommand({
         TableName: TABLE_NAME,
         Key: {
           pk: `EMPLOYEE#${username}`,
