@@ -441,7 +441,7 @@ function IletisimListesiPageContent() {
 
 export default function IletisimListesiPage() {
   return (
-    <PageGuard permissionId="iletisim-listesi">
+    <PageGuard permissionId="crm-contacts">
       <IletisimListesiPageContent />
     </PageGuard>
   );

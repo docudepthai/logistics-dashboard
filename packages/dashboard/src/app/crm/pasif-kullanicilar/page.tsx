@@ -555,7 +555,7 @@ function PasifKullanicilarPageContent() {
 
 export default function PasifKullanicilarPage() {
   return (
-    <PageGuard permissionId="pasif-kullanicilar">
+    <PageGuard permissionId="crm-inactive">
       <PasifKullanicilarPageContent />
     </PageGuard>
   );
