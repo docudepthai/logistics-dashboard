@@ -85,6 +85,12 @@ export async function searchJobs(
 ): Promise<SearchJobsResult> {
   const limit = params.limit || 10;
 
+  // Auto-apply weight filter for small vehicles (max 3.5 ton capacity)
+  const smallVehicles = ['kamyonet', 'panelvan'];
+  if (smallVehicles.includes(params.vehicleType?.toLowerCase() || '') && params.maxWeight === undefined) {
+    params.maxWeight = 3.5;
+  }
+
   // Build dynamic query based on provided parameters
   // Only show jobs from last 24 hours
   // Exclude jobs without a destination (varis belirtilmemis)
@@ -128,11 +134,31 @@ export async function searchJobs(
   }
 
   if (params.vehicleType) {
-    // Only search structured vehicle_type field - raw_text causes false positives
-    // (e.g., "kamyonet olmaz" in a tir job would incorrectly match)
-    conditions.push(`LOWER(vehicle_type) LIKE LOWER($${paramIndex})`);
-    values.push(`%${params.vehicleType}%`);
-    paramIndex++;
+    const vt = params.vehicleType.toLowerCase();
+    if (vt === 'kamyonet' || vt === 'panelvan') {
+      // For small vehicles (kamyonet/panelvan): show jobs that are either marked as such OR are lightweight (<=3.5 ton)
+      // This catches jobs suitable for small vehicles even if not explicitly tagged
+      conditions.push(`(
+        LOWER(vehicle_type) LIKE '%kamyonet%'
+        OR LOWER(vehicle_type) LIKE '%panelvan%'
+        OR (weight IS NOT NULL AND weight <= 3.5)
+        OR (weight IS NULL AND (vehicle_type IS NULL OR vehicle_type = ''))
+      )`);
+      // Exclude large vehicle types - not suitable for small vehicles
+      // Note: 'kamyon' check must not match 'kamyonet', so we check for 'kamyon' without 'kamyonet'
+      conditions.push(`(vehicle_type IS NULL OR (
+        LOWER(vehicle_type) NOT LIKE '%tir%'
+        AND LOWER(vehicle_type) NOT LIKE '%dorse%'
+        AND NOT (LOWER(vehicle_type) LIKE '%kamyon%' AND LOWER(vehicle_type) NOT LIKE '%kamyonet%')
+      ))`);
+      conditions.push(`(body_type IS NULL OR LOWER(body_type) NOT LIKE '%damperli%')`);
+    } else {
+      // Only search structured vehicle_type field - raw_text causes false positives
+      // (e.g., "kamyonet olmaz" in a tir job would incorrectly match)
+      conditions.push(`LOWER(vehicle_type) LIKE LOWER($${paramIndex})`);
+      values.push(`%${params.vehicleType}%`);
+      paramIndex++;
+    }
   }
 
   if (params.bodyType) {
@@ -215,10 +241,6 @@ export async function searchJobs(
   const fetchLimit = Math.max(200, offset * 3 + 150);
   values.push(fetchLimit);
 
-  // Add priority group JID as a parameter for the ORDER BY
-  values.push(PRIORITY_GROUP_JID);
-  const priorityParamIndex = paramIndex + 1;
-
   const query = `
     SELECT
       id,
@@ -240,9 +262,7 @@ export async function searchJobs(
       created_at as "createdAt"
     FROM jobs
     WHERE ${conditions.join(' AND ')}
-    ORDER BY
-      CASE WHEN source_group_jid = $${priorityParamIndex} THEN 0 ELSE 1 END,
-      created_at DESC
+    ORDER BY COALESCE(posted_at, created_at) DESC
     LIMIT $${paramIndex}
   `;
 

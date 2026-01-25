@@ -2045,6 +2045,18 @@ export class LogisticsAgent {
         directResponse += `\n\nhint: toplamda ${result.totalCount} is var, ${shownCount} tane gosteriyorum. *"devam"* yaz daha fazla gosteririm.`;
       }
 
+      // Add note for small vehicle searches about unspecified weight jobs
+      const smallVehicleTypes = ['kamyonet', 'panelvan'];
+      const searchedVehicle = params.vehicleType?.toLowerCase();
+      if (searchedVehicle && smallVehicleTypes.includes(searchedVehicle) && result.jobs.length > 0) {
+        const jobsWithoutWeight = result.jobs.filter(j => !j.weight).length;
+        if (jobsWithoutWeight > 0) {
+          // Turkish dative suffix: kamyonet+e, panelvan+a (vowel harmony)
+          const dativeSuffix = searchedVehicle === 'kamyonet' ? 'e' : 'a';
+          directResponse += `\n\n_not: ${jobsWithoutWeight} ilanda tonaj belirtilmemis, ${searchedVehicle}${dativeSuffix} uygun mu aradiginda sor_`;
+        }
+      }
+
       // === VEHICLE SUGGESTION ===
       // If user has preferredVehicle and didn't specify a vehicle type, suggest filtering
       const userPreferredVehicle = (currentContext as ConversationContext)?.preferredVehicle;
@@ -2355,10 +2367,32 @@ export class LogisticsAgent {
         parts.push(`tel: ${job.contactPhone}`);
       }
 
+      // Time posted (relative time in Turkish)
+      const postedTime = job.postedAt || job.createdAt;
+      if (postedTime) {
+        const timeAgo = this.formatTimeAgoTurkish(new Date(postedTime));
+        parts.push(`(${timeAgo})`);
+      }
+
       lines.push(parts.join(', '));
     }
 
     return lines.join('\n');
+  }
+
+  /**
+   * Format time ago in Turkish (e.g., "2 saat önce", "30 dk önce")
+   */
+  private formatTimeAgoTurkish(date: Date): string {
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMins / 60);
+
+    if (diffMins < 1) return 'az önce';
+    if (diffMins < 60) return `${diffMins} dk önce`;
+    if (diffHours < 24) return `${diffHours} saat önce`;
+    return `${Math.floor(diffHours / 24)} gün önce`;
   }
 
   /**

@@ -392,7 +392,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "849903bbb7c5803ad38252f33ac7290768d66e574d6385bb4088f083e22fb9ee.zip"
+     "S3Key": "91cd235dc06676b281e427f15e4ad8faa127d38b9cf1207f1c2365dd5b573d73.zip"
     },
     "Environment": {
      "Variables": {
@@ -421,7 +421,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/ProcessorHandler/Resource",
-    "aws:asset:path": "asset.849903bbb7c5803ad38252f33ac7290768d66e574d6385bb4088f083e22fb9ee",
+    "aws:asset:path": "asset.91cd235dc06676b281e427f15e4ad8faa127d38b9cf1207f1c2365dd5b573d73",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }
@@ -619,7 +619,7 @@
    "Properties": {
     "Code": {
      "S3Bucket": "cdk-hnb659fds-assets-426476636541-eu-central-1",
-     "S3Key": "f3eb24ab738174706f41a906a5ed399303120287b9dd47faf124bd32b4709e65.zip"
+     "S3Key": "bf56dd160b9589e666b2fd5ab8bac7dad04f939387b8ec1d068316ef967564b3.zip"
     },
     "Environment": {
      "Variables": {
@@ -651,7 +651,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "TurkishLogisticsBot/QueryHandler/Resource",
-    "aws:asset:path": "asset.f3eb24ab738174706f41a906a5ed399303120287b9dd47faf124bd32b4709e65",
+    "aws:asset:path": "asset.bf56dd160b9589e666b2fd5ab8bac7dad04f939387b8ec1d068316ef967564b3",
     "aws:asset:is-bundled": true,
     "aws:asset:property": "Code"
    }

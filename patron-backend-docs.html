@@ -1,0 +1,3621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patron Backend Architecture Documentation</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Code Highlighting -->
+  <link href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet">
+
+  <style>
+    /* ============================================
+       CSS DESIGN SYSTEM - xAI Inspired Theme
+       ============================================ */
+
+    :root {
+      /* Monochrome Enterprise Color System */
+      --bg-primary: #000000;
+      --bg-secondary: #0a0a0a;
+      --bg-tertiary: #141414;
+      --bg-elevated: #1a1a1a;
+      --bg-card: #0f0f0f;
+
+      --border: #1f1f1f;
+      --border-elevated: #2a2a2a;
+      --border-bright: #404040;
+
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --text-muted: #666666;
+      --text-inverse: #000000;
+
+      /* Grayscale Spectrum */
+      --gray-50: #fafafa;
+      --gray-100: #f5f5f5;
+      --gray-200: #e5e5e5;
+      --gray-300: #d4d4d4;
+      --gray-400: #a3a3a3;
+      --gray-500: #737373;
+      --gray-600: #525252;
+      --gray-700: #404040;
+      --gray-800: #262626;
+      --gray-900: #171717;
+
+      /* Monochrome Accents */
+      --accent-primary: #ffffff;
+      --accent-secondary: #d4d4d4;
+      --accent-tertiary: #a3a3a3;
+      --accent-green: #ffffff;
+      --accent-blue: #ffffff;
+      --accent-orange: #ffffff;
+      --accent-red: #ffffff;
+      --accent-cyan: #ffffff;
+
+      /* Monochrome Gradients */
+      --gradient-primary: linear-gradient(135deg, #ffffff 0%, #d4d4d4 100%);
+      --gradient-secondary: linear-gradient(135deg, #d4d4d4 0%, #a3a3a3 100%);
+      --gradient-accent: linear-gradient(90deg, #ffffff 0%, #d4d4d4 100%);
+      --gradient-hero: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.03), transparent 50%);
+
+      /* Monochrome Shadows */
+      --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.5);
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.6);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.7);
+      --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.8);
+      --shadow-xl: 0 16px 48px rgba(0, 0, 0, 0.9);
+      --shadow-purple: 0 0 40px rgba(255, 255, 255, 0.1);
+      --shadow-glow: 0 0 60px rgba(255, 255, 255, 0.08);
+
+      /* Typography */
+      --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-code: 'Fira Code', 'JetBrains Mono', 'SF Mono', monospace;
+
+      /* Layout */
+      --sidebar-width: 280px;
+      --header-height: 72px;
+      --content-max-width: 1280px;
+
+      /* Animation */
+      --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ============================================
+       RESET & BASE STYLES
+       ============================================ */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.6;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 400px;
+      background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.02), transparent 50%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============================================
+       TYPOGRAPHY
+       ============================================ */
+
+    h1 {
+      font-size: 36px;
+      font-weight: 800;
+      margin-bottom: 20px;
+      letter-spacing: -1px;
+      background: var(--gradient-primary);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      border-bottom: 1px solid var(--border-elevated);
+      padding-bottom: 16px;
+      position: relative;
+    }
+
+    h1::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      background: #ffffff;
+    }
+
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin: 48px 0 20px 0;
+      letter-spacing: -0.5px;
+      color: var(--text-primary);
+      position: relative;
+      padding-left: 16px;
+    }
+
+    h2::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 24px;
+      background: #ffffff;
+      border-radius: 2px;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 600;
+      margin: 32px 0 16px 0;
+      color: var(--text-primary);
+      letter-spacing: -0.3px;
+    }
+
+    h4 {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 20px 0 10px 0;
+      color: var(--text-secondary);
+    }
+
+    p {
+      margin-bottom: 16px;
+      line-height: 1.7;
+    }
+
+    a {
+      color: var(--accent-secondary);
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    a:hover {
+      color: var(--accent-primary);
+      text-decoration: underline;
+    }
+
+    strong {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    code {
+      font-family: var(--font-code);
+      font-size: 13px;
+      background: var(--bg-tertiary);
+      padding: 4px 8px;
+      border-radius: 6px;
+      color: #ffffff;
+      border: 1px solid var(--border-elevated);
+      font-weight: 600;
+    }
+
+    pre code {
+      display: block;
+      padding: 20px;
+      overflow-x: auto;
+      background: #000000;
+      border: 1px solid var(--border-elevated);
+      border-radius: 10px;
+      color: var(--text-primary);
+      line-height: 1.6;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8), inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+      font-weight: 400;
+    }
+
+    /* ============================================
+       LAYOUT - HEADER
+       ============================================ */
+
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-bright);
+      padding: 16px 24px;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(10, 10, 10, 0.98) 0%, rgba(0, 0, 0, 0.95) 100%);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-left: 0;
+    }
+
+    .logo {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .logo svg {
+      color: #ffffff;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
+    }
+
+    .search-container {
+      flex: 1;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 11px 16px 11px 42px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-elevated);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: var(--font-body);
+      transition: all var(--transition-base);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: #ffffff;
+      background: var(--bg-elevated);
+      box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.05);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 12px);
+      left: 0;
+      right: 0;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-elevated);
+      border-radius: 12px;
+      max-height: 420px;
+      overflow-y: auto;
+      display: none;
+      box-shadow: var(--shadow-xl);
+      backdrop-filter: blur(20px);
+    }
+
+    .search-results.active {
+      display: block;
+    }
+
+    .search-result {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      position: relative;
+    }
+
+    .search-result::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: #ffffff;
+      opacity: 0;
+      transition: opacity var(--transition-base);
+    }
+
+    .search-result:hover {
+      background: var(--bg-card);
+      padding-left: 22px;
+    }
+
+    .search-result:hover::before {
+      opacity: 1;
+    }
+
+    .search-result:last-child {
+      border-bottom: none;
+    }
+
+    .search-result-title {
+      font-weight: 600;
+      color: var(--accent-primary);
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .search-result-section {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .search-result-content {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .search-highlight {
+      background: rgba(255, 211, 61, 0.3);
+      color: var(--accent-yellow);
+      padding: 2px 4px;
+      border-radius: 2px;
+    }
+
+    /* ============================================
+       LAYOUT - SIDEBAR
+       ============================================ */
+
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: var(--sidebar-width);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-elevated);
+      overflow-y: auto;
+      padding: 28px 20px;
+      z-index: 50;
+    }
+
+    .sidebar-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-elevated);
+      letter-spacing: -0.5px;
+    }
+
+    .nav-section {
+      margin-bottom: 28px;
+    }
+
+    .nav-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      margin-bottom: 12px;
+      padding-left: 12px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 10px 14px;
+      margin: 3px 0;
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      transition: all var(--transition-base);
+      position: relative;
+      font-weight: 500;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 0;
+      background: #ffffff;
+      border-radius: 0 2px 2px 0;
+      transition: height var(--transition-base);
+    }
+
+    .nav-link:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+      text-decoration: none;
+      padding-left: 18px;
+    }
+
+    .nav-link:hover::before {
+      height: 60%;
+    }
+
+    .nav-link.active {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent);
+      color: #ffffff;
+      font-weight: 600;
+      padding-left: 18px;
+    }
+
+    .nav-link.active::before {
+      height: 70%;
+    }
+
+    /* ============================================
+       LAYOUT - MAIN CONTENT
+       ============================================ */
+
+    .main {
+      margin-left: var(--sidebar-width);
+      padding: 32px 40px;
+      max-width: calc(var(--content-max-width) + 80px);
+    }
+
+    .section {
+      margin-bottom: 64px;
+    }
+
+    /* ============================================
+       COMPONENTS - STATS CARDS
+       ============================================ */
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
+      border: 1px solid var(--border-elevated);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+      transition: all var(--transition-slow);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      padding: 1px;
+      background: linear-gradient(135deg, #ffffff 0%, #a0a0a0 100%);
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      mask-composite: exclude;
+      opacity: 0;
+      transition: opacity var(--transition-slow);
+      border-radius: 16px;
+    }
+
+    .stat-card::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100%;
+      background: radial-gradient(circle at top, rgba(255, 255, 255, 0.03), transparent 70%);
+      opacity: 0;
+      transition: opacity var(--transition-slow);
+    }
+
+    .stat-card:hover {
+      transform: translateY(-6px) scale(1.02);
+      box-shadow: var(--shadow-xl), 0 0 60px rgba(255, 255, 255, 0.08);
+      border-color: transparent;
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+    }
+
+    .stat-card:hover::after {
+      opacity: 1;
+    }
+
+    .stat-value {
+      font-size: 40px;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 10px;
+      letter-spacing: -1px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ============================================
+       COMPONENTS - TABLES
+       ============================================ */
+
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background: var(--bg-card);
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border-elevated);
+    }
+
+    thead {
+      background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-card) 100%);
+    }
+
+    th {
+      padding: 16px 20px;
+      text-align: left;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      border-bottom: 1px solid var(--border-elevated);
+    }
+
+    td {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      font-size: 13.5px;
+      transition: background var(--transition-base);
+    }
+
+    tbody tr:hover {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), transparent);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* ============================================
+       COMPONENTS - CODE BLOCKS
+       ============================================ */
+
+    .code-block {
+      position: relative;
+      margin: 20px 0;
+    }
+
+    .code-label {
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      font-size: 12px;
+      font-family: var(--font-code);
+      border-top-left-radius: 6px;
+      border-top-right-radius: 6px;
+      border: 1px solid var(--border);
+      border-bottom: none;
+    }
+
+    .code-label + pre {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      margin-top: 0;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-family: var(--font-body);
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.2s;
+      z-index: 10;
+    }
+
+    .copy-btn:hover {
+      background: var(--border);
+      color: var(--text-primary);
+    }
+
+    .copy-btn.copied {
+      background: var(--accent-green);
+      color: var(--bg-primary);
+      border-color: var(--accent-green);
+    }
+
+    /* ============================================
+       COMPONENTS - COLLAPSIBLE SECTIONS
+       ============================================ */
+
+    .collapsible {
+      margin: 24px 0;
+    }
+
+    .collapsible-header {
+      background: var(--bg-card);
+      border: 1px solid var(--border-elevated);
+      border-radius: 10px;
+      padding: 18px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all var(--transition-base);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .collapsible-header::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 0;
+      background: #ffffff;
+      transition: width var(--transition-base);
+    }
+
+    .collapsible-header:hover {
+      background: var(--bg-elevated);
+      border-color: #ffffff;
+      padding-left: 28px;
+    }
+
+    .collapsible-header:hover::before {
+      width: 3px;
+    }
+
+    .collapsible-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .collapsible-icon {
+      color: #ffffff;
+      transition: transform 0.3s;
+    }
+
+    .collapsible-icon.expanded {
+      transform: rotate(90deg);
+    }
+
+    .collapsible-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease-out;
+    }
+
+    .collapsible-content.expanded {
+      max-height: 5000px;
+    }
+
+    .collapsible-inner {
+      padding: 24px;
+      border: 1px solid var(--border-elevated);
+      border-top: none;
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
+      background: var(--bg-card);
+    }
+
+    /* ============================================
+       COMPONENTS - BADGES
+       ============================================ */
+
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      transition: all var(--transition-base);
+    }
+
+    .badge-blue {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-green {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-purple {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.06));
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .badge-orange {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge-red {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.05));
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .badge:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+    }
+
+    /* ============================================
+       COMPONENTS - DIAGRAMS
+       ============================================ */
+
+    .diagram-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-elevated);
+      border-radius: 12px;
+      padding: 32px;
+      margin: 32px 0;
+      overflow-x: auto;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+      min-height: 200px;
+    }
+
+    /* ============================================
+       COMPONENTS - ALERT BOXES
+       ============================================ */
+
+    .alert {
+      padding: 18px 24px;
+      border-radius: 10px;
+      margin: 24px 0;
+      border-left: 3px solid;
+      background: var(--bg-card);
+      transition: all var(--transition-base);
+    }
+
+    .alert:hover {
+      transform: translateX(4px);
+    }
+
+    .alert-info {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), var(--bg-card));
+      border-color: #ffffff;
+      color: var(--text-primary);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .alert-warning {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), var(--bg-card));
+      border-color: #a0a0a0;
+      color: var(--text-primary);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .alert-success {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), var(--bg-card));
+      border-color: #ffffff;
+      color: var(--text-primary);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .alert-danger {
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), var(--bg-card));
+      border-color: #a0a0a0;
+      color: var(--text-primary);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ============================================
+       COMPONENTS - LISTS
+       ============================================ */
+
+    ul, ol {
+      margin: 16px 0;
+      padding-left: 24px;
+    }
+
+    li {
+      margin: 8px 0;
+      line-height: 1.7;
+    }
+
+    li code {
+      font-size: 12px;
+    }
+
+    /* ============================================
+       FOOTER
+       ============================================ */
+
+    .footer {
+      margin-left: var(--sidebar-width);
+      padding: 40px;
+      border-top: 1px solid var(--border-elevated);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 13px;
+      background: linear-gradient(180deg, transparent, var(--bg-secondary));
+    }
+
+    /* ============================================
+       RESPONSIVE
+       ============================================ */
+
+    @media (max-width: 1024px) {
+      :root {
+        --sidebar-width: 0px;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+
+      .sidebar.mobile-open {
+        transform: translateX(0);
+      }
+
+      .header-content {
+        margin-left: 0;
+      }
+
+      .main {
+        margin-left: 0;
+        padding: 24px 20px;
+      }
+
+      .footer {
+        margin-left: 0;
+        padding: 24px 20px;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .table-container {
+        font-size: 12px;
+      }
+
+      th, td {
+        padding: 8px 12px;
+      }
+    }
+
+    /* ============================================
+       SCROLLBAR
+       ============================================ */
+
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================
+       STICKY HEADER WITH SEARCH
+       ============================================ -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+          <path d="M2 17l10 5 10-5"/>
+          <path d="M2 12l10 5 10-5"/>
+        </svg>
+        Patron Backend Docs
+      </div>
+
+      <div class="search-container">
+        <span class="search-icon">&#128269;</span>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search documentation... (Ctrl+K)" />
+        <div class="search-results" id="searchResults"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================
+       FIXED SIDEBAR NAVIGATION
+       ============================================ -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-title">Navigation</div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Overview</div>
+      <a href="#architecture" class="nav-link">System Architecture</a>
+      <a href="#data-flow" class="nav-link">Data Flow</a>
+      <a href="#quick-stats" class="nav-link">Quick Stats</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Data Sources</div>
+      <a href="#evolution-api" class="nav-link">Evolution API</a>
+      <a href="#whatsapp-api" class="nav-link">WhatsApp Business API</a>
+      <a href="#openai-api" class="nav-link">OpenAI API</a>
+      <a href="#scrapers" class="nav-link">Kamyoon & Yukbul Scrapers</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Processing Pipeline</div>
+      <a href="#message-flow" class="nav-link">Message Flow</a>
+      <a href="#ai-parser" class="nav-link">AI Parser (GPT-4o-mini)</a>
+      <a href="#transformations" class="nav-link">Data Transformations</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Database</div>
+      <a href="#postgresql" class="nav-link">PostgreSQL Schemas</a>
+      <a href="#dynamodb" class="nav-link">DynamoDB Tables</a>
+      <a href="#indexes" class="nav-link">Indexes & Optimization</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Lambda Functions</div>
+      <a href="#lambda-webhook" class="nav-link">webhook.ts</a>
+      <a href="#lambda-processor" class="nav-link">processor.ts</a>
+      <a href="#lambda-query" class="nav-link">query.ts</a>
+      <a href="#lambda-payment" class="nav-link">payment.ts</a>
+      <a href="#lambda-auto-nudge" class="nav-link">auto-nudge.ts</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">AI Agent</div>
+      <a href="#logistics-agent" class="nav-link">LogisticsAgent Class</a>
+      <a href="#conversation-store" class="nav-link">ConversationStore</a>
+      <a href="#user-store" class="nav-link">UserStore</a>
+      <a href="#turkish-parsing" class="nav-link">Turkish Parsing</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Infrastructure</div>
+      <a href="#cdk-stack" class="nav-link">CDK Stack</a>
+      <a href="#env-vars" class="nav-link">Environment Variables</a>
+      <a href="#deployment" class="nav-link">Deployment Guide</a>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-section-title">Advanced</div>
+      <a href="#error-handling" class="nav-link">Error Handling</a>
+      <a href="#monitoring" class="nav-link">Monitoring & Logs</a>
+      <a href="#security" class="nav-link">Security & IAM</a>
+      <a href="#troubleshooting" class="nav-link">Troubleshooting</a>
+    </div>
+  </nav>
+
+  <!-- ============================================
+       MAIN CONTENT
+       ============================================ -->
+  <main class="main">
+
+    <!-- Section 1: System Architecture Overview -->
+    <section id="architecture" class="section">
+      <h1>1. System Architecture Overview</h1>
+
+      <p>Patron is a Turkish logistics platform that aggregates load offers from multiple sources (WhatsApp groups, Kamyoon API, Yukbul API) and provides an AI-powered conversational agent for job search via WhatsApp Business API.</p>
+
+      <div id="quick-stats" class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value">5</div>
+          <div class="stat-label">Lambda Functions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">2</div>
+          <div class="stat-label">Railway Scrapers</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">15min</div>
+          <div class="stat-label">Scrape Interval</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value">GPT-4o-mini</div>
+          <div class="stat-label">AI Parser Model</div>
+        </div>
+      </div>
+
+      <h2>Architecture Diagram</h2>
+      <div class="diagram-container">
+        <div class="mermaid">
+graph TB
+    subgraph "External Sources"
+        K[Kamyoon API]
+        Y[Yukbul API]
+        E[Evolution API<br/>WhatsApp Groups]
+    end
+
+    subgraph "Railway Deployments"
+        KS[Kamyoon Scraper<br/>15min cron]
+        YS[Yukbul Scraper<br/>15min cron]
+    end
+
+    subgraph "AWS - API Gateway"
+        AG[API Gateway<br/>/webhook, /query, /payment]
+    end
+
+    subgraph "AWS - Lambda Functions"
+        L1[webhook.ts<br/>256MB, 30s]
+        L2[processor.ts<br/>512MB, 60s]
+        L3[query.ts<br/>512MB, 60s]
+        L4[payment.ts<br/>256MB, 30s]
+        L5[auto-nudge.ts<br/>256MB, 120s]
+    end
+
+    subgraph "AWS - Storage & Queue"
+        S3[S3 Bucket<br/>Raw Messages]
+        SQS[SQS FIFO Queue<br/>Processing]
+    end
+
+    subgraph "Databases"
+        PG[(PostgreSQL<br/>jobs, raw_messages)]
+        DDB[(DynamoDB<br/>conversations, users)]
+    end
+
+    subgraph "External APIs"
+        OAI[OpenAI API<br/>GPT-4o-mini]
+        WA[WhatsApp<br/>Business API]
+        PT[PayTR<br/>Payment Gateway]
+    end
+
+    subgraph "Scheduler"
+        EB[EventBridge<br/>15min rule]
+    end
+
+    K -->|GET /load-offers| KS
+    Y -->|POST /listings| YS
+    E -->|webhook POST| AG
+    KS -->|POST /webhook| AG
+    YS -->|POST /webhook| AG
+
+    AG -->|messages.upsert| L1
+    AG -->|user query| L3
+    AG -->|generate payment| L4
+
+    L1 -->|store| S3
+    L1 -->|enqueue| SQS
+
+    SQS -->|trigger| L2
+
+    L2 -->|parse| OAI
+    L2 -->|insert| PG
+    L2 -->|query pending| DDB
+    L2 -->|notify| WA
+
+    L3 -->|search jobs| PG
+    L3 -->|conversation| DDB
+    L3 -->|agent| OAI
+    L3 -->|respond| WA
+
+    L4 -->|verify| DDB
+    L4 -->|integrate| PT
+
+    EB -->|schedule| L5
+    L5 -->|scan users| DDB
+    L5 -->|send reminders| WA
+
+    classDef external fill:#3B82F6,stroke:#2563EB,color:#fff
+    classDef railway fill:#10B981,stroke:#059669,color:#fff
+    classDef aws fill:#8B5CF6,stroke:#7C3AED,color:#fff
+    classDef database fill:#3FB950,stroke:#2EA043,color:#fff
+    classDef api fill:#F0883E,stroke:#D97706,color:#fff
+
+    class K,Y,E external
+    class KS,YS railway
+    class AG,L1,L2,L3,L4,L5,S3,SQS,EB aws
+    class PG,DDB database
+    class OAI,WA,PT api
+        </div>
+      </div>
+
+      <h2>Component Inventory</h2>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Type</th>
+              <th>Runtime/Platform</th>
+              <th>Configuration</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>webhook</strong></td>
+              <td><span class="badge badge-purple">Lambda</span></td>
+              <td>Node.js 20.x</td>
+              <td>256MB, 30s timeout</td>
+              <td>Receives Evolution API webhooks, stores in S3, queues to SQS</td>
+            </tr>
+            <tr>
+              <td><strong>processor</strong></td>
+              <td><span class="badge badge-purple">Lambda</span></td>
+              <td>Node.js 20.x</td>
+              <td>512MB, 60s timeout</td>
+              <td>Parses messages with AI, creates jobs, sends proactive notifications</td>
+            </tr>
+            <tr>
+              <td><strong>query</strong></td>
+              <td><span class="badge badge-purple">Lambda</span></td>
+              <td>Node.js 20.x</td>
+              <td>512MB, 60s timeout</td>
+              <td>Handles user queries via WhatsApp, conversational job search</td>
+            </tr>
+            <tr>
+              <td><strong>payment</strong></td>
+              <td><span class="badge badge-purple">Lambda</span></td>
+              <td>Node.js 20.x</td>
+              <td>256MB, 30s timeout</td>
+              <td>Generates PayTR payment links, handles webhooks</td>
+            </tr>
+            <tr>
+              <td><strong>auto-nudge</strong></td>
+              <td><span class="badge badge-purple">Lambda</span></td>
+              <td>Node.js 20.x</td>
+              <td>256MB, 120s timeout</td>
+              <td>Sends reminder messages to inactive users (scheduled every 15min)</td>
+            </tr>
+            <tr>
+              <td><strong>Kamyoon Scraper</strong></td>
+              <td><span class="badge badge-green">Railway</span></td>
+              <td>Node.js</td>
+              <td>Cron: <code>*/15 * * * *</code></td>
+              <td>Fetches load offers from Kamyoon API every 15 minutes</td>
+            </tr>
+            <tr>
+              <td><strong>Yukbul Scraper</strong></td>
+              <td><span class="badge badge-green">Railway</span></td>
+              <td>Node.js</td>
+              <td>Cron: <code>*/15 * * * *</code></td>
+              <td>Fetches listings from Yukbul Supabase API every 15 minutes</td>
+            </tr>
+            <tr>
+              <td><strong>SQS FIFO Queue</strong></td>
+              <td><span class="badge badge-purple">AWS</span></td>
+              <td>FIFO</td>
+              <td>Batch: 10, DLQ after 3 retries</td>
+              <td>Message processing queue with order preservation per group</td>
+            </tr>
+            <tr>
+              <td><strong>S3 Bucket</strong></td>
+              <td><span class="badge badge-purple">AWS</span></td>
+              <td>S3</td>
+              <td>Lifecycle: 30d→IA, 90d→Glacier</td>
+              <td>Long-term raw message archive</td>
+            </tr>
+            <tr>
+              <td><strong>PostgreSQL</strong></td>
+              <td><span class="badge badge-green">Database</span></td>
+              <td>RDS</td>
+              <td>eu-central-1</td>
+              <td>Structured job data with indexes for fast search</td>
+            </tr>
+            <tr>
+              <td><strong>DynamoDB</strong></td>
+              <td><span class="badge badge-green">Database</span></td>
+              <td>NoSQL</td>
+              <td>PAY_PER_REQUEST</td>
+              <td>User conversations, context, pending notifications (with TTL)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 2: Data Sources & External APIs -->
+    <section id="data-sources" class="section">
+      <h1>2. Data Sources & External APIs</h1>
+
+      <p>Patron integrates with multiple external systems to ingest logistics data and interact with users via WhatsApp. This section details each API integration, authentication methods, rate limits, and data formats.</p>
+
+      <h2 id="evolution-api">Evolution API (WhatsApp Webhooks)</h2>
+
+      <p>Evolution API is a self-hosted WhatsApp Business API alternative that provides webhook integration for WhatsApp group messages.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Notes</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Endpoint</strong></td>
+              <td><code>POST /webhook</code></td>
+              <td>Receives messages.upsert events</td>
+            </tr>
+            <tr>
+              <td><strong>Verify Token</strong></td>
+              <td><code>process.env.WHATSAPP_VERIFY_TOKEN</code></td>
+              <td>Stored in Secrets Manager</td>
+            </tr>
+            <tr>
+              <td><strong>Event Types</strong></td>
+              <td><code>messages.upsert</code></td>
+              <td>New messages from groups</td>
+            </tr>
+            <tr>
+              <td><strong>Instances</strong></td>
+              <td>turkish-logistics, turkish-logistics-2</td>
+              <td>Two WhatsApp accounts monitoring groups</td>
+            </tr>
+            <tr>
+              <td><strong>Message Filters</strong></td>
+              <td>Group messages only, excludes own messages</td>
+              <td>See webhook.ts:L45-60</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Evolution API Webhook Payload Structure</h3>
+      <pre><code class="language-typescript">interface EvolutionWebhookPayload {
+  event: string;  // "messages.upsert"
+  instance: string;  // "turkish-logistics" | "turkish-logistics-2"
+  source: string;  // WhatsApp group JID
+  payload: {
+    data: {
+      key: {
+        remoteJid: string;  // Group ID (e.g., "120363123456@g.us")
+        fromMe: boolean;
+        id: string;  // Message ID
+      };
+      message: {
+        conversation?: string;
+        extendedTextMessage?: {
+          text: string;
+        };
+      };
+      messageTimestamp: number;
+      pushName: string;  // Sender name
+    };
+  };
+}</code></pre>
+
+      <h2 id="whatsapp-api">WhatsApp Business API (Meta)</h2>
+
+      <p>Direct integration with Meta's WhatsApp Business Platform for sending proactive notifications and query responses to users.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Configuration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Base URL</strong></td>
+              <td><code>https://graph.facebook.com/v18.0</code></td>
+              <td>Meta Graph API</td>
+            </tr>
+            <tr>
+              <td><strong>Phone Number ID</strong></td>
+              <td><code>process.env.WHATSAPP_PHONE_NUMBER_ID</code></td>
+              <td>975431092314310</td>
+            </tr>
+            <tr>
+              <td><strong>Access Token</strong></td>
+              <td><code>process.env.WHATSAPP_ACCESS_TOKEN</code></td>
+              <td>Permanent token from Meta Business</td>
+            </tr>
+            <tr>
+              <td><strong>Message Types</strong></td>
+              <td>text, template, interactive</td>
+              <td>Used in processor.ts and query.ts</td>
+            </tr>
+            <tr>
+              <td><strong>Rate Limits</strong></td>
+              <td>1000 messages/second (business tier)</td>
+              <td>Enforced by Meta</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Send Message Example (processor.ts)</h3>
+      <pre><code class="language-typescript">// From packages/lambda/src/handlers/processor.ts
+async function sendWhatsAppMessage(phone: string, message: string) {
+  const response = await fetch(
+    `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`,
+    {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        messaging_product: 'whatsapp',
+        to: phone,  // Format: 905551234567 (Turkish mobile)
+        type: 'text',
+        text: { body: message },
+      }),
+    }
+  );
+
+  return response.json();
+}</code></pre>
+
+      <h2 id="openai-api">OpenAI API (GPT-4o-mini)</h2>
+
+      <p>AI-powered message parser that extracts structured data (origin, destination, vehicle type, phones) from Turkish logistics messages.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+              <th>Rationale</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Model</strong></td>
+              <td><code>gpt-4o-mini</code></td>
+              <td>Fast, cost-effective for structured extraction</td>
+            </tr>
+            <tr>
+              <td><strong>Response Format</strong></td>
+              <td><code>{ type: 'json_object' }</code></td>
+              <td>Guarantees valid JSON output</td>
+            </tr>
+            <tr>
+              <td><strong>Temperature</strong></td>
+              <td><code>0.1</code></td>
+              <td>Low temperature for deterministic parsing</td>
+            </tr>
+            <tr>
+              <td><strong>Max Tokens</strong></td>
+              <td><code>1000</code></td>
+              <td>Sufficient for structured output</td>
+            </tr>
+            <tr>
+              <td><strong>Average Cost</strong></td>
+              <td>~$0.0003 per message</td>
+              <td>Input: ~200 tokens, Output: ~150 tokens</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>System Prompt (ai-parser.ts:L48-88)</h3>
+      <details>
+        <summary>Click to expand full system prompt</summary>
+        <pre><code class="language-typescript">const SYSTEM_PROMPT = `You are a Turkish logistics message parser. Extract structured data from Turkish logistics/freight messages.
+
+Return a JSON object with:
+- origin: { province: string, district?: string } - Starting location (look for "dan", "den" suffixes or first location)
+- destination: { province: string, district?: string } - Ending location (look for "a", "e", "ya", "ye" suffixes or second location)
+- vehicleType: "TIR" | "KAMYON" | "KAMYONET" | "KIRKAYAK" | "10 TEKER" | "6 TEKER" | null - Vehicle type mentioned
+  - "TIR" = standard truck/semi
+  - "KAMYON" = truck
+  - "KAMYONET" = small truck/van
+  - "KIRKAYAK" or "40 AYAK" = 40-foot container
+  - "10 TEKER" = 10-wheeler
+  - "6 TEKER" = 6-wheeler
+- bodyType: "TENTELI" | "KAPALI" | "ACIK" | "DAMPERLI" | "1360" | null - Vehicle body/trailer type
+  - "TENTELI" = tarpaulin/curtain-sided
+  - "KAPALI" = closed/box
+  - "ACIK" = open/flatbed
+  - "DAMPERLI" = tipper/dump
+  - "1360" or "13.60" = 13.60 meter trailer (standard TIR length, NOT weight!)
+- isRefrigerated: boolean - true if "frigo", "frigorifik", "termokin", "soğutmalı" mentioned
+- phones: string[] - All phone numbers found (Turkish mobile format)
+- weight: { value: number, unit: "ton" | "kg" } | null - ONLY actual cargo weight (e.g., "15 ton", "5000 kg"). DO NOT confuse with:
+  - Vehicle measurements like "1360" (13.60 meters)
+  - "8 metre" (vehicle length)
+  - Dimensions or vehicle specs
+- cargoType: string | null - Type of cargo (e.g., "palet", "gıda", "tekstil", "demir", "makine", "seramik")
+- contactName: string | null - Contact person name if mentioned (look for Turkish names near phone numbers)
+- messageType: "CARGO_AVAILABLE" | "VEHICLE_WANTED" | "VEHICLE_AVAILABLE" | "UNKNOWN"
+  - CARGO_AVAILABLE: Message offers cargo/freight (yük var, yükleme, etc.) - this is most common
+  - VEHICLE_WANTED: Looking for a vehicle (araç aranıyor, TIR lazım, ihtiyaç var, etc.)
+  - VEHICLE_AVAILABLE: Vehicle is available (boş araç, müsait, etc.)
+- isUrgent: boolean - true if "acil", "hemen", "bugün", "yarın" mentioned
+- additionalLocations: Array of other locations mentioned besides origin/destination
+
+Important Turkish logistics terms:
+- "Parsiyel" or "Parça" = partial/LTL load
+- "Komple" = full truckload (FTL)
+- "Hafif" = light cargo
+- Districts like "Çerkezköy" (Tekirdag), "Akhisar" (Manisa), "Kızıltepe" (Mardin) should map to their provinces.
+
+Turkish province names should be normalized (e.g., "İstanbul" -> "Istanbul", "Muğla" -> "Mugla").
+Phone numbers should be in format: 05XXXXXXXXX (11 digits).`;</code></pre>
+      </details>
+
+      <h2 id="scrapers">Kamyoon & Yukbul Scrapers (Railway)</h2>
+
+      <p>Two background services deployed on Railway that fetch logistics load offers from third-party APIs every 15 minutes and forward them to the webhook handler.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Scraper</th>
+              <th>API Endpoint</th>
+              <th>Cron Schedule</th>
+              <th>Data Format</th>
+              <th>Source File</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Kamyoon</strong></td>
+              <td><code>GET /load-offers</code></td>
+              <td><code>*/15 * * * *</code></td>
+              <td>JSON array of load offers</td>
+              <td>kamyoon/scraper-service/src/index.ts</td>
+            </tr>
+            <tr>
+              <td><strong>Yukbul</strong></td>
+              <td><code>POST /listings</code> (Supabase)</td>
+              <td><code>*/15 * * * *</code></td>
+              <td>JSON array of listings</td>
+              <td>yukbul/scraper-service/src/index.ts</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Kamyoon Scraper Implementation</h3>
+      <pre><code class="language-typescript">// From kamyoon/scraper-service/src/index.ts:L15-45
+const WEBHOOK_URL = process.env.WEBHOOK_URL;  // Patron API Gateway URL
+const KAMYOON_API = 'https://api.kamyoon.com/load-offers';
+
+// Runs every 15 minutes
+cron.schedule('*/15 * * * *', async () => {
+  console.log('[Kamyoon] Fetching load offers...');
+
+  const response = await fetch(KAMYOON_API);
+  const offers: KamyoonLoadOffer[] = await response.json();
+
+  console.log(`[Kamyoon] Found ${offers.length} offers`);
+
+  // Transform to Evolution API webhook format
+  for (const offer of offers) {
+    const payload = transformToWebhookPayload(offer);
+
+    // Send to Patron webhook
+    await fetch(WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+  }
+
+  console.log('[Kamyoon] Batch sent successfully');
+});</code></pre>
+
+      <h3>Data Transformation Example</h3>
+      <pre><code class="language-typescript">// Convert Kamyoon format to Evolution webhook format
+function transformToWebhookPayload(offer: KamyoonLoadOffer): EvolutionWebhookPayload {
+  const messageText = `
+${offer.origin} → ${offer.destination}
+${offer.vehicleType} ${offer.trailerType}
+${offer.weight} ton
+İletişim: ${offer.phone}
+  `.trim();
+
+  return {
+    event: 'messages.upsert',
+    instance: 'kamyoon-scraper',  // Virtual instance identifier
+    source: offer.source,
+    payload: {
+      data: {
+        key: {
+          remoteJid: '120363999999@g.us',  // Virtual group ID
+          fromMe: false,
+          id: `KAMYOON_${offer.id}_${Date.now()}`,
+        },
+        message: {
+          conversation: messageText,
+        },
+        messageTimestamp: Math.floor(Date.now() / 1000),
+        pushName: 'Kamyoon Bot',
+      },
+    },
+  };
+}</code></pre>
+    </section>
+
+    <!-- Section 3: Data Processing Pipeline -->
+    <section id="message-flow" class="section">
+      <h1>3. Data Processing Pipeline</h1>
+
+      <p>This section details the complete message flow from ingestion to notification, including deduplication, parsing, and proactive user matching.</p>
+
+      <h2>Complete Message Flow Sequence</h2>
+      <div class="diagram-container">
+        <div class="mermaid">
+sequenceDiagram
+    participant Scraper as Kamyoon/Yukbul<br/>Scraper (Railway)
+    participant API as API Gateway<br/>/webhook
+    participant Webhook as webhook.ts<br/>Lambda
+    participant S3 as S3 Bucket<br/>Raw Messages
+    participant SQS as SQS FIFO<br/>Queue
+    participant Processor as processor.ts<br/>Lambda
+    participant OpenAI as GPT-4o-mini<br/>Parser
+    participant PG as PostgreSQL<br/>jobs table
+    participant DDB as DynamoDB<br/>conversations
+    participant WA as WhatsApp<br/>Business API
+
+    Note over Scraper: Runs every 15min
+    Scraper->>API: POST /webhook (Evolution format)
+
+    API->>Webhook: Invoke Lambda
+
+    Webhook->>Webhook: Validate event type
+    Webhook->>Webhook: Filter group messages
+    Webhook->>Webhook: Exclude own messages
+
+    Webhook->>S3: Store raw payload<br/>messages/{year}/{month}/{day}/{instance}/{messageId}.json
+
+    Webhook->>SQS: Enqueue message<br/>MessageGroupId: remoteJid<br/>MessageDeduplicationId: messageId
+
+    Webhook-->>API: 200 OK
+
+    Note over SQS: Batch processing (up to 10 messages)
+    SQS->>Processor: Trigger Lambda (batch)
+
+    loop For each message
+        Processor->>Processor: Extract phone from JID
+        Processor->>Processor: Check if linked device (skip @lid)
+
+        Processor->>OpenAI: Parse message (GPT-4o-mini)
+        OpenAI-->>Processor: Structured JSON<br/>{origin, destination, vehicle, phones}
+
+        Processor->>PG: Check duplicate (message_id)
+
+        alt New job
+            Processor->>PG: INSERT INTO jobs
+
+            Processor->>DDB: Query pending notifications<br/>(users waiting for this route)
+
+            alt Has pending users
+                loop For each matched user
+                    Processor->>WA: Send proactive notification<br/>"Aradığınız yük geldi!"
+                    Processor->>DDB: Delete pending notification
+                end
+            end
+        else Duplicate
+            Processor->>Processor: Skip (log duplicate)
+        end
+    end
+
+    Processor-->>SQS: Success
+        </div>
+      </div>
+
+      <h2 id="ai-parser">AI Parser Logic (GPT-4o-mini)</h2>
+
+      <p>The AI parser is the core intelligence of the system, converting unstructured Turkish logistics messages into structured job data.</p>
+
+      <h3>Parser Invocation (processor.ts:L85-110)</h3>
+      <pre><code class="language-typescript">// From packages/lambda/src/handlers/processor.ts
+import { parseWithAI } from '@turkish-logistics/parser';
+
+// Extract text from Evolution webhook payload
+const messageText = extractTextFromMessage(messageData);
+
+console.log('[Processor] Parsing message:', {
+  messageId,
+  text: messageText.substring(0, 100) + '...'
+});
+
+// Call AI parser
+const parsed = await parseWithAI(messageText);
+
+console.log('[Processor] Parser result:', {
+  messageType: parsed.messageType,
+  origin: parsed.origin?.provinceName,
+  destination: parsed.destination?.provinceName,
+  vehicleType: parsed.vehicle?.vehicleType,
+  confidenceScore: parsed.confidenceScore,
+  phones: parsed.phones.map(p => p.normalized),
+});
+
+// Validate minimum requirements
+if (!parsed.origin || !parsed.destination) {
+  console.warn('[Processor] Skipping - missing origin or destination');
+  continue;  // Skip to next message
+}
+
+if (parsed.confidenceScore < 0.5) {
+  console.warn('[Processor] Low confidence:', parsed.confidenceScore);
+  // Still insert but mark as low quality
+}</code></pre>
+
+      <h2 id="transformations">Data Transformations</h2>
+
+      <h3>Phone Number Extraction & Normalization</h3>
+      <p>Phone extraction is critical for proactive notifications. The system handles Turkish country codes and linked device IDs.</p>
+
+      <pre><code class="language-typescript">// From packages/lambda/src/handlers/processor.ts:L15-35
+function extractPhoneFromJid(jid: string | undefined): string | null {
+  if (!jid) return null;
+
+  // Skip linked device IDs (WhatsApp Web/Desktop)
+  // Format: 905551234567:10@s.whatsapp.net (colon indicates linked device)
+  if (jid.endsWith('@lid') || jid.includes(':')) {
+    console.log('[Processor] Skipping linked device JID:', jid);
+    return null;
+  }
+
+  // Extract digits before @ symbol
+  // Example: 905551234567@s.whatsapp.net -> 905551234567
+  const match = jid.match(/^(\d+)@/);
+  if (!match?.[1]) return null;
+
+  let phone = match[1];
+
+  // Convert Turkish country code to local format
+  // 905551234567 -> 05551234567 (Turkish mobile format)
+  if (phone.startsWith('90') && phone.length >= 12) {
+    phone = '0' + phone.slice(2);
+  }
+
+  // Validate Turkish mobile format: 05XXXXXXXXX (11 digits)
+  if (!/^05\d{9}$/.test(phone)) {
+    console.warn('[Processor] Invalid phone format:', phone);
+    return null;
+  }
+
+  return phone;
+}
+
+// Example usage
+const phone = extractPhoneFromJid('905551234567@s.whatsapp.net');
+// Result: '05551234567'
+
+const linkedDevice = extractPhoneFromJid('905551234567:10@s.whatsapp.net');
+// Result: null (linked device skipped)</code></pre>
+
+      <h3>Turkish Location Parsing (Suffix Analysis)</h3>
+      <p>Turkish uses directional case suffixes to indicate origin and destination. The AI parser is trained to recognize these patterns.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Suffix Pattern</th>
+              <th>Meaning</th>
+              <th>Example</th>
+              <th>Extracted Field</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>-dan, -den</code></td>
+              <td>FROM (ablative case)</td>
+              <td>"Istanbul<strong>dan</strong> Ankara"</td>
+              <td>origin = Istanbul</td>
+            </tr>
+            <tr>
+              <td><code>-a, -e, -ya, -ye</code></td>
+              <td>TO (dative case)</td>
+              <td>"Istanbul Ankara<strong>ya</strong>"</td>
+              <td>destination = Ankara</td>
+            </tr>
+            <tr>
+              <td>No suffix (order)</td>
+              <td>First = FROM, Second = TO</td>
+              <td>"Istanbul Ankara"</td>
+              <td>origin = Istanbul, destination = Ankara</td>
+            </tr>
+            <tr>
+              <td><code>→, &gt;, -</code></td>
+              <td>Arrow indicator</td>
+              <td>"Istanbul → Ankara"</td>
+              <td>origin = Istanbul, destination = Ankara</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Proactive Notification Matching</h3>
+      <p>When a new job is created, the system checks DynamoDB for users who have pending notifications for matching routes.</p>
+
+      <pre><code class="language-typescript">// From packages/lambda/src/handlers/processor.ts:L140-180
+async function notifyMatchingUsers(job: Job) {
+  const { originProvince, destinationProvince, vehicleType } = job;
+
+  // Query DynamoDB for pending notifications
+  const pendingUsers = await dynamodb.query({
+    TableName: 'turkish-logistics-conversations',
+    IndexName: 'pending-notifications-index',
+    KeyConditionExpression: 'sk = :sk AND begins_with(pk, :prefix)',
+    FilterExpression: 'route.origin = :origin AND route.destination = :dest',
+    ExpressionAttributeValues: {
+      ':sk': 'PENDING_NOTIFICATION',
+      ':prefix': 'USER#',
+      ':origin': originProvince,
+      ':dest': destinationProvince,
+    },
+  });
+
+  console.log(`[Processor] Found ${pendingUsers.length} users waiting for ${originProvince} → ${destinationProvince}`);
+
+  for (const user of pendingUsers) {
+    const phone = user.pk.replace('USER#', '');
+
+    // Format notification message
+    const message = `
+🚚 Aradığınız yük geldi!
+
+📍 ${originProvince} → ${destinationProvince}
+${vehicleType ? `🚛 ${vehicleType}` : ''}
+${job.weight ? `⚖️ ${job.weight.value} ${job.weight.unit}` : ''}
+
+İletişim: ${job.contactPhone || 'Bilgi yok'}
+    `.trim();
+
+    // Send via WhatsApp Business API
+    await sendWhatsAppMessage(phone, message);
+
+    // Delete pending notification (TTL will auto-delete after 7 days anyway)
+    await dynamodb.deleteItem({
+      TableName: 'turkish-logistics-conversations',
+      Key: { pk: user.pk, sk: 'PENDING_NOTIFICATION' },
+    });
+  }
+}</code></pre>
+    </section>
+
+    <!-- Section 4: Database Schemas -->
+    <section id="postgresql" class="section">
+      <h1>4. Database Schemas</h1>
+
+      <p>Patron uses a hybrid database approach: PostgreSQL for structured job data with complex queries, and DynamoDB for real-time conversation state and pending notifications.</p>
+
+      <h2>PostgreSQL Schema (jobs table)</h2>
+
+      <p>The jobs table stores parsed logistics job offers with full-text search capabilities and route-based indexes for fast querying.</p>
+
+      <h3>Complete Table Definition (packages/database/src/schema/jobs.ts)</h3>
+      <pre><code class="language-typescript">import { pgTable, uuid, text, timestamp, decimal, jsonb, index, boolean } from 'drizzle-orm/pg-core';
+
+export const jobs = pgTable('jobs', {
+  // Primary Key
+  id: uuid('id').primaryKey().defaultRandom(),
+
+  // Message Reference
+  messageId: text('message_id').notNull().unique()
+    .references(() => rawMessages.messageId),
+  source: text('source'),  // "turkish-logistics", "kamyoon-scraper", etc.
+  instance: text('instance'),
+
+  // Location Fields
+  originProvince: text('origin_province'),
+  originDistrict: text('origin_district'),
+  destinationProvince: text('destination_province'),
+  destinationDistrict: text('destination_district'),
+
+  // Vehicle Details
+  vehicleType: text('vehicle_type'),  // "TIR", "KAMYON", "KAMYONET", etc.
+  bodyType: text('body_type'),  // "TENTELI", "KAPALI", "ACIK", etc.
+  isRefrigerated: boolean('is_refrigerated').default(false),
+
+  // Cargo Details
+  weight: jsonb('weight').$type<{ value: number; unit: 'ton' | 'kg' }>(),
+  cargoType: text('cargo_type'),  // "palet", "gıda", "tekstil", etc.
+
+  // Contact Information
+  contactPhone: text('contact_phone'),
+  contactName: text('contact_name'),
+
+  // Metadata
+  messageType: text('message_type'),  // "CARGO_AVAILABLE", "VEHICLE_WANTED", etc.
+  isUrgent: boolean('is_urgent').default(false),
+  confidenceScore: decimal('confidence_score', { precision: 3, scale: 2 }),
+  confidenceLevel: text('confidence_level'),  // "high", "medium", "low"
+
+  // Multiple Routes Support (JSONB array)
+  routes: jsonb('routes').$type<Array<{
+    origin: string;
+    destination: string;
+    vehicle?: string;
+  }>>(),
+
+  // Timestamps
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+
+  // Soft Delete
+  deactivatedAt: timestamp('deactivated_at'),
+
+}, (table) => ({
+  // Indexes for fast querying
+  routeIdx: index('jobs_route_idx')
+    .on(table.originProvince, table.destinationProvince),
+
+  routesIdx: index('jobs_routes_idx')
+    .using('gin', table.routes),  // GIN index for JSONB array queries
+
+  sourceIdx: index('jobs_source_idx').on(table.source),
+
+  vehicleIdx: index('jobs_vehicle_idx').on(table.vehicleType),
+
+  createdAtIdx: index('jobs_created_at_idx')
+    .on(table.createdAt.desc()),  // Most recent first
+
+  confidenceIdx: index('jobs_confidence_idx')
+    .on(table.confidenceScore.desc()),
+
+  activeIdx: index('jobs_active_idx')
+    .on(table.deactivatedAt)  // NULL = active jobs
+    .where(sql`deactivated_at IS NULL`),
+}));</code></pre>
+
+      <h3>Example Query: Search Jobs by Route</h3>
+      <pre><code class="language-typescript">// From packages/agent/src/tools/searchJobs.ts:L45-85
+const jobs = await db.select()
+  .from(jobsTable)
+  .where(
+    and(
+      eq(jobsTable.originProvince, 'Istanbul'),
+      eq(jobsTable.destinationProvince, 'Ankara'),
+      isNull(jobsTable.deactivatedAt),  // Active only
+      gte(jobsTable.createdAt, new Date(Date.now() - 7 * 24 * 60 * 60 * 1000))  // Last 7 days
+    )
+  )
+  .orderBy(desc(jobsTable.createdAt))
+  .limit(20);
+
+// Result: Array of jobs matching Istanbul → Ankara route</code></pre>
+
+      <h2 id="dynamodb">DynamoDB Tables</h2>
+
+      <p>DynamoDB stores user conversations, search context, and pending notifications with TTL for automatic cleanup.</p>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Access Pattern</th>
+              <th>Partition Key (pk)</th>
+              <th>Sort Key (sk)</th>
+              <th>TTL Field</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Get user conversation</strong></td>
+              <td><code>USER#{phone}</code></td>
+              <td><code>CONVERSATION</code></td>
+              <td>-</td>
+              <td>Retrieve chat history and context</td>
+            </tr>
+            <tr>
+              <td><strong>Get pending notifications</strong></td>
+              <td><code>USER#{phone}</code></td>
+              <td><code>PENDING_NOTIFICATION</code></td>
+              <td><code>expiresAt</code> (7 days)</td>
+              <td>Check if user is waiting for specific route</td>
+            </tr>
+            <tr>
+              <td><strong>Get user preferences</strong></td>
+              <td><code>USER#{phone}</code></td>
+              <td><code>PREFERENCES</code></td>
+              <td>-</td>
+              <td>Frequent routes, vehicle preferences</td>
+            </tr>
+            <tr>
+              <td><strong>Get call list entry</strong></td>
+              <td><code>USER#{phone}</code></td>
+              <td><code>CALL_LIST</code></td>
+              <td>-</td>
+              <td>CRM: Users to call for onboarding</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Conversation Item Structure</h3>
+      <pre><code class="language-json">{
+  "pk": "USER#905551234567",
+  "sk": "CONVERSATION",
+  "messages": [
+    {
+      "role": "user",
+      "content": "istanbul ankara",
+      "timestamp": "2026-01-24T10:30:00Z"
+    },
+    {
+      "role": "assistant",
+      "content": "İstanbul → Ankara için 5 yük buldum...",
+      "timestamp": "2026-01-24T10:30:02Z"
+    }
+  ],
+  "context": {
+    "lastOrigin": "Istanbul",
+    "lastDestination": "Ankara",
+    "lastVehicle": "TIR",
+    "frequentRoutes": [
+      { "origin": "Istanbul", "destination": "Ankara", "count": 12 }
+    ]
+  },
+  "updatedAt": "2026-01-24T10:30:02Z"
+}</code></pre>
+
+      <h3>Pending Notification Item Structure (with TTL)</h3>
+      <pre><code class="language-json">{
+  "pk": "USER#905551234567",
+  "sk": "PENDING_NOTIFICATION",
+  "route": {
+    "origin": "Istanbul",
+    "destination": "Izmir"
+  },
+  "vehicle": "TIR",
+  "createdAt": "2026-01-24T10:00:00Z",
+  "expiresAt": 1738411200,
+  "reason": "User asked for Istanbul → Izmir but no jobs available"
+}</code></pre>
+
+      <h2 id="indexes">Index Optimization</h2>
+
+      <h3>PostgreSQL Index Usage Statistics</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Index Name</th>
+              <th>Columns</th>
+              <th>Type</th>
+              <th>Query Pattern</th>
+              <th>Avg Performance</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>jobs_route_idx</code></td>
+              <td><code>(origin_province, destination_province)</code></td>
+              <td>B-tree</td>
+              <td>WHERE origin = X AND destination = Y</td>
+              <td>~5ms (100k rows)</td>
+            </tr>
+            <tr>
+              <td><code>jobs_routes_idx</code></td>
+              <td><code>routes</code> (JSONB)</td>
+              <td>GIN</td>
+              <td>WHERE routes @> '[{"origin": "Istanbul"}]'</td>
+              <td>~15ms (100k rows)</td>
+            </tr>
+            <tr>
+              <td><code>jobs_created_at_idx</code></td>
+              <td><code>created_at DESC</code></td>
+              <td>B-tree</td>
+              <td>ORDER BY created_at DESC LIMIT 20</td>
+              <td>~2ms</td>
+            </tr>
+            <tr>
+              <td><code>jobs_active_idx</code></td>
+              <td><code>deactivated_at</code> (WHERE NULL)</td>
+              <td>Partial</td>
+              <td>WHERE deactivated_at IS NULL</td>
+              <td>~3ms (filters ~30% rows)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section 5: Lambda Functions -->
+    <section id="lambda-webhook" class="section">
+      <h1>5. Lambda Functions</h1>
+
+      <p>Patron's backend logic is distributed across 5 Lambda functions, each with a specific responsibility in the processing pipeline.</p>
+
+      <h2>webhook.ts - Message Ingestion</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Trigger</strong></td>
+              <td>API Gateway POST /webhook</td>
+            </tr>
+            <tr>
+              <td><strong>Memory</strong></td>
+              <td>256 MB</td>
+            </tr>
+            <tr>
+              <td><strong>Timeout</strong></td>
+              <td>30 seconds</td>
+            </tr>
+            <tr>
+              <td><strong>Concurrency</strong></td>
+              <td>Unreserved (auto-scales)</td>
+            </tr>
+            <tr>
+              <td><strong>Env Vars</strong></td>
+              <td><code>WHATSAPP_VERIFY_TOKEN</code>, <code>RAW_MESSAGES_BUCKET</code>, <code>QUEUE_URL</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Core Logic (packages/lambda/src/handlers/webhook.ts)</h3>
+      <pre><code class="language-typescript">export async function handler(
+  event: APIGatewayProxyEvent,
+  _context: Context
+): Promise<APIGatewayProxyResult> {
+
+  const payload: EvolutionWebhookPayload = JSON.parse(event.body || '{}');
+
+  // Step 1: Validate event type
+  if (!isMessagesUpsertEvent(payload)) {
+    return { statusCode: 200, body: 'Event ignored' };
+  }
+
+  const messageData = payload.payload.data;
+  const messageId = messageData.key.id;
+  const remoteJid = messageData.key.remoteJid;
+
+  // Step 2: Filter messages
+  if (isOwnMessage(messageData)) {
+    console.log('[Webhook] Skipping own message');
+    return { statusCode: 200, body: 'Own message ignored' };
+  }
+
+  if (!isGroupMessage(messageData)) {
+    console.log('[Webhook] Skipping non-group message');
+    return { statusCode: 200, body: 'Non-group message ignored' };
+  }
+
+  // Step 3: Store in S3
+  const s3Key = `messages/${year}/${month}/${day}/${instance}/${messageId}.json`;
+
+  await s3Client.send(new PutObjectCommand({
+    Bucket: process.env.RAW_MESSAGES_BUCKET,
+    Key: s3Key,
+    Body: JSON.stringify(payload),
+    ContentType: 'application/json',
+  }));
+
+  console.log('[Webhook] Stored in S3:', s3Key);
+
+  // Step 4: Enqueue to SQS FIFO
+  await sqsClient.send(new SendMessageCommand({
+    QueueUrl: process.env.QUEUE_URL,
+    MessageBody: JSON.stringify(payload),
+    MessageGroupId: remoteJid,  // Preserves order per group
+    MessageDeduplicationId: messageId,  // Prevents duplicates
+  }));
+
+  console.log('[Webhook] Queued message:', messageId);
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify({ success: true, messageId }),
+  };
+}</code></pre>
+
+      <h2 id="lambda-processor">processor.ts - AI Parsing & Job Creation</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Trigger</strong></td>
+              <td>SQS FIFO Queue (batch size: 10)</td>
+            </tr>
+            <tr>
+              <td><strong>Memory</strong></td>
+              <td>512 MB</td>
+            </tr>
+            <tr>
+              <td><strong>Timeout</strong></td>
+              <td>60 seconds</td>
+            </tr>
+            <tr>
+              <td><strong>Batch Window</strong></td>
+              <td>5 seconds</td>
+            </tr>
+            <tr>
+              <td><strong>Env Vars</strong></td>
+              <td><code>DATABASE_URL</code>, <code>OPENAI_API_KEY</code>, <code>WHATSAPP_ACCESS_TOKEN</code>, <code>CONVERSATIONS_TABLE</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Processing Flow</h3>
+      <ol>
+        <li>Extract phone number from JID (skip linked devices @lid)</li>
+        <li>Parse message with GPT-4o-mini (JSON mode, temperature 0.1)</li>
+        <li>Check for duplicate message_id in PostgreSQL</li>
+        <li>Insert new job into jobs table</li>
+        <li>Query DynamoDB for users with pending notifications matching this route</li>
+        <li>Send proactive WhatsApp notifications to matched users</li>
+        <li>Delete pending notification items (auto-expire after 7 days via TTL)</li>
+      </ol>
+
+      <h2 id="lambda-query">query.ts - Conversational Job Search</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Trigger</strong></td>
+              <td>API Gateway POST /query</td>
+            </tr>
+            <tr>
+              <td><strong>Memory</strong></td>
+              <td>512 MB</td>
+            </tr>
+            <tr>
+              <td><strong>Timeout</strong></td>
+              <td>60 seconds</td>
+            </tr>
+            <tr>
+              <td><strong>Agent</strong></td>
+              <td>LogisticsAgent (GPT-4o-mini with tools)</td>
+            </tr>
+            <tr>
+              <td><strong>Tools Available</strong></td>
+              <td><code>searchJobs</code>, <code>getUserContext</code>, <code>setPendingNotification</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Agent Tools Configuration</h3>
+      <pre><code class="language-typescript">// From packages/agent/src/agent.ts:L120-180
+const tools = [
+  {
+    name: 'searchJobs',
+    description: 'Search for logistics jobs by route (origin, destination) and filters (vehicle type, max age in days)',
+    parameters: {
+      type: 'object',
+      properties: {
+        origin: { type: 'string', description: 'Origin province (Turkish)' },
+        destination: { type: 'string', description: 'Destination province (Turkish)' },
+        vehicleType: { type: 'string', enum: ['TIR', 'KAMYON', 'KAMYONET'], description: 'Optional vehicle filter' },
+        maxAgeDays: { type: 'number', default: 7, description: 'Max job age in days' },
+      },
+      required: ['origin', 'destination'],
+    },
+  },
+  {
+    name: 'setPendingNotification',
+    description: 'Create a pending notification for user when no jobs match their search. User will be notified when matching job arrives.',
+    parameters: {
+      type: 'object',
+      properties: {
+        phone: { type: 'string' },
+        route: {
+          type: 'object',
+          properties: {
+            origin: { type: 'string' },
+            destination: { type: 'string' },
+          },
+        },
+        vehicle: { type: 'string', nullable: true },
+      },
+      required: ['phone', 'route'],
+    },
+  },
+];</code></pre>
+
+      <h2 id="lambda-payment">payment.ts - PayTR Integration</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Trigger</strong></td>
+              <td>API Gateway POST /payment</td>
+            </tr>
+            <tr>
+              <td><strong>Memory</strong></td>
+              <td>256 MB</td>
+            </tr>
+            <tr>
+              <td><strong>Timeout</strong></td>
+              <td>30 seconds</td>
+            </tr>
+            <tr>
+              <td><strong>Env Vars</strong></td>
+              <td><code>PAYTR_MERCHANT_ID</code>, <code>PAYTR_MERCHANT_KEY</code>, <code>PAYTR_MERCHANT_SALT</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Payment Link Generation</h3>
+      <pre><code class="language-typescript">// Generate PayTR iframe token
+const paymentData = {
+  merchant_id: process.env.PAYTR_MERCHANT_ID,
+  user_ip: event.requestContext.identity.sourceIp,
+  merchant_oid: `JOB_${jobId}_${Date.now()}`,
+  email: userEmail,
+  payment_amount: Math.floor(amount * 100),  // Convert to kuruş (cents)
+  user_basket: JSON.stringify([
+    ['Job Premium Feature', amount, 1],
+  ]),
+  no_installment: 1,
+  max_installment: 0,
+  currency: 'TL',
+  test_mode: 0,
+  merchant_ok_url: 'https://ankago.com/payment/success',
+  merchant_fail_url: 'https://ankago.com/payment/failed',
+};
+
+// Generate HMAC token
+const hashStr = `${paymentData.merchant_id}${paymentData.user_ip}${paymentData.merchant_oid}${paymentData.email}${paymentData.payment_amount}${paymentData.user_basket}${paymentData.no_installment}${paymentData.max_installment}${paymentData.currency}${paymentData.test_mode}`;
+
+const token = crypto
+  .createHmac('sha256', process.env.PAYTR_MERCHANT_KEY)
+  .update(hashStr + process.env.PAYTR_MERCHANT_SALT)
+  .digest('base64');
+
+paymentData.paytr_token = token;</code></pre>
+
+      <h2 id="lambda-auto-nudge">auto-nudge.ts - User Re-engagement</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Property</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Trigger</strong></td>
+              <td>EventBridge (every 15 minutes)</td>
+            </tr>
+            <tr>
+              <td><strong>Memory</strong></td>
+              <td>256 MB</td>
+            </tr>
+            <tr>
+              <td><strong>Timeout</strong></td>
+              <td>120 seconds</td>
+            </tr>
+            <tr>
+              <td><strong>Target Users</strong></td>
+              <td>Inactive for 24+ hours, has previous searches</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Nudge Logic</h3>
+      <pre><code class="language-typescript">// Scan DynamoDB for inactive users
+const users = await dynamodb.scan({
+  TableName: 'turkish-logistics-conversations',
+  FilterExpression: 'sk = :sk AND updatedAt < :cutoff',
+  ExpressionAttributeValues: {
+    ':sk': 'CONVERSATION',
+    ':cutoff': new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+  },
+});
+
+for (const user of users.Items) {
+  const phone = user.pk.replace('USER#', '');
+  const lastRoute = user.context?.frequentRoutes?.[0];
+
+  if (lastRoute) {
+    const message = `
+Merhaba! 👋
+
+${lastRoute.origin} → ${lastRoute.destination} rotasında yeni yükler var. Kontrol etmek ister misin?
+
+Aramak için: "${lastRoute.origin} ${lastRoute.destination}"
+    `.trim();
+
+    await sendWhatsAppMessage(phone, message);
+  }
+}</code></pre>
+    </section>
+
+    <!-- Section 6: AI Agent & Conversation Engine -->
+    <section id="logistics-agent" class="section">
+      <h1>6. AI Agent & Conversation Engine</h1>
+
+      <p>The LogisticsAgent is a conversational AI powered by GPT-4o-mini that understands Turkish logistics queries, maintains context across messages, and provides personalized job search results.</p>
+
+      <h2>LogisticsAgent Architecture</h2>
+
+      <div class="diagram-container">
+        <div class="mermaid">
+stateDiagram-v2
+    [*] --> ReceiveQuery: User sends message
+
+    ReceiveQuery --> LoadContext: Fetch from DynamoDB
+    LoadContext --> ParseIntent: Extract origin/destination/vehicle
+
+    ParseIntent --> CheckCache: Look for recent search
+    CheckCache --> ExecuteTool: Cache miss
+    CheckCache --> FormatResponse: Cache hit
+
+    ExecuteTool --> SearchJobs: searchJobs tool
+    SearchJobs --> CheckResults: Query PostgreSQL
+
+    CheckResults --> FormatResponse: Jobs found (1+)
+    CheckResults --> CreatePending: No jobs found (0)
+
+    CreatePending --> setPendingNotification: Save to DynamoDB with TTL
+    setPendingNotification --> FormatResponse
+
+    FormatResponse --> UpdateContext: Save conversation
+    UpdateContext --> SendWhatsApp: Send via Business API
+    SendWhatsApp --> [*]
+
+    note right of ParseIntent
+      Turkish suffix analysis:
+      "Istanbul'dan" → origin
+      "Ankara'ya" → destination
+    end note
+
+    note right of CreatePending
+      TTL: 7 days
+      Auto-notify when job arrives
+    end note
+        </div>
+      </div>
+
+      <h2 id="conversation-store">ConversationStore (DynamoDB)</h2>
+
+      <h3>Context Tracking Fields</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Field</th>
+              <th>Type</th>
+              <th>Purpose</th>
+              <th>Example</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>lastOrigin</code></td>
+              <td>string</td>
+              <td>Last searched origin province</td>
+              <td>"Istanbul"</td>
+            </tr>
+            <tr>
+              <td><code>lastDestination</code></td>
+              <td>string</td>
+              <td>Last searched destination province</td>
+              <td>"Ankara"</td>
+            </tr>
+            <tr>
+              <td><code>lastVehicle</code></td>
+              <td>string</td>
+              <td>Last vehicle type filter</td>
+              <td>"TIR"</td>
+            </tr>
+            <tr>
+              <td><code>frequentRoutes</code></td>
+              <td>array</td>
+              <td>Top 5 most searched routes (for nudges)</td>
+              <td>[{origin: "Istanbul", destination: "Ankara", count: 12}]</td>
+            </tr>
+            <tr>
+              <td><code>preferredVehicles</code></td>
+              <td>array</td>
+              <td>Vehicle types user searches for</td>
+              <td>["TIR", "KAMYON"]</td>
+            </tr>
+            <tr>
+              <td><code>messages</code></td>
+              <td>array</td>
+              <td>Last 50 messages (for context)</td>
+              <td>[{role: "user", content: "istanbul ankara", timestamp: "..."}]</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Context Usage in Agent (packages/agent/src/agent.ts)</h3>
+      <pre><code class="language-typescript">// Load user context from DynamoDB
+const context = await this.conversationStore.getConversation(phone);
+
+// Add context to system prompt
+const systemPrompt = `You are a Turkish logistics job search assistant.
+
+User's frequent routes:
+${context.frequentRoutes.map(r => `- ${r.origin} → ${r.destination} (${r.count} searches)`).join('\n')}
+
+Last search: ${context.lastOrigin} → ${context.lastDestination}
+Preferred vehicles: ${context.preferredVehicles.join(', ')}
+
+When user provides incomplete info (e.g., just "Ankara"), assume they mean their last origin and ask to confirm.
+`;
+
+// Example conversation
+// User: "Ankara" (incomplete)
+// Agent: "Istanbul'dan Ankara'ya mı demek istediniz?" (Did you mean Istanbul to Ankara?)
+// Uses context.lastOrigin = "Istanbul"</code></pre>
+
+      <h2 id="turkish-parsing">Turkish Language Parsing</h2>
+
+      <h3>Location Disambiguation (agent.ts:L95-125)</h3>
+      <p>Some Turkish words are both vehicle terms AND city names. The agent must disambiguate based on context.</p>
+
+      <pre><code class="language-typescript">// From packages/agent/src/agent.ts:L95-125
+const VEHICLE_TERMS_NOT_LOCATIONS = new Set([
+  'arac', 'araç',  // "araç" = vehicle, but also Araç district in Kastamonu!
+  'kamyon', 'tir', 'tır', 'dorse',
+  'kasa', 'kas',   // "kas" is stem after suffix strip (matches Kaş district in Antalya!)
+  'panelvan', 'panel',   // NOT Van province!
+  'çekici', 'cekici',
+]);
+
+const COMMON_WORDS_NOT_LOCATIONS = new Set([
+  'olur',    // "olur" = "okay", but matches Olur district in Erzurum!
+  'var',     // "var" = "there is"
+  'yok',     // "yok" = "there isn't"
+  'lazim',   // "lazım" = "needed"
+]);
+
+// Example: "Van kamyon lazım"
+// WRONG: origin = Van (city), destination = Kamyon (not a city)
+// CORRECT: origin/destination = missing, vehicleType = Kamyon, location hint = Van
+
+// Strip Turkish suffixes to find root word
+function stripSuffix(word: string): string {
+  const suffixes = ['dan', 'den', 'a', 'e', 'ya', 'ye', 'da', 'de', 'ta', 'te'];
+
+  for (const suffix of suffixes) {
+    if (word.endsWith(suffix)) {
+      return word.slice(0, -suffix.length);
+    }
+  }
+
+  return word;
+}
+
+// Example: "Ankara'ya" → "Ankara" (remove -ya suffix)</code></pre>
+
+      <h2 id="user-store">UserStore (Subscription Management)</h2>
+
+      <h3>User Subscription Check</h3>
+      <pre><code class="language-typescript">// From packages/agent/src/stores/user-store.ts
+export class UserStore {
+  async hasActiveSubscription(phone: string): Promise<boolean> {
+    const user = await this.dynamodb.getItem({
+      TableName: 'turkish-logistics-conversations',
+      Key: { pk: `USER#${phone}`, sk: 'SUBSCRIPTION' },
+    });
+
+    if (!user.Item) return false;
+
+    const expiresAt = new Date(user.Item.expiresAt);
+    return expiresAt > new Date();
+  }
+
+  async getTrialStatus(phone: string): Promise<{ isActive: boolean; daysRemaining: number }> {
+    const user = await this.dynamodb.getItem({
+      TableName: 'turkish-logistics-conversations',
+      Key: { pk: `USER#${phone}`, sk: 'TRIAL' },
+    });
+
+    if (!user.Item) {
+      // First-time user: create 7-day trial
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+
+      await this.dynamodb.putItem({
+        TableName: 'turkish-logistics-conversations',
+        Item: {
+          pk: `USER#${phone}`,
+          sk: 'TRIAL',
+          expiresAt: expiresAt.toISOString(),
+          createdAt: new Date().toISOString(),
+        },
+      });
+
+      return { isActive: true, daysRemaining: 7 };
+    }
+
+    const expiresAt = new Date(user.Item.expiresAt);
+    const daysRemaining = Math.ceil((expiresAt.getTime() - Date.now()) / (24 * 60 * 60 * 1000));
+
+    return {
+      isActive: expiresAt > new Date(),
+      daysRemaining: Math.max(0, daysRemaining),
+    };
+  }
+}</code></pre>
+    </section>
+
+    <!-- Section 7: Turkish Message Parsing Examples -->
+    <section id="parsing-examples" class="section">
+      <h1>7. Turkish Message Parsing Examples</h1>
+
+      <p>This section provides 10 real-world examples of Turkish logistics messages and how the AI parser extracts structured data.</p>
+
+      <h2>Example 1: Simple Route with Vehicle</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">İstanbul'dan Ankara'ya TIR lazım
+05551234567</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Istanbul" },
+  "destination": { "province": "Ankara" },
+  "vehicleType": "TIR",
+  "phones": ["05551234567"],
+  "messageType": "VEHICLE_WANTED",
+  "isUrgent": false,
+  "confidenceScore": 0.95
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Suffix Detection:</strong> "Istanbul'dan" (-dan = FROM) → origin</li>
+          <li><strong>Suffix Detection:</strong> "Ankara'ya" (-ya = TO) → destination</li>
+          <li><strong>Vehicle Type:</strong> "TIR" matches known vehicle patterns</li>
+          <li><strong>Message Type:</strong> "lazım" (needed) → VEHICLE_WANTED</li>
+        </ul>
+      </div>
+
+      <h2>Example 2: Cargo Available with Weight</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">Bursa Konya 15 ton palet yükleme var
+Tenteli araç lazım
+Mehmet 0533-987-6543</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Bursa" },
+  "destination": { "province": "Konya" },
+  "weight": { "value": 15, "unit": "ton" },
+  "cargoType": "palet",
+  "bodyType": "TENTELI",
+  "phones": ["05339876543"],
+  "contactName": "Mehmet",
+  "messageType": "CARGO_AVAILABLE",
+  "isUrgent": false,
+  "confidenceScore": 0.92
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>No Suffix:</strong> First location = origin, second = destination</li>
+          <li><strong>Weight Extraction:</strong> "15 ton" parsed correctly (not vehicle measurement)</li>
+          <li><strong>Cargo Type:</strong> "palet" identified as cargo</li>
+          <li><strong>Body Type:</strong> "Tenteli" (tarpaulin) standardized to TENTELI</li>
+          <li><strong>Contact:</strong> Name extracted near phone number</li>
+        </ul>
+      </div>
+
+      <h2>Example 3: Refrigerated TIR</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">Antalya İzmir frigo 13.60 gıda
+0542 123 45 67</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Antalya" },
+  "destination": { "province": "Izmir" },
+  "isRefrigerated": true,
+  "bodyType": "1360",
+  "cargoType": "gıda",
+  "phones": ["05421234567"],
+  "messageType": "CARGO_AVAILABLE",
+  "confidenceScore": 0.88
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Refrigerated:</strong> "frigo" triggers isRefrigerated = true</li>
+          <li><strong>Body Type:</strong> "13.60" identified as trailer length (NOT weight!)</li>
+          <li><strong>Cargo Type:</strong> "gıda" (food) requires refrigeration</li>
+          <li><strong>Phone Normalization:</strong> "0542 123 45 67" → "05421234567"</li>
+        </ul>
+      </div>
+
+      <h2>Example 4: Multiple Routes (JSONB Array)</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">İstanbul Ankara, Ankara Konya, Konya Antalya
+Kamyon boş
+05551112233</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Istanbul" },
+  "destination": { "province": "Ankara" },
+  "vehicleType": "KAMYON",
+  "routes": [
+    { "origin": "Istanbul", "destination": "Ankara", "vehicle": "KAMYON" },
+    { "origin": "Ankara", "destination": "Konya", "vehicle": "KAMYON" },
+    { "origin": "Konya", "destination": "Antalya", "vehicle": "KAMYON" }
+  ],
+  "messageType": "VEHICLE_AVAILABLE",
+  "phones": ["05551112233"],
+  "confidenceScore": 0.90
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Multi-Route:</strong> Comma-separated routes parsed into JSONB array</li>
+          <li><strong>Primary Route:</strong> First route becomes origin/destination</li>
+          <li><strong>Additional Routes:</strong> Stored in routes[] for flexible querying</li>
+          <li><strong>Vehicle Status:</strong> "boş" (empty) → VEHICLE_AVAILABLE</li>
+        </ul>
+      </div>
+
+      <h2>Example 5: Urgent Cargo</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">ACİL!!! Tekirdağ Eskişehir 20 ton demir
+Bugün yüklenecek
+05441122334</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Tekirdag" },
+  "destination": { "province": "Eskisehir" },
+  "weight": { "value": 20, "unit": "ton" },
+  "cargoType": "demir",
+  "isUrgent": true,
+  "phones": ["05441122334"],
+  "messageType": "CARGO_AVAILABLE",
+  "confidenceScore": 0.93
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Urgency Detection:</strong> "ACİL" + "bugün" → isUrgent = true</li>
+          <li><strong>Turkish Characters:</strong> "Tekirdağ" → normalized to "Tekirdag"</li>
+          <li><strong>Heavy Cargo:</strong> "demir" (iron) flagged as heavy</li>
+        </ul>
+      </div>
+
+      <h2>Example 6: District-Level Location</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">Çerkezköy'den Akhisar'a
+Kamyonet 5 ton
+05331234567</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Tekirdag", "district": "Çerkezköy" },
+  "destination": { "province": "Manisa", "district": "Akhisar" },
+  "vehicleType": "KAMYONET",
+  "weight": { "value": 5, "unit": "ton" },
+  "phones": ["05331234567"],
+  "messageType": "CARGO_AVAILABLE",
+  "confidenceScore": 0.87
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>District Mapping:</strong> Çerkezköy → Tekirdag province</li>
+          <li><strong>District Mapping:</strong> Akhisar → Manisa province</li>
+          <li><strong>Vehicle Type:</strong> "Kamyonet" (small truck) identified</li>
+        </ul>
+      </div>
+
+      <h2>Example 7: Partial Load (Parsiyel)</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">İzmir Adana parsiyel
+3 ton tekstil
+05421239876</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Izmir" },
+  "destination": { "province": "Adana" },
+  "weight": { "value": 3, "unit": "ton" },
+  "cargoType": "tekstil",
+  "messageType": "CARGO_AVAILABLE",
+  "confidenceScore": 0.91,
+  "additionalInfo": "parsiyel (LTL)"
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Load Type:</strong> "parsiyel" = partial/LTL (Less Than Truckload)</li>
+          <li><strong>Cargo Type:</strong> "tekstil" (textiles) identified</li>
+        </ul>
+      </div>
+
+      <h2>Example 8: Container (40 Ayak)</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">Mersin İstanbul 40 ayak konteyner
+Kapali kasa
+05551239999</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Mersin" },
+  "destination": { "province": "Istanbul" },
+  "vehicleType": "KIRKAYAK",
+  "bodyType": "KAPALI",
+  "phones": ["05551239999"],
+  "messageType": "CARGO_AVAILABLE",
+  "confidenceScore": 0.89
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Container:</strong> "40 ayak" (40-foot) → vehicleType = KIRKAYAK</li>
+          <li><strong>Body Type:</strong> "Kapali kasa" → KAPALI (closed/box)</li>
+        </ul>
+      </div>
+
+      <h2>Example 9: Ambiguous Word (Kas/Kaş)</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">Kaş'tan Antalya içi
+Hafif yük
+05421234444</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Antalya", "district": "Kaş" },
+  "destination": { "province": "Antalya" },
+  "messageType": "CARGO_AVAILABLE",
+  "phones": ["05421234444"],
+  "confidenceScore": 0.85,
+  "additionalInfo": "intra-city (Antalya içi)"
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Disambiguation:</strong> "Kaş" is a district (NOT "kas" = vehicle box)</li>
+          <li><strong>Intra-City:</strong> "Antalya içi" detected (same province)</li>
+          <li><strong>Light Cargo:</strong> "Hafif" flagged but not extracted as field</li>
+        </ul>
+      </div>
+
+      <h2>Example 10: Complex Real-World Message</h2>
+      <div class="example-card">
+        <h3>Input Message</h3>
+        <pre><code class="language-text">ACİL! İstanbul Avrupa yakası'ndan Gaziantep'e
+18 ton makine parçası
+Damperli veya açık kasa olabilir
+Yarın sabah yüklenecek
+İletişim: Ahmet Bey 0533-444-5566</code></pre>
+
+        <h3>AI Parser Output</h3>
+        <pre><code class="language-json">{
+  "origin": { "province": "Istanbul", "district": "Avrupa yakası" },
+  "destination": { "province": "Gaziantep" },
+  "weight": { "value": 18, "unit": "ton" },
+  "cargoType": "makine parçası",
+  "bodyType": "DAMPERLI",
+  "isUrgent": true,
+  "phones": ["05334445566"],
+  "contactName": "Ahmet Bey",
+  "messageType": "CARGO_AVAILABLE",
+  "confidenceScore": 0.94
+}</code></pre>
+
+        <h3>Analysis</h3>
+        <ul>
+          <li><strong>Urgency:</strong> "ACİL" + "Yarın sabah" → isUrgent = true</li>
+          <li><strong>District:</strong> "Avrupa yakası" (European side) preserved</li>
+          <li><strong>Body Type:</strong> "Damperli veya açık" → DAMPERLI selected (first option)</li>
+          <li><strong>Contact:</strong> Full name "Ahmet Bey" extracted</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Section 8: Infrastructure & Deployment -->
+    <section id="cdk-stack" class="section">
+      <h1>8. Infrastructure & Deployment</h1>
+
+      <p>Patron's infrastructure is defined as code using AWS CDK (TypeScript) and deployed to eu-central-1 region.</p>
+
+      <h2>CDK Stack Overview (packages/infrastructure/lib/stack.ts)</h2>
+
+      <h3>Resource Summary</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Resource Type</th>
+              <th>Count</th>
+              <th>Names</th>
+              <th>Purpose</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Lambda Functions</strong></td>
+              <td>5</td>
+              <td>webhook, processor, query, payment, auto-nudge</td>
+              <td>Core backend logic</td>
+            </tr>
+            <tr>
+              <td><strong>API Gateway</strong></td>
+              <td>1</td>
+              <td>turkish-logistics-api</td>
+              <td>REST API endpoints</td>
+            </tr>
+            <tr>
+              <td><strong>S3 Buckets</strong></td>
+              <td>1</td>
+              <td>turkish-logistics-raw-messages-*</td>
+              <td>Raw message archive</td>
+            </tr>
+            <tr>
+              <td><strong>SQS Queues</strong></td>
+              <td>2</td>
+              <td>turkish-logistics-messages.fifo, DLQ</td>
+              <td>Message processing queue</td>
+            </tr>
+            <tr>
+              <td><strong>DynamoDB Tables</strong></td>
+              <td>1</td>
+              <td>turkish-logistics-conversations</td>
+              <td>User conversations & notifications</td>
+            </tr>
+            <tr>
+              <td><strong>EventBridge Rules</strong></td>
+              <td>1</td>
+              <td>auto-nudge-schedule</td>
+              <td>15-minute cron for nudges</td>
+            </tr>
+            <tr>
+              <td><strong>Secrets Manager</strong></td>
+              <td>1</td>
+              <td>turkish-logistics-secrets</td>
+              <td>API keys & credentials</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="env-vars">Environment Variables</h2>
+
+      <h3>Lambda Function Environment Variables</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Variable</th>
+              <th>Source</th>
+              <th>Used By</th>
+              <th>Example Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>DATABASE_URL</code></td>
+              <td>Secrets Manager</td>
+              <td>processor, query</td>
+              <td>postgresql://user:pass@host:5432/db?sslmode=require</td>
+            </tr>
+            <tr>
+              <td><code>OPENAI_API_KEY</code></td>
+              <td>Secrets Manager</td>
+              <td>processor, query</td>
+              <td>sk-proj-...</td>
+            </tr>
+            <tr>
+              <td><code>WHATSAPP_ACCESS_TOKEN</code></td>
+              <td>Secrets Manager</td>
+              <td>processor, query, auto-nudge</td>
+              <td>EAA48ZBzDwIi...</td>
+            </tr>
+            <tr>
+              <td><code>WHATSAPP_PHONE_NUMBER_ID</code></td>
+              <td>Hardcoded</td>
+              <td>processor, query, auto-nudge</td>
+              <td>975431092314310</td>
+            </tr>
+            <tr>
+              <td><code>WHATSAPP_VERIFY_TOKEN</code></td>
+              <td>Secrets Manager</td>
+              <td>webhook</td>
+              <td>turkish-logistics-verify</td>
+            </tr>
+            <tr>
+              <td><code>RAW_MESSAGES_BUCKET</code></td>
+              <td>CDK Output</td>
+              <td>webhook</td>
+              <td>turkish-logistics-raw-messages-426476636541</td>
+            </tr>
+            <tr>
+              <td><code>QUEUE_URL</code></td>
+              <td>CDK Output</td>
+              <td>webhook</td>
+              <td>https://sqs.eu-central-1.amazonaws.com/.../turkish-logistics-messages.fifo</td>
+            </tr>
+            <tr>
+              <td><code>CONVERSATIONS_TABLE</code></td>
+              <td>CDK Output</td>
+              <td>processor, query, auto-nudge</td>
+              <td>turkish-logistics-conversations</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 id="deployment">Deployment Guide</h2>
+
+      <h3>Prerequisites</h3>
+      <pre><code class="language-bash"># Install dependencies
+pnpm install
+
+# Build all packages (turbo monorepo)
+pnpm run build
+
+# Synthesize CDK stack (verify changes)
+cd packages/infrastructure
+npx cdk synth</code></pre>
+
+      <h3>Deploy to AWS</h3>
+      <pre><code class="language-bash"># Set AWS profile
+export AWS_PROFILE=logistics
+
+# Deploy CDK stack
+cd packages/infrastructure
+npx cdk deploy --all
+
+# Outputs:
+# - API Gateway URL
+# - S3 bucket name
+# - DynamoDB table name
+# - Lambda function ARNs</code></pre>
+
+      <h3>Database Migration</h3>
+      <pre><code class="language-bash"># Run Drizzle migrations
+cd packages/database
+pnpm drizzle-kit generate:pg
+pnpm drizzle-kit migrate
+
+# Or use environment variable
+DATABASE_URL="postgresql://..." pnpm drizzle-kit migrate</code></pre>
+
+      <h3>Railway Scraper Deployment</h3>
+      <pre><code class="language-bash"># Kamyoon scraper
+cd kamyoon/scraper-service
+railway up
+
+# Yukbul scraper
+cd yukbul/scraper-service
+railway up
+
+# Set environment variables in Railway dashboard:
+# - WEBHOOK_URL (API Gateway /webhook endpoint)
+# - KAMYOON_API_URL or YUKBUL_API_URL</code></pre>
+    </section>
+
+    <!-- Section 9: Error Handling & Monitoring -->
+    <section id="error-handling" class="section">
+      <h1>9. Error Handling & Monitoring</h1>
+
+      <h2>SQS Dead Letter Queue (DLQ)</h2>
+      <p>Messages that fail processing after 3 retries are moved to the DLQ for manual inspection.</p>
+
+      <pre><code class="language-typescript">// CDK configuration (packages/infrastructure/lib/stack.ts)
+const dlq = new sqs.Queue(this, 'MessagesDLQ', {
+  queueName: 'turkish-logistics-messages-dlq.fifo',
+  fifo: true,
+  retentionPeriod: cdk.Duration.days(14),  // Keep for 2 weeks
+});
+
+const queue = new sqs.Queue(this, 'MessagesQueue', {
+  queueName: 'turkish-logistics-messages.fifo',
+  fifo: true,
+  visibilityTimeout: cdk.Duration.seconds(90),  // 1.5x Lambda timeout
+  deadLetterQueue: {
+    queue: dlq,
+    maxReceiveCount: 3,  // Retry 3 times before DLQ
+  },
+});</code></pre>
+
+      <h2 id="monitoring">CloudWatch Logs & Metrics</h2>
+
+      <h3>Key Log Groups</h3>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Log Group</th>
+              <th>Retention</th>
+              <th>Key Queries</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>/aws/lambda/turkish-logistics-webhook</code></td>
+              <td>7 days</td>
+              <td>Filter by "Skipping" to see ignored messages</td>
+            </tr>
+            <tr>
+              <td><code>/aws/lambda/turkish-logistics-processor</code></td>
+              <td>7 days</td>
+              <td>Filter by "Parser result" to see AI outputs</td>
+            </tr>
+            <tr>
+              <td><code>/aws/lambda/turkish-logistics-query</code></td>
+              <td>7 days</td>
+              <td>Filter by phone number to see user conversations</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>CloudWatch Insights Query Examples</h3>
+      <pre><code class="language-text"># Find all AI parsing errors
+fields @timestamp, @message
+| filter @message like /AI parsing failed/
+| sort @timestamp desc
+| limit 20
+
+# Track proactive notifications sent
+fields @timestamp, @message
+| filter @message like /Sent proactive notification/
+| stats count() by bin(5m)
+
+# Find duplicate messages skipped
+fields @timestamp, @message
+| filter @message like /Duplicate message/
+| stats count() by messageId</code></pre>
+
+      <h2 id="troubleshooting">Common Issues & Troubleshooting</h2>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Issue</th>
+              <th>Symptoms</th>
+              <th>Solution</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Messages not processing</strong></td>
+              <td>SQS queue depth increasing</td>
+              <td>Check processor Lambda errors, increase concurrency, verify DATABASE_URL</td>
+            </tr>
+            <tr>
+              <td><strong>AI parser timeouts</strong></td>
+              <td>OpenAI requests taking >30s</td>
+              <td>Increase timeout, check OPENAI_API_KEY, reduce max_tokens</td>
+            </tr>
+            <tr>
+              <td><strong>Proactive notifications not sending</strong></td>
+              <td>Users not receiving matches</td>
+              <td>Verify WHATSAPP_ACCESS_TOKEN, check DynamoDB pending notifications, verify phone format</td>
+            </tr>
+            <tr>
+              <td><strong>Linked device messages skipped</strong></td>
+              <td>JID ends with :XX@s.whatsapp.net</td>
+              <td>Expected behavior - linked devices are intentionally skipped</td>
+            </tr>
+            <tr>
+              <td><strong>Database connection errors</strong></td>
+              <td>ETIMEDOUT, connection refused</td>
+              <td>Verify RDS security group, check DATABASE_URL format, ensure sslmode=require</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="footer">
+    <p>Patron Backend Documentation | Generated: <span id="timestamp"></span> | v1.0.0</p>
+    <p style="font-size: 12px; margin-top: 8px;">Built with Mermaid.js, Prism.js, and Fuse.js</p>
+  </footer>
+
+  <!-- ============================================
+       JAVASCRIPT LIBRARIES
+       ============================================ -->
+
+  <!-- Mermaid.js for diagrams -->
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.8.0/dist/mermaid.min.js"></script>
+
+  <!-- Prism.js for syntax highlighting -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+
+  <!-- Fuse.js for search -->
+  <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+
+  <!-- ============================================
+       CUSTOM JAVASCRIPT
+       ============================================ -->
+  <script>
+    // ============================================
+    // MERMAID INITIALIZATION
+    // ============================================
+
+    mermaid.initialize({
+      theme: 'dark',
+      themeVariables: {
+        primaryColor: '#404040',
+        primaryTextColor: '#ffffff',
+        primaryBorderColor: '#666666',
+        lineColor: '#a0a0a0',
+        secondaryColor: '#666666',
+        tertiaryColor: '#1a1a1a',
+        background: '#000000',
+        mainBkg: '#0a0a0a',
+        secondBkg: '#141414',
+        edgeLabelBackground: '#1a1a1a',
+        clusterBkg: '#0a0a0a',
+        clusterBorder: '#404040',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '14px',
+        nodeBorder: '#ffffff',
+        actorBkg: '#141414',
+        actorBorder: '#ffffff',
+        actorTextColor: '#ffffff',
+        actorLineColor: '#a0a0a0',
+        signalColor: '#a0a0a0',
+        signalTextColor: '#ffffff',
+        labelBoxBkgColor: '#141414',
+        labelBoxBorderColor: '#404040',
+        labelTextColor: '#ffffff'
+      },
+      startOnLoad: true,
+      flowchart: {
+        curve: 'basis',
+        padding: 15,
+        useMaxWidth: true,
+        htmlLabels: true
+      },
+      sequence: {
+        actorMargin: 50,
+        useMaxWidth: true
+      },
+      er: {
+        layoutDirection: 'LR',
+        useMaxWidth: true
+      },
+      stateDiagram: {
+        useMaxWidth: true
+      }
+    });
+
+    // ============================================
+    // SEARCH FUNCTIONALITY
+    // ============================================
+
+    // Comprehensive search index
+    const searchIndex = [
+      // System Architecture
+      { title: 'System Architecture', section: 'Overview', content: 'Patron backend architecture with 5 Lambda functions, 2 Railway scrapers, PostgreSQL and DynamoDB, GPT-4o-mini AI parser', anchor: '#architecture' },
+      { title: 'Architecture Diagram', section: 'Overview', content: 'Complete system flow from scrapers through API Gateway, Lambda functions, databases to external APIs', anchor: '#architecture' },
+      { title: 'Component Inventory', section: 'Overview', content: 'List of all components: Lambda functions, scrapers, queues, databases with configurations', anchor: '#architecture' },
+      { title: 'Quick Stats', section: 'Overview', content: '5 Lambda functions, 2 Railway scrapers, 15-minute scrape interval, GPT-4o-mini AI model', anchor: '#quick-stats' },
+
+      // Data Sources
+      { title: 'Evolution API', section: 'Data Sources', content: 'WhatsApp webhook integration for group messages, messages.upsert events, two instances monitoring groups', anchor: '#evolution-api' },
+      { title: 'Evolution Webhook Payload', section: 'Data Sources', content: 'EvolutionWebhookPayload structure with message data, key, remoteJid, messageTimestamp', anchor: '#evolution-api' },
+      { title: 'WhatsApp Business API', section: 'Data Sources', content: 'Meta Graph API for sending proactive notifications and query responses, 1000 messages/second rate limit', anchor: '#whatsapp-api' },
+      { title: 'Send WhatsApp Message', section: 'Data Sources', content: 'Send message via WhatsApp Business API with phone number, text body, messaging_product', anchor: '#whatsapp-api' },
+      { title: 'OpenAI API', section: 'Data Sources', content: 'GPT-4o-mini model for Turkish logistics message parsing, JSON mode, temperature 0.1, ~$0.0003 per message', anchor: '#openai-api' },
+      { title: 'GPT System Prompt', section: 'Data Sources', content: 'Turkish logistics parser prompt extracting origin, destination, vehicle type, phones, weight, cargo type', anchor: '#openai-api' },
+      { title: 'Kamyoon Scraper', section: 'Data Sources', content: 'Railway deployment fetching load offers every 15 minutes from Kamyoon API, transforms to webhook format', anchor: '#scrapers' },
+      { title: 'Yukbul Scraper', section: 'Data Sources', content: 'Railway deployment fetching listings every 15 minutes from Yukbul Supabase API', anchor: '#scrapers' },
+      { title: 'Scraper Implementation', section: 'Data Sources', content: 'Cron schedule */15 * * * *, fetch from API, transform to Evolution webhook format, POST to Patron', anchor: '#scrapers' },
+
+      // Processing Pipeline
+      { title: 'Message Flow', section: 'Processing Pipeline', content: 'Complete sequence from scraper to webhook, S3, SQS, processor, AI parsing, PostgreSQL, proactive notifications', anchor: '#message-flow' },
+      { title: 'Message Flow Diagram', section: 'Processing Pipeline', content: 'Sequence diagram showing webhook validation, S3 storage, SQS batching, AI parsing, job creation, user matching', anchor: '#message-flow' },
+      { title: 'AI Parser Logic', section: 'Processing Pipeline', content: 'GPT-4o-mini JSON mode parsing with parseWithAI function, confidence scoring, origin/destination extraction', anchor: '#ai-parser' },
+      { title: 'Phone Extraction', section: 'Processing Pipeline', content: 'extractPhoneFromJid function converts Turkish country code, skips linked devices @lid, validates 05XXXXXXXXX format', anchor: '#transformations' },
+      { title: 'Turkish Suffix Analysis', section: 'Processing Pipeline', content: 'Location parsing using -dan/-den for FROM (ablative), -a/-e/-ya/-ye for TO (dative), order-based parsing', anchor: '#transformations' },
+      { title: 'Proactive Notifications', section: 'Processing Pipeline', content: 'Match new jobs with pending DynamoDB notifications, send WhatsApp messages to waiting users, delete notification items', anchor: '#transformations' },
+
+      // Database Schemas
+      { title: 'PostgreSQL Schema', section: 'Database', content: 'jobs table with UUID primary key, message reference, location fields, vehicle details, cargo details, contact information', anchor: '#postgresql' },
+      { title: 'Jobs Table Definition', section: 'Database', content: 'Drizzle ORM schema with originProvince, destinationProvince, vehicleType, bodyType, weight JSONB, routes array', anchor: '#postgresql' },
+      { title: 'PostgreSQL Indexes', section: 'Database', content: 'B-tree index on route, GIN index on routes JSONB, created_at DESC, confidence score, active jobs partial index', anchor: '#indexes' },
+      { title: 'Search Jobs Query', section: 'Database', content: 'Drizzle query with WHERE origin/destination, NULL deactivatedAt, last 7 days, ORDER BY created_at DESC LIMIT 20', anchor: '#postgresql' },
+      { title: 'DynamoDB Tables', section: 'Database', content: 'turkish-logistics-conversations table with pk USER#phone, sk for CONVERSATION, PENDING_NOTIFICATION, PREFERENCES, CALL_LIST', anchor: '#dynamodb' },
+      { title: 'Conversation Item', section: 'Database', content: 'DynamoDB item with messages array, context with lastOrigin/lastDestination/frequentRoutes, updatedAt timestamp', anchor: '#dynamodb' },
+      { title: 'Pending Notification', section: 'Database', content: 'DynamoDB item with route origin/destination, vehicle, TTL expiresAt 7 days, auto-delete after expiry', anchor: '#dynamodb' },
+      { title: 'Index Performance', section: 'Database', content: 'jobs_route_idx ~5ms, jobs_routes_idx GIN ~15ms, jobs_created_at_idx ~2ms, jobs_active_idx partial ~3ms', anchor: '#indexes' },
+
+      // Lambda Functions
+      { title: 'webhook.ts Lambda', section: 'Lambda Functions', content: 'API Gateway POST /webhook, 256MB, 30s timeout, validates events, filters messages, stores S3, queues SQS', anchor: '#lambda-webhook' },
+      { title: 'Webhook Handler Logic', section: 'Lambda Functions', content: 'isMessagesUpsertEvent validation, isOwnMessage filter, isGroupMessage filter, S3 PutObjectCommand, SQS SendMessageCommand', anchor: '#lambda-webhook' },
+      { title: 'processor.ts Lambda', section: 'Lambda Functions', content: 'SQS FIFO trigger, 512MB, 60s timeout, batch size 10, AI parsing, job creation, proactive notifications', anchor: '#lambda-processor' },
+      { title: 'Processor Flow', section: 'Lambda Functions', content: '1. Extract phone from JID, 2. Parse with GPT-4o-mini, 3. Check duplicates, 4. Insert job, 5. Query pending, 6. Send notifications, 7. Delete pending', anchor: '#lambda-processor' },
+      { title: 'query.ts Lambda', section: 'Lambda Functions', content: 'API Gateway POST /query, 512MB, 60s timeout, LogisticsAgent with searchJobs/setPendingNotification tools', anchor: '#lambda-query' },
+      { title: 'Agent Tools', section: 'Lambda Functions', content: 'searchJobs tool with origin/destination/vehicleType/maxAgeDays, setPendingNotification for user route alerts', anchor: '#lambda-query' },
+      { title: 'payment.ts Lambda', section: 'Lambda Functions', content: 'API Gateway POST /payment, 256MB, 30s timeout, PayTR integration, HMAC token generation, iframe payment links', anchor: '#lambda-payment' },
+      { title: 'PayTR Integration', section: 'Lambda Functions', content: 'Generate merchant_oid, payment_amount in kuruş, HMAC SHA256 token with merchant_key and salt', anchor: '#lambda-payment' },
+      { title: 'auto-nudge.ts Lambda', section: 'Lambda Functions', content: 'EventBridge 15-minute cron, 256MB, 120s timeout, scans inactive users 24+ hours, sends re-engagement messages', anchor: '#lambda-auto-nudge' },
+      { title: 'Nudge Logic', section: 'Lambda Functions', content: 'DynamoDB scan with updatedAt < 24h cutoff, extract frequentRoutes, send WhatsApp reminder with last searched route', anchor: '#lambda-auto-nudge' },
+
+      // AI Agent
+      { title: 'LogisticsAgent', section: 'AI Agent', content: 'GPT-4o-mini conversational AI for Turkish logistics queries, context tracking, personalized job search, pending notifications', anchor: '#logistics-agent' },
+      { title: 'Agent State Machine', section: 'AI Agent', content: 'ReceiveQuery → LoadContext → ParseIntent → CheckCache → ExecuteTool → FormatResponse → UpdateContext → SendWhatsApp', anchor: '#logistics-agent' },
+      { title: 'ConversationStore', section: 'AI Agent', content: 'DynamoDB store with lastOrigin, lastDestination, lastVehicle, frequentRoutes top 5, preferredVehicles, messages last 50', anchor: '#conversation-store' },
+      { title: 'Context Tracking', section: 'AI Agent', content: 'Track user search history, frequent routes for nudges, preferred vehicles, conversation context for incomplete queries', anchor: '#conversation-store' },
+      { title: 'Context Usage', section: 'AI Agent', content: 'Load context from DynamoDB, add to system prompt, handle incomplete queries using lastOrigin/lastDestination', anchor: '#conversation-store' },
+      { title: 'Turkish Parsing', section: 'AI Agent', content: 'Disambiguation of vehicle terms vs locations, VEHICLE_TERMS_NOT_LOCATIONS, COMMON_WORDS_NOT_LOCATIONS, suffix stripping', anchor: '#turkish-parsing' },
+      { title: 'Location Disambiguation', section: 'AI Agent', content: 'araç = vehicle not Araç district, kas = stem not Kaş district, panelvan not Van province, olur = okay not Olur district', anchor: '#turkish-parsing' },
+      { title: 'Suffix Stripping', section: 'AI Agent', content: 'stripSuffix function removes -dan/-den/-a/-e/-ya/-ye/-da/-de/-ta/-te to find root word, example Ankara\'ya → Ankara', anchor: '#turkish-parsing' },
+      { title: 'UserStore', section: 'AI Agent', content: 'Subscription management, hasActiveSubscription check, getTrialStatus with 7-day trial, auto-create trial for first-time users', anchor: '#user-store' },
+      { title: 'Trial Management', section: 'AI Agent', content: 'First-time users get 7-day trial, DynamoDB TRIAL item with expiresAt, daysRemaining calculation, subscription expiry check', anchor: '#user-store' },
+
+      // Turkish Parsing Examples
+      { title: 'Example 1: Simple Route', section: 'Turkish Parsing', content: 'İstanbul\'dan Ankara\'ya TIR, suffix detection -dan for FROM, -ya for TO, vehicleType TIR, messageType VEHICLE_WANTED', anchor: '#parsing-examples' },
+      { title: 'Example 2: Cargo with Weight', section: 'Turkish Parsing', content: 'Bursa Konya 15 ton palet, no suffix order-based parsing, weight 15 ton, cargoType palet, bodyType TENTELI, contactName Mehmet', anchor: '#parsing-examples' },
+      { title: 'Example 3: Refrigerated', section: 'Turkish Parsing', content: 'Antalya İzmir frigo 13.60, isRefrigerated true, bodyType 1360 trailer length NOT weight, cargoType gıda food', anchor: '#parsing-examples' },
+      { title: 'Example 4: Multiple Routes', section: 'Turkish Parsing', content: 'İstanbul Ankara, Ankara Konya, Konya Antalya routes JSONB array, primary route first, messageType VEHICLE_AVAILABLE boş', anchor: '#parsing-examples' },
+      { title: 'Example 5: Urgent Cargo', section: 'Turkish Parsing', content: 'ACİL Tekirdağ Eskişehir 20 ton demir, isUrgent true from ACİL and bugün, Turkish character normalization Tekirdağ → Tekirdag', anchor: '#parsing-examples' },
+      { title: 'Example 6: District-Level', section: 'Turkish Parsing', content: 'Çerkezköy Akhisar, district mapping Çerkezköy → Tekirdag province, Akhisar → Manisa province, vehicleType KAMYONET', anchor: '#parsing-examples' },
+      { title: 'Example 7: Partial Load', section: 'Turkish Parsing', content: 'İzmir Adana parsiyel 3 ton tekstil, parsiyel = LTL less than truckload, cargoType tekstil textiles', anchor: '#parsing-examples' },
+      { title: 'Example 8: Container', section: 'Turkish Parsing', content: 'Mersin İstanbul 40 ayak konteyner, 40 ayak 40-foot → vehicleType KIRKAYAK, bodyType KAPALI closed box', anchor: '#parsing-examples' },
+      { title: 'Example 9: Ambiguous Word', section: 'Turkish Parsing', content: 'Kaş\'tan Antalya içi, Kaş is district NOT kas vehicle box, intra-city Antalya içi same province, hafif light cargo', anchor: '#parsing-examples' },
+      { title: 'Example 10: Complex Message', section: 'Turkish Parsing', content: 'ACİL İstanbul Avrupa yakası Gaziantep 18 ton makine parçası damperli yarın sabah, urgency ACİL + yarın, district Avrupa yakası, contactName Ahmet Bey', anchor: '#parsing-examples' },
+
+      // Infrastructure
+      { title: 'CDK Stack', section: 'Infrastructure', content: 'AWS CDK TypeScript stack in eu-central-1, 5 Lambdas, API Gateway, S3, SQS FIFO, DynamoDB, EventBridge, Secrets Manager', anchor: '#cdk-stack' },
+      { title: 'Resource Summary', section: 'Infrastructure', content: '5 Lambda functions, 1 API Gateway, 1 S3 bucket, 2 SQS queues FIFO + DLQ, 1 DynamoDB table, 1 EventBridge rule, 1 Secrets Manager', anchor: '#cdk-stack' },
+      { title: 'Environment Variables', section: 'Infrastructure', content: 'DATABASE_URL from Secrets Manager, OPENAI_API_KEY, WHATSAPP_ACCESS_TOKEN, WHATSAPP_PHONE_NUMBER_ID, QUEUE_URL, CONVERSATIONS_TABLE', anchor: '#env-vars' },
+      { title: 'Deployment Guide', section: 'Infrastructure', content: 'pnpm install, pnpm run build, AWS_PROFILE=logistics, npx cdk deploy --all, Drizzle migrations, Railway scraper deployment', anchor: '#deployment' },
+      { title: 'Database Migration', section: 'Infrastructure', content: 'Drizzle kit generate:pg and migrate commands, DATABASE_URL environment variable, PostgreSQL SSL mode required', anchor: '#deployment' },
+      { title: 'Railway Deployment', section: 'Infrastructure', content: 'Deploy Kamyoon and Yukbul scrapers to Railway, set WEBHOOK_URL to API Gateway, configure cron schedule', anchor: '#deployment' },
+
+      // Monitoring
+      { title: 'Dead Letter Queue', section: 'Monitoring', content: 'SQS DLQ for failed messages after 3 retries, 14-day retention, FIFO queue, manual inspection required', anchor: '#error-handling' },
+      { title: 'CloudWatch Logs', section: 'Monitoring', content: 'Log groups for webhook, processor, query Lambdas with 7-day retention, filter patterns for debugging', anchor: '#monitoring' },
+      { title: 'CloudWatch Insights', section: 'Monitoring', content: 'Query AI parsing errors, track proactive notifications, find duplicate messages, stats count by time bins', anchor: '#monitoring' },
+      { title: 'Troubleshooting', section: 'Monitoring', content: 'Messages not processing: check SQS depth, Lambda errors, DATABASE_URL. AI timeouts: increase timeout, check OPENAI_API_KEY. Notifications not sending: verify WHATSAPP_ACCESS_TOKEN', anchor: '#troubleshooting' },
+
+      // Technical Terms
+      { title: 'TIR Vehicle', section: 'Technical', content: 'Standard truck semi-trailer, most common vehicle type in Turkish logistics', anchor: '#openai-api' },
+      { title: 'KAMYON Vehicle', section: 'Technical', content: 'Truck vehicle type, smaller than TIR, common for medium loads', anchor: '#openai-api' },
+      { title: 'KAMYONET Vehicle', section: 'Technical', content: 'Small truck or van, used for lighter cargo and urban deliveries', anchor: '#openai-api' },
+      { title: 'KIRKAYAK Container', section: 'Technical', content: '40-foot container, also called 40 AYAK in Turkish', anchor: '#openai-api' },
+      { title: 'TENTELI Body', section: 'Technical', content: 'Tarpaulin or curtain-sided trailer, flexible loading and unloading', anchor: '#openai-api' },
+      { title: 'KAPALI Body', section: 'Technical', content: 'Closed or box trailer, secure enclosed cargo space', anchor: '#openai-api' },
+      { title: 'DAMPERLI Body', section: 'Technical', content: 'Tipper or dump trailer, used for construction materials and bulk cargo', anchor: '#openai-api' },
+      { title: '1360 Trailer', section: 'Technical', content: '13.60 meter trailer standard TIR length, NOT weight measurement', anchor: '#openai-api' },
+      { title: 'Frigo Refrigerated', section: 'Technical', content: 'Refrigerated truck, also called frigorifik, termokin, soğutmalı in Turkish', anchor: '#openai-api' },
+      { title: 'Parsiyel Load', section: 'Technical', content: 'Partial or LTL (Less Than Truckload) shipment, shared cargo space', anchor: '#parsing-examples' },
+      { title: 'Komple Load', section: 'Technical', content: 'Full truckload FTL shipment, dedicated vehicle for single customer', anchor: '#openai-api' },
+      { title: 'Hafif Cargo', section: 'Technical', content: 'Light cargo, typically lower weight but may require more volume', anchor: '#openai-api' },
+      { title: 'CARGO_AVAILABLE', section: 'Technical', content: 'Message type offering cargo/freight, keywords: yük var, yükleme, most common type', anchor: '#openai-api' },
+      { title: 'VEHICLE_WANTED', section: 'Technical', content: 'Message type looking for vehicle, keywords: araç aranıyor, TIR lazım, ihtiyaç var', anchor: '#openai-api' },
+      { title: 'VEHICLE_AVAILABLE', section: 'Technical', content: 'Message type vehicle available, keywords: boş araç, müsait, empty vehicle ready', anchor: '#openai-api' },
+
+      // Advanced Topics
+      { title: 'Batch Processing', section: 'Advanced', content: 'SQS batch size 10 messages, 5-second batch window, visibility timeout 90 seconds (1.5x Lambda timeout)', anchor: '#lambda-processor' },
+      { title: 'FIFO Queue', section: 'Advanced', content: 'MessageGroupId preserves order per group, MessageDeduplicationId prevents duplicates, content-based deduplication', anchor: '#lambda-webhook' },
+      { title: 'S3 Lifecycle', section: 'Advanced', content: 'Raw messages transition to IA after 30 days, Glacier after 90 days, long-term archive strategy', anchor: '#cdk-stack' },
+      { title: 'DynamoDB TTL', section: 'Advanced', content: 'Pending notifications auto-expire after 7 days, expiresAt field with Unix timestamp', anchor: '#dynamodb' },
+      { title: 'Confidence Scoring', section: 'Advanced', content: 'AI parser returns confidenceScore 0-1, confidenceLevel high/medium/low, minimum 0.5 threshold for insertion', anchor: '#ai-parser' },
+      { title: 'Linked Devices', section: 'Advanced', content: 'JIDs ending with :XX@s.whatsapp.net or @lid are skipped, WhatsApp Web/Desktop sessions not processed', anchor: '#transformations' },
+      { title: 'Turkish Normalization', section: 'Advanced', content: 'Province names normalized İstanbul → Istanbul, Muğla → Mugla, remove Turkish characters for database consistency', anchor: '#openai-api' },
+      { title: 'Phone Normalization', section: 'Advanced', content: 'Turkish mobile format 05XXXXXXXXX 11 digits, country code 90 converted to 0, spaces and dashes removed', anchor: '#transformations' },
+      { title: 'GIN Index', section: 'Advanced', content: 'PostgreSQL Generalized Inverted Index for JSONB routes array, supports @> containment queries, ~15ms performance', anchor: '#indexes' },
+      { title: 'Partial Index', section: 'Advanced', content: 'jobs_active_idx only indexes rows WHERE deactivated_at IS NULL, reduces index size by ~30%, ~3ms queries', anchor: '#indexes' },
+    ];
+
+    const fuse = new Fuse(searchIndex, {
+      keys: ['title', 'content', 'section'],
+      threshold: 0.3,
+      includeMatches: true,
+      minMatchCharLength: 2
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+    let searchTimeout;
+
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      const query = e.target.value.trim();
+
+      if (query.length < 2) {
+        searchResults.classList.remove('active');
+        return;
+      }
+
+      searchTimeout = setTimeout(() => {
+        const results = fuse.search(query).slice(0, 10);
+
+        if (results.length === 0) {
+          searchResults.innerHTML = '<div class="search-result"><div class="search-result-content">No results found</div></div>';
+        } else {
+          searchResults.innerHTML = results.map(result => {
+            const item = result.item;
+            let content = item.content;
+
+            // Highlight matches
+            if (result.matches && result.matches.length > 0) {
+              result.matches.forEach(match => {
+                if (match.key === 'content' && match.indices.length > 0) {
+                  const indices = match.indices[0];
+                  const before = content.substring(0, indices[0]);
+                  const highlighted = content.substring(indices[0], indices[1] + 1);
+                  const after = content.substring(indices[1] + 1);
+                  content = before + '<span class="search-highlight">' + highlighted + '</span>' + after;
+                }
+              });
+            }
+
+            return `
+              <div class="search-result" onclick="navigateTo('${item.anchor}')">
+                <div class="search-result-title">${item.title}</div>
+                <div class="search-result-section">${item.section}</div>
+                <div class="search-result-content">${content.substring(0, 150)}...</div>
+              </div>
+            `;
+          }).join('');
+        }
+
+        searchResults.classList.add('active');
+      }, 300);
+    });
+
+    // Close search results when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.search-container')) {
+        searchResults.classList.remove('active');
+      }
+    });
+
+    // Keyboard shortcut (Ctrl+K)
+    document.addEventListener('keydown', (e) => {
+      if (e.ctrlKey && e.key === 'k') {
+        e.preventDefault();
+        searchInput.focus();
+      }
+      if (e.key === 'Escape') {
+        searchResults.classList.remove('active');
+        searchInput.blur();
+      }
+    });
+
+    function navigateTo(anchor) {
+      searchResults.classList.remove('active');
+      searchInput.value = '';
+      window.location.hash = anchor;
+    }
+
+    // ============================================
+    // SCROLL SPY NAVIGATION
+    // ============================================
+
+    const sections = document.querySelectorAll('.section');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    function updateActiveNav() {
+      let currentSection = '';
+
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop;
+        const sectionHeight = section.clientHeight;
+        if (window.pageYOffset >= sectionTop - 100) {
+          currentSection = section.getAttribute('id');
+        }
+      });
+
+      navLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.getAttribute('href') === '#' + currentSection) {
+          link.classList.add('active');
+        }
+      });
+    }
+
+    window.addEventListener('scroll', updateActiveNav);
+    window.addEventListener('load', updateActiveNav);
+
+    // ============================================
+    // CODE COPY BUTTONS
+    // ============================================
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const codeBlocks = document.querySelectorAll('pre code');
+
+      codeBlocks.forEach(block => {
+        const button = document.createElement('button');
+        button.className = 'copy-btn';
+        button.textContent = 'Copy';
+
+        button.addEventListener('click', async () => {
+          const code = block.textContent;
+          await navigator.clipboard.writeText(code);
+          button.textContent = 'Copied!';
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.textContent = 'Copy';
+            button.classList.remove('copied');
+          }, 2000);
+        });
+
+        block.parentElement.style.position = 'relative';
+        block.parentElement.appendChild(button);
+      });
+
+      // Set timestamp
+      document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    });
+
+    // ============================================
+    // COLLAPSIBLE SECTIONS
+    // ============================================
+
+    function initializeCollapsibles() {
+      const collapsibles = document.querySelectorAll('.collapsible-header');
+
+      collapsibles.forEach(header => {
+        header.addEventListener('click', () => {
+          const content = header.nextElementSibling;
+          const icon = header.querySelector('.collapsible-icon');
+
+          content.classList.toggle('expanded');
+          icon.classList.toggle('expanded');
+        });
+      });
+    }
+
+    // Initialize after DOM loads
+    document.addEventListener('DOMContentLoaded', initializeCollapsibles);
+
+    // ============================================
+    // SMOOTH SCROLL WITH OFFSET
+    // ============================================
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          const offset = 80; // Header height
+          const elementPosition = target.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>

@@ -28,6 +28,7 @@ interface AIParseResult {
     district?: string;
   };
   vehicleType?: string;
+  bodyType?: string;
   isRefrigerated: boolean;
   phones: string[];
   weight?: {
@@ -49,18 +50,39 @@ const SYSTEM_PROMPT = `You are a Turkish logistics message parser. Extract struc
 Return a JSON object with:
 - origin: { province: string, district?: string } - Starting location (look for "dan", "den" suffixes or first location)
 - destination: { province: string, district?: string } - Ending location (look for "a", "e", "ya", "ye" suffixes or second location)
-- vehicleType: "TIR" | "KAMYON" | "TIRTIKET" | "DORSE" | null - Vehicle type mentioned
+- vehicleType: "TIR" | "KAMYON" | "KAMYONET" | "KIRKAYAK" | "10 TEKER" | "6 TEKER" | null - Vehicle type mentioned
+  - "TIR" = standard truck/semi
+  - "KAMYON" = truck
+  - "KAMYONET" = small truck/van
+  - "KIRKAYAK" or "40 AYAK" = 40-foot container
+  - "10 TEKER" = 10-wheeler
+  - "6 TEKER" = 6-wheeler
+- bodyType: "TENTELI" | "KAPALI" | "ACIK" | "DAMPERLI" | "1360" | null - Vehicle body/trailer type
+  - "TENTELI" = tarpaulin/curtain-sided
+  - "KAPALI" = closed/box
+  - "ACIK" = open/flatbed
+  - "DAMPERLI" = tipper/dump
+  - "1360" or "13.60" = 13.60 meter trailer (standard TIR length, NOT weight!)
 - isRefrigerated: boolean - true if "frigo", "frigorifik", "termokin", "soğutmalı" mentioned
 - phones: string[] - All phone numbers found (Turkish mobile format)
-- weight: { value: number, unit: "ton" | "kg" } | null - Weight if mentioned
-- cargoType: string | null - Type of cargo (e.g., "palet", "gıda", "tekstil", "demir", "makine")
-- contactName: string | null - Contact person name if mentioned
+- weight: { value: number, unit: "ton" | "kg" } | null - ONLY actual cargo weight (e.g., "15 ton", "5000 kg"). DO NOT confuse with:
+  - Vehicle measurements like "1360" (13.60 meters)
+  - "8 metre" (vehicle length)
+  - Dimensions or vehicle specs
+- cargoType: string | null - Type of cargo (e.g., "palet", "gıda", "tekstil", "demir", "makine", "seramik")
+- contactName: string | null - Contact person name if mentioned (look for Turkish names near phone numbers)
 - messageType: "CARGO_AVAILABLE" | "VEHICLE_WANTED" | "VEHICLE_AVAILABLE" | "UNKNOWN"
-  - CARGO_AVAILABLE: Message offers cargo/freight (yük var, yükleme, etc.)
+  - CARGO_AVAILABLE: Message offers cargo/freight (yük var, yükleme, etc.) - this is most common
   - VEHICLE_WANTED: Looking for a vehicle (araç aranıyor, TIR lazım, ihtiyaç var, etc.)
   - VEHICLE_AVAILABLE: Vehicle is available (boş araç, müsait, etc.)
 - isUrgent: boolean - true if "acil", "hemen", "bugün", "yarın" mentioned
 - additionalLocations: Array of other locations mentioned besides origin/destination
+
+Important Turkish logistics terms:
+- "Parsiyel" or "Parça" = partial/LTL load
+- "Komple" = full truckload (FTL)
+- "Hafif" = light cargo
+- Districts like "Çerkezköy" (Tekirdag), "Akhisar" (Manisa), "Kızıltepe" (Mardin) should map to their provinces.
 
 Turkish province names should be normalized (e.g., "İstanbul" -> "Istanbul", "Muğla" -> "Mugla").
 Phone numbers should be in format: 05XXXXXXXXX (11 digits).`;
@@ -150,11 +172,12 @@ export async function parseWithAI(message: string): Promise<ParsedMessage> {
     result.mentionedLocations = allLocations;
 
     // Map vehicle
-    if (aiResult.vehicleType) {
+    if (aiResult.vehicleType || aiResult.bodyType) {
       result.vehicle = {
-        vehicleType: aiResult.vehicleType,
+        vehicleType: aiResult.vehicleType || null,
+        bodyType: aiResult.bodyType || null,
         isRefrigerated: aiResult.isRefrigerated,
-        originalText: aiResult.vehicleType,
+        originalText: [aiResult.vehicleType, aiResult.bodyType].filter(Boolean).join(' '),
       } as ParsedVehicle;
     }
 

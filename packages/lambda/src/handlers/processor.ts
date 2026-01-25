@@ -5,7 +5,7 @@
  */
 
 import type { SQSEvent, SQSRecord, Context } from 'aws-lambda';
-import { parse, isLikelyLogisticsMessage, extractAllRoutes } from '@turkish-logistics/parser';
+import { parseWithAI, isAIParsingAvailable } from '@turkish-logistics/parser';
 import {
   createDatabaseClient,
   type DatabaseClient,
@@ -188,20 +188,24 @@ async function processRecord(record: SQSRecord): Promise<void> {
   // Extract sender phone from JID
   const senderPhone = extractPhoneFromJid(senderJid);
 
-  // Quick filter: skip non-logistics messages early
-  if (!isLikelyLogisticsMessage(text)) {
-    console.log(`Skipping non-logistics message: ${messageId}`);
+  // Skip very short messages (unlikely to be logistics)
+  if (!text || text.trim().length < 10) {
+    console.log(`Skipping short message: ${messageId}`);
     return;
   }
 
-  // Parse the message
-  const parsed = parse(text);
-  console.log(`Parsed message with confidence: ${parsed.confidenceLevel}`);
+  // Check if AI parsing is available
+  if (!isAIParsingAvailable()) {
+    console.error('OPENAI_API_KEY not configured - cannot parse messages');
+    throw new Error('AI parsing not available');
+  }
 
-  // Extract ALL routes from multi-route messages
-  const routes = extractAllRoutes(text);
-  if (routes.length > 0) {
-    console.log(`Extracted ${routes.length} routes from message`);
+  // Parse the message using GPT-4o-mini for accurate location extraction
+  const parsed = await parseWithAI(text);
+  console.log(`AI parsed message with confidence: ${parsed.confidenceLevel}`);
+
+  if (parsed.warnings.length > 0) {
+    console.log(`Parser warnings: ${parsed.warnings.join(', ')}`);
   }
 
   const { db } = getDbClient();
@@ -254,131 +258,65 @@ async function processRecord(record: SQSRecord): Promise<void> {
   }
 
   if (hasValidConfidence && contactPhone) {
-    // For multi-route messages (3+ routes), create a job for each route
-    // For single route or 2 routes, use the parsed origin/destination
-    if (routes.length >= 2) {
-      // Create multiple jobs - one for each distinct route
-      console.log(`Multi-route message: creating ${routes.length} jobs`);
+    // Create a single job with the AI-parsed origin/destination
+    const [job] = await db
+      .insert(jobs)
+      .values({
+        messageId,
+        sourceGroupJid: remoteJid,
+        rawText: text,
+        messageType: parsed.messageType,
+        originMentioned: parsed.origin?.originalText || null,
+        originProvince: parsed.origin?.provinceName || null,
+        originProvinceCode: parsed.origin?.provinceCode || null,
+        originDistrict: parsed.origin?.districtName || null,
+        destinationMentioned: parsed.destination?.originalText || null,
+        destinationProvince: parsed.destination?.provinceName || null,
+        destinationProvinceCode: parsed.destination?.provinceCode || null,
+        destinationDistrict: parsed.destination?.districtName || null,
+        vehicleType: parsed.vehicle?.vehicleType || null,
+        bodyType: parsed.vehicle?.bodyType || null,
+        isRefrigerated: parsed.vehicle?.isRefrigerated || false,
+        contactPhone,
+        contactPhoneNormalized,
+        contactName: parsed.contact?.name || null,
+        senderJid: senderJid || null,
+        senderPhone: senderPhone || null,
+        weight: parsed.weight?.value?.toString() || null,
+        weightUnit: parsed.weight?.unit || 'ton',
+        cargoType: parsed.cargoType || null,
+        loadType: parsed.loadType || null,
+        isUrgent: parsed.isUrgent,
+        confidenceScore: parsed.confidenceScore.toFixed(2),
+        confidenceLevel: parsed.confidenceLevel,
+        parsedFields: {
+          allPhones: parsed.phones.map((p) => p.normalized),
+          urgencyIndicators: parsed.urgencyIndicators,
+          confidenceFactors: parsed.confidenceFactors,
+          mentionedLocations: parsed.mentionedLocations.map((l) => ({
+            provinceName: l.provinceName,
+            provinceCode: l.provinceCode,
+            districtName: l.districtName,
+          })),
+          parsedByAI: true,
+        },
+        routes: null,
+        postedAt: timestamp ? new Date(timestamp * 1000) : new Date(),
+      })
+      .returning();
 
-      for (let i = 0; i < routes.length; i++) {
-        const route = routes[i];
-        if (!route) continue;
+    console.log(`Created job: ${job?.id} (${parsed.origin?.provinceName || '?'} → ${parsed.destination?.provinceName || '?'})`);
 
-        // Use route-specific messageId to avoid duplicates
-        const routeMessageId = `${messageId}_route_${i}`;
-
-        const [job] = await db
-          .insert(jobs)
-          .values({
-            messageId: routeMessageId,
-            sourceGroupJid: remoteJid,
-            rawText: text,
-            messageType: parsed.messageType,
-            originMentioned: route.origin,
-            originProvince: route.origin,
-            originProvinceCode: route.originCode || null,
-            originDistrict: null, // Routes don't have district info yet
-            destinationMentioned: route.destination,
-            destinationProvince: route.destination,
-            destinationProvinceCode: route.destinationCode || null,
-            destinationDistrict: null,
-            vehicleType: route.vehicle || parsed.vehicle?.vehicleType || null,
-            bodyType: route.bodyType || parsed.vehicle?.bodyType || null,
-            isRefrigerated: parsed.vehicle?.isRefrigerated || false,
-            contactPhone,
-            contactPhoneNormalized,
-            contactName: parsed.contact?.name || null,
-            senderJid: senderJid || null,
-            senderPhone: senderPhone || null,
-            weight: parsed.weight?.value?.toString() || null,
-            weightUnit: parsed.weight?.unit || 'ton',
-            cargoType: parsed.cargoType || null,
-            loadType: parsed.loadType || null,
-            isUrgent: parsed.isUrgent,
-            confidenceScore: parsed.confidenceScore.toFixed(2),
-            confidenceLevel: parsed.confidenceLevel,
-            parsedFields: {
-              allPhones: parsed.phones.map((p) => p.normalized),
-              urgencyIndicators: parsed.urgencyIndicators,
-              confidenceFactors: parsed.confidenceFactors,
-              isMultiRoute: true,
-              routeIndex: i,
-              totalRoutes: routes.length,
-            },
-            routes: null, // Don't duplicate routes in each job
-            postedAt: timestamp ? new Date(timestamp * 1000) : new Date(),
-          })
-          .returning();
-
-        console.log(`Created multi-route job ${i + 1}/${routes.length}: ${job?.id} (${route.origin} → ${route.destination})`);
-
-        // === PROACTIVE NOTIFICATION: Notify users who searched for this route ===
-        await notifyMatchingUsers(route.origin, route.destination, {
-          weight: parsed.weight?.value?.toString(),
-          vehicleType: route.vehicle || parsed.vehicle?.vehicleType || undefined,
-          contactPhone: contactPhone || undefined,
-        });
+    // === PROACTIVE NOTIFICATION: Notify users who searched for this route ===
+    await notifyMatchingUsers(
+      parsed.origin?.provinceName || null,
+      parsed.destination?.provinceName || null,
+      {
+        weight: parsed.weight?.value?.toString(),
+        vehicleType: parsed.vehicle?.vehicleType || undefined,
+        contactPhone: contactPhone || undefined,
       }
-    } else {
-      // Single route - use original behavior
-      const [job] = await db
-        .insert(jobs)
-        .values({
-          messageId,
-          sourceGroupJid: remoteJid,
-          rawText: text,
-          messageType: parsed.messageType,
-          originMentioned: parsed.origin?.originalText || null,
-          originProvince: parsed.origin?.provinceName || null,
-          originProvinceCode: parsed.origin?.provinceCode || null,
-          originDistrict: parsed.origin?.districtName || null,
-          destinationMentioned: parsed.destination?.originalText || null,
-          destinationProvince: parsed.destination?.provinceName || null,
-          destinationProvinceCode: parsed.destination?.provinceCode || null,
-          destinationDistrict: parsed.destination?.districtName || null,
-          vehicleType: parsed.vehicle?.vehicleType || null,
-          bodyType: parsed.vehicle?.bodyType || null,
-          isRefrigerated: parsed.vehicle?.isRefrigerated || false,
-          contactPhone,
-          contactPhoneNormalized,
-          contactName: parsed.contact?.name || null,
-          senderJid: senderJid || null,
-          senderPhone: senderPhone || null,
-          weight: parsed.weight?.value?.toString() || null,
-          weightUnit: parsed.weight?.unit || 'ton',
-          cargoType: parsed.cargoType || null,
-          loadType: parsed.loadType || null,
-          isUrgent: parsed.isUrgent,
-          confidenceScore: parsed.confidenceScore.toFixed(2),
-          confidenceLevel: parsed.confidenceLevel,
-          parsedFields: {
-            allPhones: parsed.phones.map((p) => p.normalized),
-            urgencyIndicators: parsed.urgencyIndicators,
-            confidenceFactors: parsed.confidenceFactors,
-            mentionedLocations: parsed.mentionedLocations.map((l) => ({
-              provinceName: l.provinceName,
-              provinceCode: l.provinceCode,
-              districtName: l.districtName,
-            })),
-          },
-          routes: routes.length > 0 ? routes : null,
-          postedAt: timestamp ? new Date(timestamp * 1000) : new Date(),
-        })
-        .returning();
-
-      console.log(`Created job: ${job?.id} (type: ${parsed.messageType})`);
-
-      // === PROACTIVE NOTIFICATION: Notify users who searched for this route ===
-      await notifyMatchingUsers(
-        parsed.origin?.provinceName || null,
-        parsed.destination?.provinceName || null,
-        {
-          weight: parsed.weight?.value?.toString(),
-          vehicleType: parsed.vehicle?.vehicleType || undefined,
-          contactPhone: contactPhone || undefined,
-        }
-      );
-    }
+    );
   } else if (!hasValidConfidence) {
     console.log(`Skipped job creation: confidence too low (${parsed.confidenceLevel})`);
   }

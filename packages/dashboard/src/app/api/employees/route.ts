@@ -85,6 +85,15 @@ export async function GET() {
     console.log('[Employees API] Scanning DynamoDB table:', TABLE_NAME);
     console.log('[Employees API] Using credentials:', process.env.MY_AWS_ACCESS_KEY_ID ? 'Custom (MY_AWS_*)' : 'Default/IAM Role');
     console.log('[Employees API] Region:', process.env.REGION);
+
+    // Debug: Try a simple scan first to see what's in the table
+    const debugScan = await getDocClient().send(new ScanCommand({
+      TableName: TABLE_NAME,
+      Limit: 5,
+    }));
+    console.log('[Employees API] Debug scan (no filter) found:', debugScan.Items?.length, 'items');
+    console.log('[Employees API] Sample PKs:', debugScan.Items?.slice(0, 3).map(i => i.pk));
+
     const employeesResult = await getDocClient().send(new ScanCommand({
       TableName: TABLE_NAME,
       FilterExpression: 'begins_with(pk, :pk) AND sk = :sk',
