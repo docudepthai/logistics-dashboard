@@ -134,7 +134,7 @@ export async function GET() {
     // Combine DynamoDB and Cognito data
     const employees = await Promise.all(
       (employeesResult.Items || []).map(async (item) => {
-        const username = item.username;
+        const username = item.username as string;
 
         // Get permissions
         let allowedPages = ALL_PAGES.map(p => p.id); // Default: all pages
@@ -159,11 +159,11 @@ export async function GET() {
 
         return {
           username,
-          displayName: item.displayName || username,
-          email: item.email || cognitoInfo?.email || '',
+          displayName: (item.displayName as string) || username,
+          email: (item.email as string) || cognitoInfo?.email || '',
           allowedPages,
           status: cognitoInfo?.status || 'inactive',
-          createdAt: item.createdAt,
+          createdAt: item.createdAt as string,
         };
       })
     );
