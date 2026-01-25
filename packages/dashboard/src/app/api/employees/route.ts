@@ -74,12 +74,15 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const session = await getServerSession();
+    console.log('[Employees API] Session user:', session?.user?.name);
 
     if (session?.user?.name !== ADMIN_USER) {
+      console.log('[Employees API] Unauthorized - expected:', ADMIN_USER);
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
     // Get all employees from DynamoDB
+    console.log('[Employees API] Scanning DynamoDB table:', TABLE_NAME);
     const employeesResult = await getDocClient().send(new ScanCommand({
       TableName: TABLE_NAME,
       FilterExpression: 'begins_with(pk, :pk) AND sk = :sk',
@@ -88,6 +91,7 @@ export async function GET() {
         ':sk': 'PROFILE',
       },
     }));
+    console.log('[Employees API] DynamoDB scan found:', employeesResult.Items?.length, 'items');
 
     // Get Cognito users for status
     let cognitoUsers: Map<string, { status: string; email: string }> = new Map();
