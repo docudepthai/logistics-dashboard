@@ -66,8 +66,9 @@ export async function GET() {
       const result = await docClient.send(
         new ScanCommand({
           TableName: CONVERSATIONS_TABLE,
-          FilterExpression: 'sk = :sk',
+          FilterExpression: 'begins_with(pk, :pkPrefix) AND sk = :sk',
           ExpressionAttributeValues: {
+            ':pkPrefix': 'USER#',
             ':sk': 'PROFILE',
           },
           ExclusiveStartKey: lastEvaluatedKey,
@@ -78,15 +79,17 @@ export async function GET() {
       lastEvaluatedKey = result.LastEvaluatedKey;
     } while (lastEvaluatedKey);
 
-    const users: (User & { canViewPhones: boolean; daysRemaining: number | null })[] = allItems.map((item) => {
+    const users: (User & { canViewPhones: boolean; daysRemaining: number | null })[] = allItems
+      .filter((item) => item.phoneNumber) // Skip items without phoneNumber
+      .map((item) => {
       const user: User = {
-        phoneNumber: item.phoneNumber,
-        firstContactAt: item.firstContactAt,
-        freeTierExpiresAt: item.freeTierExpiresAt,
-        membershipStatus: item.membershipStatus,
-        welcomeMessageSent: item.welcomeMessageSent,
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
+        phoneNumber: item.phoneNumber || '',
+        firstContactAt: item.firstContactAt || item.createdAt || new Date().toISOString(),
+        freeTierExpiresAt: item.freeTierExpiresAt || new Date().toISOString(),
+        membershipStatus: item.membershipStatus || 'free_trial',
+        welcomeMessageSent: item.welcomeMessageSent ?? false,
+        createdAt: item.createdAt || new Date().toISOString(),
+        updatedAt: item.updatedAt || new Date().toISOString(),
         paidUntil: item.paidUntil,
         paymentId: item.paymentId,
       };
