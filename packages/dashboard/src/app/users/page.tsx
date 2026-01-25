@@ -253,7 +253,11 @@ function UsersPageContent() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-neutral-400 text-sm">{formatDate(user.firstContactAt)}</td>
-                      <td className="px-4 py-3 text-neutral-400 text-sm">{formatDate(user.freeTierExpiresAt)}</td>
+                      <td className="px-4 py-3 text-neutral-400 text-sm">
+                        {user.membershipStatus === 'premium' && user.paidUntil
+                          ? formatDate(user.paidUntil)
+                          : formatDate(user.freeTierExpiresAt)}
+                      </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center space-x-1 ${user.canViewPhones ? 'text-emerald-400' : 'text-red-400'}`}>
                           <span className={`w-2 h-2 rounded-full ${user.canViewPhones ? 'bg-emerald-400' : 'bg-red-400'}`}></span>
