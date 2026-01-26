@@ -52,24 +52,26 @@ export async function GET() {
         WHERE created_at > NOW() - INTERVAL '24 hours'
       `,
 
-      // Jobs by source - unique jobs using MD5 hash
+      // Jobs by source - unique jobs using MD5 hash, join with raw_messages for instance_name
       sql`
         SELECT source, COUNT(*) as count FROM (
           SELECT DISTINCT
             CASE
-              WHEN source_group_jid = 'kamyoon-loads@g.us' THEN 'kamyoon'
-              WHEN source_group_jid = 'yukbul-loads@g.us' THEN 'yukbul'
+              WHEN j.source_group_jid = 'kamyoon-loads@g.us' THEN 'kamyoon'
+              WHEN j.source_group_jid = 'yukbul-loads@g.us' THEN 'yukbul'
+              WHEN rm.instance_name = 'turkish-logistics-2' THEN 'evolution-2'
               ELSE 'evolution'
             END as source,
             MD5(
-              COALESCE(origin_province, '') || '|' ||
-              COALESCE(destination_province, '') || '|' ||
-              COALESCE(contact_phone, '') || '|' ||
-              COALESCE(body_type, '') || '|' ||
-              COALESCE(cargo_type, '')
+              COALESCE(j.origin_province, '') || '|' ||
+              COALESCE(j.destination_province, '') || '|' ||
+              COALESCE(j.contact_phone, '') || '|' ||
+              COALESCE(j.body_type, '') || '|' ||
+              COALESCE(j.cargo_type, '')
             ) as job_hash
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours'
+          FROM jobs j
+          LEFT JOIN raw_messages rm ON j.message_id = rm.message_id
+          WHERE j.created_at > NOW() - INTERVAL '24 hours'
         ) unique_jobs
         GROUP BY source
         ORDER BY count DESC
