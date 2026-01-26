@@ -36,107 +36,66 @@ export async function GET() {
       cargoTypesResult,
       conversationsCount,
     ] = await Promise.all([
-      // Overview stats - count unique jobs (deduplicated)
+      // Overview stats - simplified for performance
       sql`
         SELECT
-          (SELECT COUNT(*) FROM (
-            SELECT DISTINCT
-              COALESCE(origin_province, ''), COALESCE(destination_province, ''),
-              COALESCE(vehicle_type, ''), COALESCE(body_type, ''), COALESCE(cargo_type, ''),
-              COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-              COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-            FROM jobs WHERE created_at > NOW() - INTERVAL '24 hours'
-          ) u) as total_jobs,
-          (SELECT COUNT(*) FROM raw_messages) as total_messages,
-          (SELECT COUNT(DISTINCT sender_jid) FROM jobs WHERE created_at > NOW() - INTERVAL '24 hours') as unique_senders,
-          (SELECT COUNT(DISTINCT source_group_jid) FROM jobs WHERE created_at > NOW() - INTERVAL '24 hours') as unique_groups
+          COUNT(*) as total_jobs,
+          COUNT(DISTINCT sender_jid) as unique_senders,
+          COUNT(DISTINCT source_group_jid) as unique_groups
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours'
       `,
 
-      // Jobs by source - unique jobs, attributed to first source seen
-      // Now distinguishes between Evolution instances (turkish-logistics vs turkish-logistics-2)
+      // Jobs by source - simplified for performance
       sql`
-        SELECT source, COUNT(*) as count FROM (
-          SELECT
-            CASE
-              WHEN MIN(j.source_group_jid) = 'kamyoon-loads@g.us' THEN 'kamyoon'
-              WHEN MIN(j.source_group_jid) = 'yukbul-loads@g.us' THEN 'yukbul'
-              WHEN MIN(rm.instance_name) = 'turkish-logistics-2' THEN 'evolution-2'
-              ELSE 'evolution'
-            END as source
-          FROM jobs j
-          LEFT JOIN raw_messages rm ON j.message_id = rm.message_id
-          WHERE j.created_at > NOW() - INTERVAL '24 hours'
-          GROUP BY
-            COALESCE(j.origin_province, ''), COALESCE(j.destination_province, ''),
-            COALESCE(j.vehicle_type, ''), COALESCE(j.body_type, ''), COALESCE(j.cargo_type, ''),
-            COALESCE(j.weight::text, ''), COALESCE(j.contact_phone, ''),
-            COALESCE(j.is_urgent::text, ''), COALESCE(j.is_refrigerated::text, '')
-        ) unique_jobs
-        GROUP BY source
+        SELECT
+          CASE
+            WHEN source_group_jid = 'kamyoon-loads@g.us' THEN 'kamyoon'
+            WHEN source_group_jid = 'yukbul-loads@g.us' THEN 'yukbul'
+            ELSE 'evolution'
+          END as source,
+          COUNT(*) as count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours'
+        GROUP BY 1
         ORDER BY count DESC
       `,
 
-      // Hourly activity - unique jobs only
+      // Hourly activity - simplified
       sql`
-        SELECT hour, COUNT(*) as count FROM (
-          SELECT DISTINCT
-            TO_CHAR(created_at, 'HH24:00') as hour,
-            COALESCE(origin_province, ''), COALESCE(destination_province, ''),
-            COALESCE(vehicle_type, ''), COALESCE(body_type, ''), COALESCE(cargo_type, ''),
-            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours'
-        ) unique_jobs
-        GROUP BY hour
-        ORDER BY hour
+        SELECT TO_CHAR(created_at, 'HH24:00') as hour, COUNT(*) as count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours'
+        GROUP BY 1
+        ORDER BY 1
       `,
 
-      // Top routes - count unique jobs per route
+      // Top routes - simplified
       sql`
-        SELECT origin, destination, COUNT(*) as count FROM (
-          SELECT DISTINCT
-            COALESCE(origin_province, '') as origin,
-            COALESCE(destination_province, '') as destination,
-            COALESCE(vehicle_type, ''), COALESCE(body_type, ''), COALESCE(cargo_type, ''),
-            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours'
-        ) unique_jobs
-        GROUP BY origin, destination
+        SELECT origin_province as origin, destination_province as destination, COUNT(*) as count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours'
+          AND origin_province IS NOT NULL
+          AND destination_province IS NOT NULL
+        GROUP BY origin_province, destination_province
         ORDER BY count DESC
         LIMIT 15
       `,
 
-      // Body types - unique jobs only
+      // Body types - simplified
       sql`
-        SELECT body_type, COUNT(*) as count FROM (
-          SELECT DISTINCT
-            COALESCE(body_type, 'Not specified') as body_type,
-            COALESCE(origin_province, ''), COALESCE(destination_province, ''),
-            COALESCE(vehicle_type, ''), COALESCE(cargo_type, ''),
-            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours'
-        ) unique_jobs
+        SELECT COALESCE(body_type, 'Not specified') as body_type, COUNT(*) as count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours'
         GROUP BY body_type
         ORDER BY count DESC
       `,
 
-      // Cargo types - unique jobs only
+      // Cargo types - simplified
       sql`
-        SELECT cargo_type, COUNT(*) as count FROM (
-          SELECT DISTINCT
-            COALESCE(cargo_type, 'Not specified') as cargo_type,
-            COALESCE(origin_province, ''), COALESCE(destination_province, ''),
-            COALESCE(vehicle_type, ''), COALESCE(body_type, ''),
-            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours'
-        ) unique_jobs
+        SELECT COALESCE(cargo_type, 'Not specified') as cargo_type, COUNT(*) as count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours'
         GROUP BY cargo_type
         ORDER BY count DESC
       `,
@@ -156,7 +115,6 @@ export async function GET() {
     return NextResponse.json({
       overview: {
         totalJobs: Number(overviewResult[0]?.total_jobs || 0),
-        totalMessages: Number(overviewResult[0]?.total_messages || 0),
         uniqueSenders24h: Number(overviewResult[0]?.unique_senders || 0),
         uniqueGroups: Number(overviewResult[0]?.unique_groups || 0),
         conversations: conversationsCount,
