@@ -36,28 +36,42 @@ export async function GET() {
       cargoTypesResult,
       conversationsCount,
     ] = await Promise.all([
-      // Overview stats - simplified for performance
+      // Overview stats - count unique jobs using MD5 hash of key fields
       sql`
         SELECT
-          COUNT(*) as total_jobs,
+          COUNT(DISTINCT MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          )) as total_jobs,
           COUNT(DISTINCT sender_jid) as unique_senders,
           COUNT(DISTINCT source_group_jid) as unique_groups
         FROM jobs
         WHERE created_at > NOW() - INTERVAL '24 hours'
       `,
 
-      // Jobs by source - simplified for performance
+      // Jobs by source - unique jobs using MD5 hash
       sql`
-        SELECT
-          CASE
-            WHEN source_group_jid = 'kamyoon-loads@g.us' THEN 'kamyoon'
-            WHEN source_group_jid = 'yukbul-loads@g.us' THEN 'yukbul'
-            ELSE 'evolution'
-          END as source,
-          COUNT(*) as count
-        FROM jobs
-        WHERE created_at > NOW() - INTERVAL '24 hours'
-        GROUP BY 1
+        SELECT source, COUNT(*) as count FROM (
+          SELECT DISTINCT
+            CASE
+              WHEN source_group_jid = 'kamyoon-loads@g.us' THEN 'kamyoon'
+              WHEN source_group_jid = 'yukbul-loads@g.us' THEN 'yukbul'
+              ELSE 'evolution'
+            END as source,
+            MD5(
+              COALESCE(origin_province, '') || '|' ||
+              COALESCE(destination_province, '') || '|' ||
+              COALESCE(contact_phone, '') || '|' ||
+              COALESCE(body_type, '') || '|' ||
+              COALESCE(cargo_type, '')
+            ) as job_hash
+          FROM jobs
+          WHERE created_at > NOW() - INTERVAL '24 hours'
+        ) unique_jobs
+        GROUP BY source
         ORDER BY count DESC
       `,
 
