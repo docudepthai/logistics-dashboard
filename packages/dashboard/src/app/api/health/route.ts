@@ -216,12 +216,23 @@ async function getProcessingStats(): Promise<{
   jobsProcessed24h: number;
 }> {
   try {
+    // Use MD5 hash for unique job counting
     const result = await sql`
       SELECT
-        COUNT(*) as total_jobs,
-        COUNT(*) FILTER (WHERE confidence_score > 0.5) as high_confidence,
-        COUNT(*) FILTER (WHERE origin_province IS NOT NULL) as has_origin,
-        COUNT(*) FILTER (WHERE destination_province IS NOT NULL) as has_destination
+        COUNT(DISTINCT MD5(
+          COALESCE(origin_province, '') || '|' ||
+          COALESCE(destination_province, '') || '|' ||
+          COALESCE(contact_phone, '') || '|' ||
+          COALESCE(body_type, '') || '|' ||
+          COALESCE(cargo_type, '')
+        )) as total_jobs,
+        COUNT(DISTINCT CASE WHEN origin_province IS NOT NULL THEN MD5(
+          COALESCE(origin_province, '') || '|' ||
+          COALESCE(destination_province, '') || '|' ||
+          COALESCE(contact_phone, '') || '|' ||
+          COALESCE(body_type, '') || '|' ||
+          COALESCE(cargo_type, '')
+        ) END) as has_origin
       FROM jobs
       WHERE created_at > NOW() - INTERVAL '24 hours'
     `;

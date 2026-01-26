@@ -98,51 +98,59 @@ const provinceCoords: Record<string, { lat: number; lng: number }> = {
 
 export async function GET() {
   try {
-    // Get routes with counts - unique jobs only
+    // Get routes with counts - unique jobs using MD5 hash
     const routes = await sql`
-      SELECT origin, destination, COUNT(*) as count FROM (
-        SELECT DISTINCT
-          origin_province as origin,
-          destination_province as destination,
-          COALESCE(vehicle_type, ''), COALESCE(body_type, ''), COALESCE(cargo_type, ''),
-          COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-          COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-        FROM jobs
-        WHERE
-          created_at > NOW() - INTERVAL '24 hours'
-          AND origin_province IS NOT NULL
-          AND destination_province IS NOT NULL
-      ) unique_jobs
-      GROUP BY origin, destination
+      SELECT
+        origin_province as origin,
+        destination_province as destination,
+        COUNT(DISTINCT MD5(
+          COALESCE(origin_province, '') || '|' ||
+          COALESCE(destination_province, '') || '|' ||
+          COALESCE(contact_phone, '') || '|' ||
+          COALESCE(body_type, '') || '|' ||
+          COALESCE(cargo_type, '')
+        )) as count
+      FROM jobs
+      WHERE
+        created_at > NOW() - INTERVAL '24 hours'
+        AND origin_province IS NOT NULL
+        AND destination_province IS NOT NULL
+      GROUP BY origin_province, destination_province
       ORDER BY count DESC
       LIMIT 50
     `;
 
-    // Get province activity - unique jobs only
+    // Get province activity - simplified
     const provinceActivity = await sql`
       SELECT
         province,
         SUM(origin_count) as origins,
         SUM(dest_count) as destinations
       FROM (
-        SELECT origin_province as province, COUNT(*) as origin_count, 0 as dest_count
-        FROM (
-          SELECT DISTINCT origin_province,
-            COALESCE(destination_province, ''), COALESCE(vehicle_type, ''), COALESCE(body_type, ''),
-            COALESCE(cargo_type, ''), COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs WHERE created_at > NOW() - INTERVAL '24 hours' AND origin_province IS NOT NULL
-        ) uo
+        SELECT origin_province as province,
+          COUNT(DISTINCT MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          )) as origin_count,
+          0 as dest_count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours' AND origin_province IS NOT NULL
         GROUP BY origin_province
         UNION ALL
-        SELECT destination_province as province, 0 as origin_count, COUNT(*) as dest_count
-        FROM (
-          SELECT DISTINCT destination_province,
-            COALESCE(origin_province, ''), COALESCE(vehicle_type, ''), COALESCE(body_type, ''),
-            COALESCE(cargo_type, ''), COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs WHERE created_at > NOW() - INTERVAL '24 hours' AND destination_province IS NOT NULL
-        ) ud
+        SELECT destination_province as province,
+          0 as origin_count,
+          COUNT(DISTINCT MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          )) as dest_count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours' AND destination_province IS NOT NULL
         GROUP BY destination_province
       ) combined
       GROUP BY province

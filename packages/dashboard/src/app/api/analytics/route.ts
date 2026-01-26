@@ -11,6 +11,15 @@ const sql = postgres(process.env.DATABASE_URL || '', {
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
+// MD5 hash for job uniqueness - faster than DISTINCT with many columns
+const JOB_HASH = `MD5(
+  COALESCE(origin_province, '') || '|' ||
+  COALESCE(destination_province, '') || '|' ||
+  COALESCE(contact_phone, '') || '|' ||
+  COALESCE(body_type, '') || '|' ||
+  COALESCE(cargo_type, '')
+)`;
+
 export async function GET() {
   try {
     const [
@@ -21,111 +30,121 @@ export async function GET() {
       peakHours,
       weeklyComparison,
     ] = await Promise.all([
-      // Daily trends (last 7 days) - unique jobs only
+      // Daily trends (last 7 days) - unique jobs using MD5 hash
       sql`
-        SELECT date, COUNT(*) as jobs, COUNT(DISTINCT sender_jid) as senders
-        FROM (
-          SELECT DISTINCT
-            DATE(created_at) as date,
-            sender_jid,
-            COALESCE(origin_province, ''), COALESCE(destination_province, ''),
-            COALESCE(vehicle_type, ''), COALESCE(body_type, ''), COALESCE(cargo_type, ''),
-            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '7 days'
-        ) unique_jobs
-        GROUP BY date
+        SELECT
+          DATE(created_at) as date,
+          COUNT(DISTINCT MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          )) as jobs,
+          COUNT(DISTINCT sender_jid) as senders
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '7 days'
+        GROUP BY DATE(created_at)
         ORDER BY date
       `,
 
-      // Parser success metrics - unique jobs only
+      // Parser success metrics - simplified
       sql`
         SELECT
-          COUNT(*) as total,
-          COUNT(*) FILTER (WHERE origin_province IS NOT NULL AND origin_province != '') as with_origin,
-          COUNT(*) FILTER (WHERE destination_province IS NOT NULL AND destination_province != '') as with_destination,
-          COUNT(*) FILTER (WHERE contact_phone IS NOT NULL AND contact_phone != '') as with_phone,
-          COUNT(*) FILTER (WHERE body_type IS NOT NULL AND body_type != '') as with_body_type,
+          COUNT(DISTINCT MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          )) as total,
+          COUNT(DISTINCT CASE WHEN origin_province IS NOT NULL AND origin_province != '' THEN MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          ) END) as with_origin,
+          COUNT(DISTINCT CASE WHEN destination_province IS NOT NULL AND destination_province != '' THEN MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          ) END) as with_destination,
+          COUNT(DISTINCT CASE WHEN contact_phone IS NOT NULL AND contact_phone != '' THEN MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          ) END) as with_phone,
+          COUNT(DISTINCT CASE WHEN body_type IS NOT NULL AND body_type != '' THEN MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          ) END) as with_body_type,
           ROUND(AVG(confidence_score)::numeric, 2) as avg_confidence
-        FROM (
-          SELECT DISTINCT
-            COALESCE(origin_province, '') as origin_province,
-            COALESCE(destination_province, '') as destination_province,
-            COALESCE(vehicle_type, ''), COALESCE(body_type, '') as body_type,
-            COALESCE(cargo_type, ''), COALESCE(weight::text, ''),
-            COALESCE(contact_phone, '') as contact_phone,
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, ''),
-            confidence_score
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours'
-        ) unique_jobs
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours'
       `,
 
-      // Top origins - unique jobs only
+      // Top origins - simplified
       sql`
         SELECT origin_province as province, COUNT(*) as count
-        FROM (
-          SELECT DISTINCT origin_province,
-            COALESCE(destination_province, ''), COALESCE(vehicle_type, ''), COALESCE(body_type, ''),
-            COALESCE(cargo_type, ''), COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours' AND origin_province IS NOT NULL
-        ) u
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours' AND origin_province IS NOT NULL
         GROUP BY origin_province
         ORDER BY count DESC
         LIMIT 10
       `,
 
-      // Top destinations - unique jobs only
+      // Top destinations - simplified
       sql`
         SELECT destination_province as province, COUNT(*) as count
-        FROM (
-          SELECT DISTINCT destination_province,
-            COALESCE(origin_province, ''), COALESCE(vehicle_type, ''), COALESCE(body_type, ''),
-            COALESCE(cargo_type, ''), COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '24 hours' AND destination_province IS NOT NULL
-        ) u
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '24 hours' AND destination_province IS NOT NULL
         GROUP BY destination_province
         ORDER BY count DESC
         LIMIT 10
       `,
 
-      // Peak hours analysis - unique jobs only
+      // Peak hours analysis - simplified
       sql`
-        SELECT hour, COUNT(*) as count FROM (
-          SELECT DISTINCT
-            EXTRACT(HOUR FROM created_at)::int as hour,
-            COALESCE(origin_province, ''), COALESCE(destination_province, ''),
-            COALESCE(vehicle_type, ''), COALESCE(body_type, ''), COALESCE(cargo_type, ''),
-            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '7 days'
-        ) unique_jobs
-        GROUP BY hour
+        SELECT
+          EXTRACT(HOUR FROM created_at)::int as hour,
+          COUNT(DISTINCT MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          )) as count
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '7 days'
+        GROUP BY EXTRACT(HOUR FROM created_at)::int
         ORDER BY hour
       `,
 
-      // This week vs last week - unique jobs only
+      // This week vs last week - simplified
       sql`
-        SELECT period, COUNT(*) as jobs FROM (
-          SELECT DISTINCT
-            CASE
-              WHEN created_at > NOW() - INTERVAL '7 days' THEN 'this_week'
-              ELSE 'last_week'
-            END as period,
-            COALESCE(origin_province, ''), COALESCE(destination_province, ''),
-            COALESCE(vehicle_type, ''), COALESCE(body_type, ''), COALESCE(cargo_type, ''),
-            COALESCE(weight::text, ''), COALESCE(contact_phone, ''),
-            COALESCE(is_urgent::text, ''), COALESCE(is_refrigerated::text, '')
-          FROM jobs
-          WHERE created_at > NOW() - INTERVAL '14 days'
-        ) unique_jobs
-        GROUP BY period
+        SELECT
+          CASE
+            WHEN created_at > NOW() - INTERVAL '7 days' THEN 'this_week'
+            ELSE 'last_week'
+          END as period,
+          COUNT(DISTINCT MD5(
+            COALESCE(origin_province, '') || '|' ||
+            COALESCE(destination_province, '') || '|' ||
+            COALESCE(contact_phone, '') || '|' ||
+            COALESCE(body_type, '') || '|' ||
+            COALESCE(cargo_type, '')
+          )) as jobs
+        FROM jobs
+        WHERE created_at > NOW() - INTERVAL '14 days'
+        GROUP BY 1
       `,
     ]);
 
