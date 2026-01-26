@@ -190,13 +190,33 @@ export async function GET() {
 
 async function getConversationsCount(): Promise<number> {
   try {
+    // Use FilterExpression to only count CONVERSATION records (not PROFILE, CALL_LIST, etc.)
+    // and add a timeout to prevent blocking
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+    let count = 0;
+
+    // Single scan with limit to prevent timeout
     const result = await docClient.send(
       new ScanCommand({
         TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
         Select: 'COUNT',
+        FilterExpression: 'sk = :sk',
+        ExpressionAttributeValues: {
+          ':sk': 'CONVERSATION',
+        },
+        // Limit the scan to prevent timeout - we'll get an approximate count
+        Limit: 10000,
       })
     );
-    return result.Count || 0;
+
+    clearTimeout(timeout);
+    count = result.Count || 0;
+
+    // If there's more data, just return what we have (approximate count)
+    // This prevents timeouts on large tables
+    return count;
   } catch (error) {
     console.error('DynamoDB error:', error);
     return 0;

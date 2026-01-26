@@ -44,6 +44,11 @@ export async function GET() {
         new ScanCommand({
           TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
           ExclusiveStartKey: lastEvaluatedKey,
+          // Only fetch needed attributes to reduce data transfer
+          ProjectionExpression: 'pk, sk, messages, #ctx, nudgeSent, nudgeSentAt, createdAt, firstContactAt',
+          ExpressionAttributeNames: {
+            '#ctx': 'context', // context is a reserved word
+          },
         })
       );
       allItems.push(...(result.Items || []));
@@ -67,8 +72,15 @@ export async function GET() {
 
     const now = Date.now();
     const eligibleUsers: EligibleUser[] = [];
+    let totalNudged = 0; // Count in the same loop
 
     for (const [phone, conv] of Array.from(conversations.entries())) {
+      // Count nudged users for stats
+      if (conv.nudgeSent === true) {
+        totalNudged++;
+        continue; // Skip users who have already been nudged
+      }
+
       const messages: Message[] = conv.messages || [];
       const context = conv.context || {};
       const profile = profiles.get(phone);
@@ -90,10 +102,6 @@ export async function GET() {
       // Only include if within 24h window (can still message)
       if (hoursRemaining <= 0) continue;
 
-      // Check if nudge was already sent
-      const nudgeSent = conv.nudgeSent === true;
-      const nudgeSentAt = conv.nudgeSentAt;
-
       eligibleUsers.push({
         phoneNumber: phone,
         firstContactAt: profile?.firstContactAt || conv.createdAt,
@@ -101,8 +109,8 @@ export async function GET() {
         hoursRemaining: Math.round(hoursRemaining * 10) / 10,
         messageCount: messages.length,
         firstMessage: userMessages[0]?.content?.slice(0, 100) || '',
-        nudgeSent,
-        nudgeSentAt,
+        nudgeSent: false,
+        nudgeSentAt: undefined,
       });
     }
 
@@ -112,8 +120,8 @@ export async function GET() {
     const stats = {
       total: eligibleUsers.length,
       urgent: eligibleUsers.filter(u => u.hoursRemaining < 6).length,
-      nudgeSent: eligibleUsers.filter(u => u.nudgeSent).length,
-      pending: eligibleUsers.filter(u => !u.nudgeSent).length,
+      nudgeSent: totalNudged, // Total ever nudged (for reference)
+      pending: eligibleUsers.length, // All users in list are pending now
     };
 
     return NextResponse.json({ users: eligibleUsers, stats });

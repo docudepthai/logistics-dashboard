@@ -11,8 +11,6 @@ interface NudgeEligibleUser {
   hoursRemaining: number;
   messageCount: number;
   firstMessage: string;
-  nudgeSent: boolean;
-  nudgeSentAt?: string;
 }
 
 interface NudgeSettings {
@@ -54,7 +52,6 @@ function PasifKullanicilarPageContent() {
   const [users, setUsers] = useState<NudgeEligibleUser[]>([]);
   const [stats, setStats] = useState({ total: 0, urgent: 0, nudgeSent: 0, pending: 0 });
   const [loading, setLoading] = useState(true);
-  const [showSent, setShowSent] = useState(false);
   const [sendingNudge, setSendingNudge] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -144,13 +141,11 @@ function PasifKullanicilarPageContent() {
       });
 
       if (res.ok) {
-        setUsers(prev => prev.map(u =>
-          u.phoneNumber === phoneNumber
-            ? { ...u, nudgeSent: true, nudgeSentAt: new Date().toISOString() }
-            : u
-        ));
+        // Remove user from list (they've been nudged, won't appear again)
+        setUsers(prev => prev.filter(u => u.phoneNumber !== phoneNumber));
         setStats(prev => ({
           ...prev,
+          total: prev.total - 1,
           nudgeSent: prev.nudgeSent + 1,
           pending: prev.pending - 1,
         }));
@@ -166,17 +161,10 @@ function PasifKullanicilarPageContent() {
     }
   };
 
-  const filteredUsers = showSent ? users : users.filter(u => !u.nudgeSent);
-
-  // Pagination
-  const totalPages = Math.ceil(filteredUsers.length / ITEMS_PER_PAGE);
+  // Pagination - all users in list are pending (nudged users are excluded by API)
+  const totalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedUsers = filteredUsers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-  // Reset to page 1 when filter changes
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [showSent]);
+  const paginatedUsers = users.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-6">
@@ -225,32 +213,23 @@ function PasifKullanicilarPageContent() {
         </div>
       </div>
 
-      {/* Filter Toggle */}
-      <div className="flex items-center justify-between">
-        <label className="flex items-center space-x-2 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={showSent}
-            onChange={(e) => setShowSent(e.target.checked)}
-            className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-emerald-500"
-          />
-          <span className="text-sm text-neutral-400">Show users who received messages</span>
-        </label>
-        {totalPages > 1 && (
+      {/* Pagination Info */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-end">
           <div className="text-sm text-neutral-500">
-            Page {currentPage} / {totalPages} ({filteredUsers.length} records)
+            Page {currentPage} / {totalPages} ({users.length} records)
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Users Table */}
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <div className="w-8 h-8 border-2 border-neutral-700 border-t-white rounded-full animate-spin" />
         </div>
-      ) : filteredUsers.length === 0 ? (
+      ) : users.length === 0 ? (
         <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-8 text-center text-neutral-500">
-          {showSent ? 'No users yet' : 'No users to send message to'}
+          No users to send message to (all users have been nudged or have searched)
         </div>
       ) : (
         <>
@@ -263,7 +242,6 @@ function PasifKullanicilarPageContent() {
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Time Left</th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Messages</th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">First Message</th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Status</th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Action</th>
                 </tr>
               </thead>
@@ -271,7 +249,7 @@ function PasifKullanicilarPageContent() {
                 {paginatedUsers.map((user) => (
                   <tr
                     key={user.phoneNumber}
-                    className={`border-b border-neutral-800/30 hover:bg-neutral-800/30 transition-colors ${user.nudgeSent ? 'opacity-60' : ''}`}
+                    className="border-b border-neutral-800/30 hover:bg-neutral-800/30 transition-colors"
                   >
                     <td className="px-4 py-3">
                       <Link
@@ -295,27 +273,14 @@ function PasifKullanicilarPageContent() {
                       {user.firstMessage || '-'}
                     </td>
                     <td className="px-4 py-3">
-                      {user.nudgeSent ? (
-                        <span className="text-xs px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded">
-                          Sent
-                        </span>
-                      ) : (
-                        <span className="text-xs px-2 py-1 bg-amber-500/20 text-amber-400 rounded">
-                          Pending
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
                       <div className="flex items-center space-x-2">
-                        {!user.nudgeSent && (
-                          <button
-                            onClick={() => handleSendClick(user.phoneNumber)}
-                            disabled={sendingNudge === user.phoneNumber}
-                            className="text-xs px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors disabled:opacity-50"
-                          >
-                            {sendingNudge === user.phoneNumber ? 'Sending...' : 'Send Template'}
-                          </button>
-                        )}
+                        <button
+                          onClick={() => handleSendClick(user.phoneNumber)}
+                          disabled={sendingNudge === user.phoneNumber}
+                          className="text-xs px-2 py-1 bg-green-500/20 text-green-400 hover:bg-green-500/30 rounded transition-colors disabled:opacity-50"
+                        >
+                          {sendingNudge === user.phoneNumber ? 'Sending...' : 'Send Template'}
+                        </button>
                         <a
                           href={`https://wa.me/${user.phoneNumber}`}
                           target="_blank"
@@ -334,7 +299,7 @@ function PasifKullanicilarPageContent() {
         </div>
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {Math.ceil(users.length / ITEMS_PER_PAGE) > 1 && (
           <div className="flex items-center justify-center space-x-2">
             <button
               onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
@@ -344,14 +309,15 @@ function PasifKullanicilarPageContent() {
               Prev
             </button>
             <div className="flex items-center space-x-1">
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              {Array.from({ length: Math.min(5, Math.ceil(users.length / ITEMS_PER_PAGE)) }, (_, i) => {
+                const pages = Math.ceil(users.length / ITEMS_PER_PAGE);
                 let pageNum: number;
-                if (totalPages <= 5) {
+                if (pages <= 5) {
                   pageNum = i + 1;
                 } else if (currentPage <= 3) {
                   pageNum = i + 1;
-                } else if (currentPage >= totalPages - 2) {
-                  pageNum = totalPages - 4 + i;
+                } else if (currentPage >= pages - 2) {
+                  pageNum = pages - 4 + i;
                 } else {
                   pageNum = currentPage - 2 + i;
                 }
@@ -371,8 +337,8 @@ function PasifKullanicilarPageContent() {
               })}
             </div>
             <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(p => Math.min(Math.ceil(users.length / ITEMS_PER_PAGE), p + 1))}
+              disabled={currentPage === Math.ceil(users.length / ITEMS_PER_PAGE)}
               className="px-3 py-1.5 bg-neutral-800 hover:bg-neutral-700 disabled:opacity-50 disabled:hover:bg-neutral-800 text-neutral-300 rounded text-sm transition-colors"
             >
               Next
