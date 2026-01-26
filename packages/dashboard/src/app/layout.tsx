@@ -6,6 +6,9 @@ import AuthLayout from './components/AuthLayout';
 export const metadata: Metadata = {
   title: 'Logistics Bot Dashboard',
   description: 'Monitor your WhatsApp logistics bot',
+  icons: {
+    icon: '/turkey.svg',
+  },
 };
 
 export default function RootLayout({
