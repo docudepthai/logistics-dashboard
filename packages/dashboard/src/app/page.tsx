@@ -6,7 +6,6 @@ import PageGuard from './components/PageGuard';
 interface Stats {
   overview: {
     totalJobs: number;
-    totalMessages: number;
     uniqueSenders24h: number;
     uniqueGroups: number;
     conversations: number;
@@ -70,10 +69,9 @@ function DashboardContent() {
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-5 gap-4">
+      <div className="grid grid-cols-4 gap-4">
         {[
           { label: 'Jobs (24h)', value: stats.overview.totalJobs },
-          { label: 'Messages', value: stats.overview.totalMessages },
           { label: 'Senders', value: stats.overview.uniqueSenders24h },
           { label: 'Groups', value: stats.overview.uniqueGroups },
           { label: 'Conversations', value: stats.overview.conversations },
