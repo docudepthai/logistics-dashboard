@@ -49,16 +49,20 @@ export async function GET(request: NextRequest) {
     const allItems: any[] = [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let lastEvaluatedKey: Record<string, any> | undefined;
-    let scannedCount = 0;
-    const maxScan = 5000; // Limit total scan to prevent timeout
 
     do {
       const result = await docClient.send(
         new ScanCommand({
           TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
-          FilterExpression: 'sk = :sk',
+          FilterExpression: 'sk = :sk AND begins_with(pk, :pkPrefix)',
           ExpressionAttributeValues: {
             ':sk': 'CONVERSATION',
+            ':pkPrefix': 'USER#',
+          },
+          // Only fetch needed fields to reduce payload
+          ProjectionExpression: 'pk, messages, #ctx, createdAt, updatedAt',
+          ExpressionAttributeNames: {
+            '#ctx': 'context',
           },
           ExclusiveStartKey: lastEvaluatedKey,
         })
@@ -66,8 +70,7 @@ export async function GET(request: NextRequest) {
 
       allItems.push(...(result.Items || []));
       lastEvaluatedKey = result.LastEvaluatedKey;
-      scannedCount += result.ScannedCount || 0;
-    } while (lastEvaluatedKey && scannedCount < maxScan);
+    } while (lastEvaluatedKey);
 
     let conversations: Conversation[] = allItems
       .map((item) => {
