@@ -9,13 +9,14 @@ const ITEMS_PER_PAGE = 50;
 interface User {
   phoneNumber: string;
   firstContactAt: string;
-  freeTierExpiresAt: string;
+  freeTierExpiresAt?: string; // Optional - only set when trial starts
   membershipStatus: 'free_trial' | 'expired' | 'premium';
   welcomeMessageSent: boolean;
   createdAt: string;
   updatedAt: string;
   paidUntil?: string;
   paymentId?: string;
+  trialStartedAt?: string; // Set on first job search
   canViewPhones: boolean;
   daysRemaining: number | null;
 }
@@ -256,7 +257,9 @@ function UsersPageContent() {
                       <td className="px-4 py-3 text-neutral-400 text-sm">
                         {user.membershipStatus === 'premium' && user.paidUntil
                           ? formatDate(user.paidUntil)
-                          : formatDate(user.freeTierExpiresAt)}
+                          : user.freeTierExpiresAt
+                            ? formatDate(user.freeTierExpiresAt)
+                            : <span className="text-neutral-600">Not started</span>}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`inline-flex items-center space-x-1 ${user.canViewPhones ? 'text-emerald-400' : 'text-red-400'}`}>

@@ -19,13 +19,14 @@ const CONVERSATIONS_TABLE = process.env.CONVERSATIONS_TABLE || 'turkish-logistic
 export interface User {
   phoneNumber: string;
   firstContactAt: string;
-  freeTierExpiresAt: string;
+  freeTierExpiresAt?: string; // Optional - only set when trial starts (first search)
   membershipStatus: 'free_trial' | 'expired' | 'premium';
   welcomeMessageSent: boolean;
   createdAt: string;
   updatedAt: string;
   paidUntil?: string;
   paymentId?: string;
+  trialStartedAt?: string; // Set on first job search
 }
 
 function isFreeTierActive(user: User): boolean {
@@ -38,11 +39,20 @@ function isFreeTierActive(user: User): boolean {
   if (user.membershipStatus === 'expired') {
     return false;
   }
+  // Trial hasn't started yet - user can view phones (trial starts on first search)
+  if (!user.trialStartedAt || !user.freeTierExpiresAt) {
+    return true;
+  }
   return new Date(user.freeTierExpiresAt) > new Date();
 }
 
 function getDaysRemaining(user: User): number | null {
   if (user.membershipStatus === 'expired') return 0;
+
+  // Trial hasn't started yet - return null to show "-" in dashboard
+  if (!user.trialStartedAt || !user.freeTierExpiresAt) {
+    return null;
+  }
 
   const expiresAt = user.membershipStatus === 'premium' && user.paidUntil
     ? new Date(user.paidUntil)
@@ -85,13 +95,14 @@ export async function GET() {
       const user: User = {
         phoneNumber: item.phoneNumber || '',
         firstContactAt: item.firstContactAt || item.createdAt || new Date().toISOString(),
-        freeTierExpiresAt: item.freeTierExpiresAt || new Date().toISOString(),
+        freeTierExpiresAt: item.freeTierExpiresAt, // May be undefined if trial hasn't started
         membershipStatus: item.membershipStatus || 'free_trial',
         welcomeMessageSent: item.welcomeMessageSent ?? false,
         createdAt: item.createdAt || new Date().toISOString(),
         updatedAt: item.updatedAt || new Date().toISOString(),
         paidUntil: item.paidUntil,
         paymentId: item.paymentId,
+        trialStartedAt: item.trialStartedAt, // May be undefined if trial hasn't started
       };
 
       return {
