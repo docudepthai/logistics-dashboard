@@ -54,6 +54,7 @@ function ConversationsPageContent() {
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [debouncedSearch, setDebouncedSearch] = useState(searchFromUrl);
   const [searching, setSearching] = useState(false);
+  const [statusFilter, setStatusFilter] = useState<'all' | 'free_trial' | 'expired' | 'premium'>('all');
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [messageInput, setMessageInput] = useState('');
   const [sendingMessage, setSendingMessage] = useState<string | null>(null);
@@ -97,6 +98,9 @@ function ConversationsPageContent() {
       });
       if (debouncedSearch) {
         params.set('search', debouncedSearch);
+      }
+      if (statusFilter !== 'all') {
+        params.set('status', statusFilter);
       }
 
       const res = await fetch(`/api/conversations?${params}`);
@@ -149,7 +153,7 @@ function ConversationsPageContent() {
       setSearching(false);
     };
     doSearch();
-  }, [currentPage, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [currentPage, debouncedSearch, statusFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-refresh every 30 seconds
   useEffect(() => {
@@ -276,7 +280,33 @@ function ConversationsPageContent() {
             {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
-        <div className="relative">
+        <div className="flex items-center gap-4">
+          {/* Status Filter Buttons */}
+          <div className="flex items-center gap-1 bg-neutral-800/50 rounded-lg p-1">
+            {[
+              { key: 'all', label: 'All' },
+              { key: 'free_trial', label: 'Free Trial' },
+              { key: 'expired', label: 'Expired' },
+              { key: 'premium', label: 'Premium' },
+            ].map(({ key, label }) => (
+              <button
+                key={key}
+                onClick={() => {
+                  setStatusFilter(key as typeof statusFilter);
+                  setCurrentPage(1);
+                }}
+                className={`px-3 py-1.5 text-xs font-medium rounded transition-colors ${
+                  statusFilter === key
+                    ? 'bg-white text-black'
+                    : 'text-neutral-400 hover:text-white hover:bg-neutral-700/50'
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+          {/* Search Input */}
+          <div className="relative">
           <input
             type="text"
             placeholder="Search by phone..."
@@ -301,6 +331,7 @@ function ConversationsPageContent() {
               </svg>
             </button>
           )}
+          </div>
         </div>
       </div>
 

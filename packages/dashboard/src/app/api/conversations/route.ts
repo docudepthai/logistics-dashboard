@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const search = searchParams.get('search') || '';
+    const status = searchParams.get('status') || ''; // Filter by membership status
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), MAX_CONVERSATIONS);
 
@@ -150,6 +151,11 @@ export async function GET(request: NextRequest) {
     if (search) {
       const searchDigits = search.replace(/\D/g, '');
       conversations = conversations.filter(c => c.userId.includes(searchDigits));
+    }
+
+    // Apply status filter if provided
+    if (status && ['free_trial', 'expired', 'premium'].includes(status)) {
+      conversations = conversations.filter(c => c.membershipStatus === status);
     }
 
     // Sort by updatedAt (most recent first)
