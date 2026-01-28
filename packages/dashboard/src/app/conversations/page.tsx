@@ -54,6 +54,10 @@ function ConversationsPageContent() {
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [debouncedSearch, setDebouncedSearch] = useState(searchFromUrl);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const [messageInput, setMessageInput] = useState('');
+  const [sendingMessage, setSendingMessage] = useState<string | null>(null);
+  const [sendError, setSendError] = useState<string | null>(null);
+  const [sendSuccess, setSendSuccess] = useState<string | null>(null);
 
   // Scroll messages container to bottom when conversation is expanded
   useEffect(() => {
@@ -177,6 +181,72 @@ function ConversationsPageContent() {
     } finally {
       setAddingToCallList(null);
       setShowReasonDropdown(null);
+    }
+  };
+
+  // Check if the last user message is within 24 hours
+  const getMessageWindowStatus = (messages: Message[]): { canSend: boolean; hoursAgo: number | null } => {
+    const userMessages = messages.filter(m => m.role === 'user');
+    if (userMessages.length === 0) {
+      return { canSend: false, hoursAgo: null };
+    }
+    const lastUserMessage = userMessages[userMessages.length - 1];
+    const hoursAgo = (Date.now() - new Date(lastUserMessage.timestamp).getTime()) / (1000 * 60 * 60);
+    return { canSend: hoursAgo <= 24, hoursAgo: Math.round(hoursAgo) };
+  };
+
+  // Send custom message to user
+  const sendMessage = async (userId: string) => {
+    if (!messageInput.trim()) return;
+
+    setSendingMessage(userId);
+    setSendError(null);
+    setSendSuccess(null);
+
+    try {
+      const res = await fetch('/api/send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phoneNumber: userId, message: messageInput.trim() }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setSendError(data.error || 'Failed to send message');
+        return;
+      }
+
+      // Add message to local state
+      setConversations(prev => prev.map(c => {
+        if (c.userId === userId) {
+          return {
+            ...c,
+            messages: [...c.messages, data.message],
+            messageCount: c.messageCount + 1,
+            updatedAt: data.message.timestamp,
+          };
+        }
+        return c;
+      }));
+
+      setMessageInput('');
+      setSendSuccess('Message sent!');
+
+      // Scroll to bottom after adding message
+      setTimeout(() => {
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+      }, 100);
+
+      // Clear success message after 3 seconds
+      setTimeout(() => setSendSuccess(null), 3000);
+    } catch (err) {
+      console.error('Failed to send message:', err);
+      setSendError('Network error');
+    } finally {
+      setSendingMessage(null);
     }
   };
 
@@ -336,27 +406,103 @@ function ConversationsPageContent() {
 
                 {/* Messages */}
                 {expanded === convo.userId && (
-                  <div
-                    ref={messagesContainerRef}
-                    className="px-6 py-4 border-t border-neutral-800/50 bg-black/20 max-h-[600px] overflow-y-auto"
-                  >
-                    <div className="space-y-3">
-                      {convo.messages.map((msg, idx) => (
-                        <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`max-w-[75%] px-4 py-2.5 rounded-lg ${
-                            msg.role === 'user'
-                              ? 'bg-white text-black'
-                              : 'bg-neutral-800 text-neutral-200'
-                          }`}>
-                            <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                            <p className={`text-xs mt-1.5 ${msg.role === 'user' ? 'text-neutral-500' : 'text-neutral-500'}`}>
-                              {new Date(msg.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                            </p>
+                  <>
+                    <div
+                      ref={messagesContainerRef}
+                      className="px-6 py-4 border-t border-neutral-800/50 bg-black/20 max-h-[600px] overflow-y-auto"
+                    >
+                      <div className="space-y-3">
+                        {convo.messages.map((msg, idx) => (
+                          <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`max-w-[75%] px-4 py-2.5 rounded-lg ${
+                              msg.role === 'user'
+                                ? 'bg-white text-black'
+                                : 'bg-neutral-800 text-neutral-200'
+                            }`}>
+                              <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                              <p className={`text-xs mt-1.5 ${msg.role === 'user' ? 'text-neutral-500' : 'text-neutral-500'}`}>
+                                {new Date(msg.timestamp).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                              </p>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
-                  </div>
+
+                    {/* Send Message Input */}
+                    {(() => {
+                      const windowStatus = getMessageWindowStatus(convo.messages);
+                      return (
+                        <div className="px-6 py-3 border-t border-neutral-800/50 bg-neutral-900/50">
+                          {windowStatus.canSend ? (
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="text"
+                                placeholder="Type a message to send..."
+                                value={sendingMessage === convo.userId ? '' : messageInput}
+                                onChange={(e) => setMessageInput(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    sendMessage(convo.userId);
+                                  }
+                                }}
+                                disabled={sendingMessage === convo.userId}
+                                className="flex-1 px-4 py-2 text-sm bg-neutral-800 border border-neutral-700 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-600 disabled:opacity-50"
+                              />
+                              <button
+                                onClick={() => sendMessage(convo.userId)}
+                                disabled={sendingMessage === convo.userId || !messageInput.trim()}
+                                className="px-4 py-2 text-sm font-medium bg-emerald-600 hover:bg-emerald-500 disabled:bg-neutral-700 disabled:text-neutral-500 text-white rounded-lg transition-colors flex items-center gap-2"
+                              >
+                                {sendingMessage === convo.userId ? (
+                                  <>
+                                    <div className="w-4 h-4 border-2 border-neutral-500 border-t-white rounded-full animate-spin" />
+                                    Sending...
+                                  </>
+                                ) : (
+                                  <>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                                    </svg>
+                                    Send
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 text-sm text-amber-400">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span>
+                                24 saat penceresi doldu.
+                                {windowStatus.hoursAgo !== null && ` Son mesaj ${windowStatus.hoursAgo} saat once.`}
+                              </span>
+                            </div>
+                          )}
+
+                          {/* Error/Success messages */}
+                          {sendError && expanded === convo.userId && (
+                            <div className="mt-2 text-sm text-red-400 flex items-center gap-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {sendError}
+                            </div>
+                          )}
+                          {sendSuccess && expanded === convo.userId && (
+                            <div className="mt-2 text-sm text-emerald-400 flex items-center gap-2">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              {sendSuccess}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })()}
+                  </>
                 )}
               </div>
             );
