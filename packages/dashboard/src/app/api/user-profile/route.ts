@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, QueryCommand } from '@aws-sdk/lib-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand, UpdateCommand } from '@aws-sdk/lib-dynamodb';
 
 export const dynamic = 'force-dynamic';
 
@@ -61,6 +61,89 @@ export async function GET(request: NextRequest) {
     console.error('User profile API error:', error);
     return NextResponse.json(
       { error: 'Failed to fetch user profile' },
+      { status: 500 }
+    );
+  }
+}
+
+// POST - Update user membership
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { phone, action, expiresAt } = body;
+
+    if (!phone) {
+      return NextResponse.json({ error: 'Phone number required' }, { status: 400 });
+    }
+
+    if (!action || !['extend_trial', 'give_premium', 'expire'].includes(action)) {
+      return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    }
+
+    if ((action === 'extend_trial' || action === 'give_premium') && !expiresAt) {
+      return NextResponse.json({ error: 'Expiration date required' }, { status: 400 });
+    }
+
+    const now = new Date().toISOString();
+    const tableName = process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations';
+
+    // Build update based on action
+    let updateExpression: string;
+    let expressionAttributeValues: Record<string, unknown>;
+
+    switch (action) {
+      case 'extend_trial':
+        updateExpression = 'SET membershipStatus = :status, freeTierExpiresAt = :expires, updatedAt = :now';
+        expressionAttributeValues = {
+          ':status': 'free_trial',
+          ':expires': expiresAt,
+          ':now': now,
+        };
+        break;
+
+      case 'give_premium':
+        updateExpression = 'SET membershipStatus = :status, paidUntil = :paidUntil, updatedAt = :now';
+        expressionAttributeValues = {
+          ':status': 'premium',
+          ':paidUntil': expiresAt,
+          ':now': now,
+        };
+        break;
+
+      case 'expire':
+        updateExpression = 'SET membershipStatus = :status, updatedAt = :now';
+        expressionAttributeValues = {
+          ':status': 'expired',
+          ':now': now,
+        };
+        break;
+
+      default:
+        return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
+    }
+
+    await docClient.send(
+      new UpdateCommand({
+        TableName: tableName,
+        Key: {
+          pk: `USER#${phone}`,
+          sk: 'PROFILE',
+        },
+        UpdateExpression: updateExpression,
+        ExpressionAttributeValues: expressionAttributeValues,
+      })
+    );
+
+    return NextResponse.json({
+      success: true,
+      phone,
+      action,
+      expiresAt: action !== 'expire' ? expiresAt : undefined,
+    });
+  } catch (error) {
+    console.error('Update membership error:', error);
+    return NextResponse.json(
+      { error: 'Failed to update membership' },
       { status: 500 }
     );
   }

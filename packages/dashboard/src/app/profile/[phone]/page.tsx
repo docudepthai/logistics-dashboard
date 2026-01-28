@@ -103,6 +103,8 @@ function getHoursRemaining(lastMessageAt: string): number {
   return Math.max(0, 24 - hoursElapsed);
 }
 
+type MembershipAction = 'extend_trial' | 'give_premium' | 'expire' | null;
+
 function UserProfilePageContent() {
   const params = useParams();
   const phone = params.phone as string;
@@ -111,20 +113,96 @@ function UserProfilePageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Membership action modal state
+  const [showModal, setShowModal] = useState(false);
+  const [modalAction, setModalAction] = useState<MembershipAction>(null);
+  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [actionLoading, setActionLoading] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [actionSuccess, setActionSuccess] = useState<string | null>(null);
+
+  const fetchData = async () => {
+    try {
+      const res = await fetch(`/api/user-profile?phone=${phone}`);
+      if (!res.ok) throw new Error('Failed to fetch user');
+      setData(await res.json());
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch(`/api/user-profile?phone=${phone}`);
-        if (!res.ok) throw new Error('Failed to fetch user');
-        setData(await res.json());
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [phone]);
+
+  const openModal = (action: MembershipAction) => {
+    setModalAction(action);
+    setActionError(null);
+    setActionSuccess(null);
+
+    // Set default date based on action
+    const now = new Date();
+    if (action === 'extend_trial') {
+      // Default: 7 days from now
+      now.setDate(now.getDate() + 7);
+    } else if (action === 'give_premium') {
+      // Default: 1 month from now
+      now.setMonth(now.getMonth() + 1);
+    }
+    setSelectedDate(now.toISOString().split('T')[0]);
+    setShowModal(true);
+  };
+
+  const handleAction = async () => {
+    if (!modalAction) return;
+
+    setActionLoading(true);
+    setActionError(null);
+    setActionSuccess(null);
+
+    try {
+      const body: { phone: string; action: string; expiresAt?: string } = {
+        phone,
+        action: modalAction,
+      };
+
+      if (modalAction !== 'expire' && selectedDate) {
+        // Convert date to end of day ISO string
+        body.expiresAt = new Date(selectedDate + 'T23:59:59.999Z').toISOString();
+      }
+
+      const res = await fetch('/api/user-profile', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to update membership');
+      }
+
+      const actionLabels: Record<string, string> = {
+        extend_trial: 'Free trial extended',
+        give_premium: 'Premium granted',
+        expire: 'Membership expired',
+      };
+
+      setActionSuccess(actionLabels[modalAction] || 'Updated');
+      setShowModal(false);
+
+      // Refresh data
+      setLoading(true);
+      await fetchData();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : 'Unknown error');
+    } finally {
+      setActionLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -232,6 +310,149 @@ function UserProfilePageContent() {
           </div>
         </div>
       </div>
+
+      {/* Success/Error Messages */}
+      {actionSuccess && (
+        <div className="bg-emerald-500/20 border border-emerald-500/30 rounded-lg p-4 text-emerald-400 text-sm">
+          {actionSuccess}
+        </div>
+      )}
+
+      {/* Membership Actions */}
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
+        <h2 className="text-sm font-medium text-white mb-4">Membership Actions</h2>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => openModal('extend_trial')}
+            className="px-4 py-2 bg-blue-500/20 text-blue-400 rounded-lg hover:bg-blue-500/30 transition-colors text-sm font-medium"
+          >
+            Extend Free Trial
+          </button>
+          <button
+            onClick={() => openModal('give_premium')}
+            className="px-4 py-2 bg-emerald-500/20 text-emerald-400 rounded-lg hover:bg-emerald-500/30 transition-colors text-sm font-medium"
+          >
+            Give Premium
+          </button>
+          {profile?.membershipStatus !== 'expired' && (
+            <button
+              onClick={() => openModal('expire')}
+              className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors text-sm font-medium"
+            >
+              Expire Membership
+            </button>
+          )}
+        </div>
+        <p className="text-neutral-500 text-xs mt-3">
+          Current status: <span className={status.text}>{status.label}</span>
+          {profile?.membershipStatus === 'free_trial' && profile?.freeTierExpiresAt && (
+            <> · Expires: {formatDate(profile.freeTierExpiresAt)}</>
+          )}
+          {profile?.membershipStatus === 'premium' && profile?.paidUntil && (
+            <> · Paid until: {formatDate(profile.paidUntil)}</>
+          )}
+        </p>
+      </div>
+
+      {/* Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="bg-neutral-900 border border-neutral-700 rounded-xl p-6 w-full max-w-md">
+            <h3 className="text-lg font-semibold text-white mb-4">
+              {modalAction === 'extend_trial' && 'Extend Free Trial'}
+              {modalAction === 'give_premium' && 'Give Premium'}
+              {modalAction === 'expire' && 'Expire Membership'}
+            </h3>
+
+            {modalAction !== 'expire' ? (
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm text-neutral-400 mb-2">
+                    {modalAction === 'extend_trial' ? 'Trial expires on' : 'Premium valid until'}
+                  </label>
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Quick presets */}
+                <div className="flex flex-wrap gap-2">
+                  {modalAction === 'extend_trial' ? (
+                    <>
+                      {[3, 7, 14, 30].map((days) => (
+                        <button
+                          key={days}
+                          onClick={() => {
+                            const d = new Date();
+                            d.setDate(d.getDate() + days);
+                            setSelectedDate(d.toISOString().split('T')[0]);
+                          }}
+                          className="px-3 py-1 text-xs bg-neutral-800 text-neutral-300 rounded hover:bg-neutral-700 transition-colors"
+                        >
+                          +{days} days
+                        </button>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      {[1, 3, 6, 12].map((months) => (
+                        <button
+                          key={months}
+                          onClick={() => {
+                            const d = new Date();
+                            d.setMonth(d.getMonth() + months);
+                            setSelectedDate(d.toISOString().split('T')[0]);
+                          }}
+                          className="px-3 py-1 text-xs bg-neutral-800 text-neutral-300 rounded hover:bg-neutral-700 transition-colors"
+                        >
+                          +{months} month{months > 1 ? 's' : ''}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <p className="text-neutral-400 text-sm">
+                Are you sure you want to expire this user&apos;s membership? They will no longer have access to premium features.
+              </p>
+            )}
+
+            {actionError && (
+              <div className="mt-4 text-red-400 text-sm bg-red-500/10 rounded-lg p-3">
+                {actionError}
+              </div>
+            )}
+
+            <div className="flex gap-3 mt-6">
+              <button
+                onClick={() => setShowModal(false)}
+                disabled={actionLoading}
+                className="flex-1 px-4 py-2 bg-neutral-800 text-neutral-300 rounded-lg hover:bg-neutral-700 transition-colors text-sm font-medium disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleAction}
+                disabled={actionLoading || (modalAction !== 'expire' && !selectedDate)}
+                className={`flex-1 px-4 py-2 rounded-lg transition-colors text-sm font-medium disabled:opacity-50 ${
+                  modalAction === 'expire'
+                    ? 'bg-red-500 text-white hover:bg-red-600'
+                    : modalAction === 'give_premium'
+                    ? 'bg-emerald-500 text-white hover:bg-emerald-600'
+                    : 'bg-blue-500 text-white hover:bg-blue-600'
+                }`}
+              >
+                {actionLoading ? 'Processing...' : 'Confirm'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Two Column Layout */}
       <div className="grid grid-cols-2 gap-6">
