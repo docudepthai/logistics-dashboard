@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PageGuard from '../components/PageGuard';
@@ -48,55 +48,92 @@ function ConversationsPageContent() {
   const [addingToCallList, setAddingToCallList] = useState<string | null>(null);
   const [showReasonDropdown, setShowReasonDropdown] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalConversations, setTotalConversations] = useState(0);
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
+  const [debouncedSearch, setDebouncedSearch] = useState(searchFromUrl);
 
-  // Filter conversations by search
-  const filteredConversations = searchQuery
-    ? conversations.filter(c => c.userId.includes(searchQuery.replace(/\D/g, '')))
-    : conversations;
-
-  // Pagination calculations
-  const totalPages = Math.ceil(filteredConversations.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const endIndex = startIndex + ITEMS_PER_PAGE;
-  const paginatedConversations = filteredConversations.slice(startIndex, endIndex);
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+      setCurrentPage(1); // Reset to first page on search
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   // Auto-expand if searching for specific user
   useEffect(() => {
-    if (searchFromUrl && filteredConversations.length === 1) {
-      setExpanded(filteredConversations[0].userId);
+    if (searchFromUrl && conversations.length === 1) {
+      setExpanded(conversations[0].userId);
     }
-  }, [searchFromUrl, filteredConversations]);
+  }, [searchFromUrl, conversations]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [convRes, callRes] = await Promise.all([
-          fetch('/api/conversations'),
-          fetch('/api/call-list'),
-        ]);
-
-        if (convRes.ok) {
-          const data = await convRes.json();
-          setConversations(data.conversations || []);
-        }
-
-        const map = new Map<string, CallListItem>();
-        if (callRes.ok) {
-          const data = await callRes.json();
-          for (const item of data.items || []) {
-            map.set(item.phoneNumber, item);
-          }
-          setCallList(map);
-        }
-      } finally {
-        setLoading(false);
+  // Fetch conversations with server-side pagination
+  const fetchConversations = useCallback(async () => {
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: ITEMS_PER_PAGE.toString(),
+      });
+      if (debouncedSearch) {
+        params.set('search', debouncedSearch);
       }
-    };
-    fetchData();
-    const interval = setInterval(fetchData, 30000);
-    return () => clearInterval(interval);
+
+      const res = await fetch(`/api/conversations?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setConversations(data.conversations || []);
+        setTotalPages(data.totalPages || 1);
+        setTotalConversations(data.total || 0);
+      }
+    } catch (error) {
+      console.error('Failed to fetch conversations:', error);
+    }
+  }, [currentPage, debouncedSearch]);
+
+  // Fetch call list separately (doesn't need pagination)
+  const fetchCallList = useCallback(async () => {
+    try {
+      const res = await fetch('/api/call-list');
+      if (res.ok) {
+        const data = await res.json();
+        const map = new Map<string, CallListItem>();
+        for (const item of data.items || []) {
+          map.set(item.phoneNumber, item);
+        }
+        setCallList(map);
+      }
+    } catch (error) {
+      console.error('Failed to fetch call list:', error);
+    }
   }, []);
+
+  // Initial load
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchConversations(), fetchCallList()]);
+      setLoading(false);
+    };
+    loadData();
+  }, [fetchConversations, fetchCallList]);
+
+  // Refresh conversations when page or search changes
+  useEffect(() => {
+    if (!loading) {
+      fetchConversations();
+    }
+  }, [currentPage, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchConversations();
+      fetchCallList();
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [fetchConversations, fetchCallList]);
 
   const formatTimeAgo = (dateString: string) => {
     const seconds = Math.floor((Date.now() - new Date(dateString).getTime()) / 1000);
@@ -144,7 +181,7 @@ function ConversationsPageContent() {
         <div>
           <h1 className="text-2xl font-semibold text-white tracking-tight">Conversations</h1>
           <p className="text-neutral-500 text-sm mt-1">
-            {searchQuery ? `${filteredConversations.length} of ${conversations.length} conversations` : `${conversations.length} active conversations`}
+            {totalConversations} conversations
             {totalPages > 1 && ` · Page ${currentPage} of ${totalPages}`}
           </p>
         </div>
@@ -153,7 +190,7 @@ function ConversationsPageContent() {
             type="text"
             placeholder="Search by phone..."
             value={searchQuery}
-            onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-64 px-3 py-1.5 pl-9 text-sm bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-600"
           />
           <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,7 +210,7 @@ function ConversationsPageContent() {
       </div>
 
       {/* Conversations List */}
-      {filteredConversations.length === 0 ? (
+      {conversations.length === 0 ? (
         <div className="text-center py-20">
           <p className="text-neutral-500">
             {searchQuery ? `No conversations found for "${searchQuery}"` : 'No conversations yet'}
@@ -181,7 +218,7 @@ function ConversationsPageContent() {
         </div>
       ) : (
         <div className="space-y-3">
-          {paginatedConversations.map((convo) => {
+          {conversations.map((convo) => {
             const inCallList = isInCallList(convo.userId);
 
             return (
