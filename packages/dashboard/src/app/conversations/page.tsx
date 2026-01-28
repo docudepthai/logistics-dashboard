@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PageGuard from '../components/PageGuard';
 
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 25;
 
 interface Message {
   role: string;

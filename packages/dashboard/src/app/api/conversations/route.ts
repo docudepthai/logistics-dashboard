@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || '';
     const status = searchParams.get('status') || ''; // Filter by membership status
     const page = parseInt(searchParams.get('page') || '1', 10);
-    const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), MAX_CONVERSATIONS);
+    const limit = Math.min(parseInt(searchParams.get('limit') || '25', 10), MAX_CONVERSATIONS);
 
     // Scan with pagination to get conversation items
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
