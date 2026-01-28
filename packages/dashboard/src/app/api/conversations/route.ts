@@ -35,6 +35,7 @@ interface Conversation {
   createdAt: string;
   updatedAt: string;
   messageCount: number;
+  membershipStatus: 'free_trial' | 'expired' | 'premium' | 'unknown';
 }
 
 export async function GET(request: NextRequest) {
@@ -72,6 +73,39 @@ export async function GET(request: NextRequest) {
       lastEvaluatedKey = result.LastEvaluatedKey;
     } while (lastEvaluatedKey);
 
+    // Fetch PROFILE records for membership status
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const profileItems: any[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let profileLastKey: Record<string, any> | undefined;
+
+    do {
+      const profileResult = await docClient.send(
+        new ScanCommand({
+          TableName: process.env.CONVERSATIONS_TABLE || 'turkish-logistics-conversations',
+          FilterExpression: 'sk = :sk AND begins_with(pk, :pkPrefix)',
+          ExpressionAttributeValues: {
+            ':sk': 'PROFILE',
+            ':pkPrefix': 'USER#',
+          },
+          ProjectionExpression: 'pk, membershipStatus',
+          ExclusiveStartKey: profileLastKey,
+        })
+      );
+
+      profileItems.push(...(profileResult.Items || []));
+      profileLastKey = profileResult.LastEvaluatedKey;
+    } while (profileLastKey);
+
+    // Create a map of phone -> membershipStatus
+    const membershipMap = new Map<string, string>();
+    for (const profile of profileItems) {
+      const phone = (profile.pk as string)?.replace('USER#', '');
+      if (phone && profile.membershipStatus) {
+        membershipMap.set(phone, profile.membershipStatus);
+      }
+    }
+
     let conversations: Conversation[] = allItems
       .map((item) => {
         // Extract user ID from pk (format: "USER#18575401309")
@@ -94,6 +128,9 @@ export async function GET(request: NextRequest) {
           lastBodyType: ctx.lastBodyType || ctx.M?.lastBodyType?.S,
         };
 
+        // Get membership status from profile map
+        const membershipStatus = (membershipMap.get(userId) || 'unknown') as Conversation['membershipStatus'];
+
         return {
           userId,
           messages,
@@ -101,6 +138,7 @@ export async function GET(request: NextRequest) {
           createdAt: item.createdAt || '',
           updatedAt: item.updatedAt || '',
           messageCount: allMessages.length, // Show total count
+          membershipStatus,
         };
       })
       // Filter out malformed entries (wamid, MSG#, etc.) - only keep phone numbers

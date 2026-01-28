@@ -20,6 +20,7 @@ interface Conversation {
   createdAt: string;
   updatedAt: string;
   messageCount: number;
+  membershipStatus: 'free_trial' | 'expired' | 'premium' | 'unknown';
 }
 
 interface CallListItem {
@@ -233,13 +234,30 @@ function ConversationsPageContent() {
                       <span className="text-neutral-400 font-mono text-sm">{convo.userId.slice(-2)}</span>
                     </div>
                     <div className="text-left">
-                      <Link
-                        href={`/profile/${convo.userId}`}
-                        onClick={(e) => e.stopPropagation()}
-                        className="text-white font-mono text-sm hover:text-blue-400 transition-colors"
-                      >
-                        +{convo.userId}
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/profile/${convo.userId}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-white font-mono text-sm hover:text-blue-400 transition-colors"
+                        >
+                          +{convo.userId}
+                        </Link>
+                        {convo.membershipStatus === 'premium' && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400 font-medium">
+                            PREMIUM
+                          </span>
+                        )}
+                        {convo.membershipStatus === 'free_trial' && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-medium">
+                            FREE TRIAL
+                          </span>
+                        )}
+                        {convo.membershipStatus === 'expired' && (
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-red-500/20 text-red-400 font-medium">
+                            EXPIRED
+                          </span>
+                        )}
+                      </div>
                       <p className="text-neutral-500 text-xs">
                         {convo.messageCount} messages · {formatTimeAgo(convo.updatedAt)}
                       </p>
