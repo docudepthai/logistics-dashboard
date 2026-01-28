@@ -62,6 +62,7 @@ function getStatusBadge(user: User): { text: string; bgColor: string; textColor:
 }
 
 type SortOrder = 'asc' | 'desc';
+type SortField = 'firstContact' | 'expires';
 
 function UsersPageContent() {
   const [data, setData] = useState<UsersData | null>(null);
@@ -69,6 +70,7 @@ function UsersPageContent() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortField, setSortField] = useState<SortField>('firstContact');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc'); // newest first by default
 
   const allUsers = data?.users || [];
@@ -78,15 +80,36 @@ function UsersPageContent() {
       )
     : allUsers;
 
-  // Sort users by first contact date
+  // Sort users by selected field
   const sortedUsers = [...filteredUsers].sort((a, b) => {
-    const dateA = new Date(a.firstContactAt).getTime();
-    const dateB = new Date(b.firstContactAt).getTime();
-    return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    if (sortField === 'firstContact') {
+      const dateA = new Date(a.firstContactAt).getTime();
+      const dateB = new Date(b.firstContactAt).getTime();
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    } else {
+      // Sort by expires date
+      const getExpiresDate = (user: User) => {
+        if (user.membershipStatus === 'premium' && user.paidUntil) {
+          return new Date(user.paidUntil).getTime();
+        }
+        if (user.freeTierExpiresAt) {
+          return new Date(user.freeTierExpiresAt).getTime();
+        }
+        return 0; // Users without expiry go to the end
+      };
+      const dateA = getExpiresDate(a);
+      const dateB = getExpiresDate(b);
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    }
   });
 
-  const toggleSortOrder = () => {
-    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+  const toggleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortField(field);
+      setSortOrder('desc');
+    }
     setCurrentPage(1);
   };
 
@@ -207,12 +230,12 @@ function UsersPageContent() {
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Welcome</th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">
                     <button
-                      onClick={toggleSortOrder}
-                      className="flex items-center space-x-1 hover:text-white transition-colors"
+                      onClick={() => toggleSort('firstContact')}
+                      className={`flex items-center space-x-1 hover:text-white transition-colors ${sortField === 'firstContact' ? 'text-white' : ''}`}
                     >
                       <span>First Contact</span>
                       <svg
-                        className={`w-4 h-4 transition-transform ${sortOrder === 'asc' ? 'rotate-180' : ''}`}
+                        className={`w-4 h-4 transition-transform ${sortField === 'firstContact' && sortOrder === 'asc' ? 'rotate-180' : ''} ${sortField !== 'firstContact' ? 'opacity-30' : ''}`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -221,7 +244,22 @@ function UsersPageContent() {
                       </svg>
                     </button>
                   </th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Expires</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">
+                    <button
+                      onClick={() => toggleSort('expires')}
+                      className={`flex items-center space-x-1 hover:text-white transition-colors ${sortField === 'expires' ? 'text-white' : ''}`}
+                    >
+                      <span>Expires</span>
+                      <svg
+                        className={`w-4 h-4 transition-transform ${sortField === 'expires' && sortOrder === 'asc' ? 'rotate-180' : ''} ${sortField !== 'expires' ? 'opacity-30' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Phones</th>
                 </tr>
               </thead>
