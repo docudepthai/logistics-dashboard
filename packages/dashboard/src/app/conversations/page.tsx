@@ -113,7 +113,7 @@ function ConversationsPageContent() {
     } catch (error) {
       console.error('Failed to fetch conversations:', error);
     }
-  }, [currentPage, debouncedSearch]);
+  }, [currentPage, debouncedSearch, statusFilter]);
 
   // Fetch call list separately (doesn't need pagination)
   const fetchCallList = useCallback(async () => {
