@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import PageGuard from '../components/PageGuard';
@@ -53,6 +53,17 @@ function ConversationsPageContent() {
   const [totalConversations, setTotalConversations] = useState(0);
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [debouncedSearch, setDebouncedSearch] = useState(searchFromUrl);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to bottom when conversation is expanded
+  useEffect(() => {
+    if (expanded && messagesEndRef.current) {
+      // Small delay to ensure DOM is rendered
+      setTimeout(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+      }, 50);
+    }
+  }, [expanded]);
 
   // Debounce search input
   useEffect(() => {
@@ -323,7 +334,7 @@ function ConversationsPageContent() {
 
                 {/* Messages */}
                 {expanded === convo.userId && (
-                  <div className="px-6 py-4 border-t border-neutral-800/50 bg-black/20 max-h-96 overflow-y-auto">
+                  <div className="px-6 py-4 border-t border-neutral-800/50 bg-black/20 max-h-[600px] overflow-y-auto">
                     <div className="space-y-3">
                       {convo.messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -339,6 +350,8 @@ function ConversationsPageContent() {
                           </div>
                         </div>
                       ))}
+                      {/* Scroll anchor - always at bottom */}
+                      <div ref={messagesEndRef} />
                     </div>
                   </div>
                 )}

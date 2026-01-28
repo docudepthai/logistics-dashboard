@@ -111,12 +111,11 @@ export async function GET(request: NextRequest) {
         // Extract user ID from pk (format: "USER#18575401309")
         const userId = (item.pk as string)?.replace('USER#', '') || 'unknown';
 
-        // Parse messages - limit to last 10 messages to reduce payload
+        // Parse all messages (no limit)
         const allMessages = item.messages || [];
-        const recentMessages = allMessages.slice(-10);
-        const messages: Message[] = recentMessages.map((msg: any) => ({
+        const messages: Message[] = allMessages.map((msg: any) => ({
           role: msg.role || msg.M?.role?.S || 'unknown',
-          content: (msg.content || msg.M?.content?.S || '').slice(0, 500), // Truncate long messages
+          content: msg.content || msg.M?.content?.S || '',
           timestamp: msg.timestamp || msg.M?.timestamp?.S || '',
         }));
 
