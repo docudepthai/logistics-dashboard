@@ -53,14 +53,16 @@ function ConversationsPageContent() {
   const [totalConversations, setTotalConversations] = useState(0);
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [debouncedSearch, setDebouncedSearch] = useState(searchFromUrl);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
-  // Scroll to bottom when conversation is expanded
+  // Scroll messages container to bottom when conversation is expanded
   useEffect(() => {
-    if (expanded && messagesEndRef.current) {
+    if (expanded && messagesContainerRef.current) {
       // Small delay to ensure DOM is rendered
       setTimeout(() => {
-        messagesEndRef.current?.scrollIntoView({ behavior: 'auto' });
+        if (messagesContainerRef.current) {
+          messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
       }, 50);
     }
   }, [expanded]);
@@ -334,7 +336,10 @@ function ConversationsPageContent() {
 
                 {/* Messages */}
                 {expanded === convo.userId && (
-                  <div className="px-6 py-4 border-t border-neutral-800/50 bg-black/20 max-h-[600px] overflow-y-auto">
+                  <div
+                    ref={messagesContainerRef}
+                    className="px-6 py-4 border-t border-neutral-800/50 bg-black/20 max-h-[600px] overflow-y-auto"
+                  >
                     <div className="space-y-3">
                       {convo.messages.map((msg, idx) => (
                         <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -350,8 +355,6 @@ function ConversationsPageContent() {
                           </div>
                         </div>
                       ))}
-                      {/* Scroll anchor - always at bottom */}
-                      <div ref={messagesEndRef} />
                     </div>
                   </div>
                 )}
