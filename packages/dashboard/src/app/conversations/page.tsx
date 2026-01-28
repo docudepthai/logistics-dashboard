@@ -53,6 +53,7 @@ function ConversationsPageContent() {
   const [totalConversations, setTotalConversations] = useState(0);
   const [searchQuery, setSearchQuery] = useState(searchFromUrl);
   const [debouncedSearch, setDebouncedSearch] = useState(searchFromUrl);
+  const [searching, setSearching] = useState(false);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [messageInput, setMessageInput] = useState('');
   const [sendingMessage, setSendingMessage] = useState<string | null>(null);
@@ -127,7 +128,7 @@ function ConversationsPageContent() {
     }
   }, []);
 
-  // Initial load
+  // Initial load only - runs once on mount
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -135,13 +136,19 @@ function ConversationsPageContent() {
       setLoading(false);
     };
     loadData();
-  }, [fetchConversations, fetchCallList]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps - only run on mount
 
-  // Refresh conversations when page or search changes
+  // Refresh conversations when page or search changes (after initial load)
   useEffect(() => {
-    if (!loading) {
-      fetchConversations();
-    }
+    if (loading) return; // Skip during initial load
+
+    const doSearch = async () => {
+      setSearching(true);
+      await fetchConversations();
+      setSearching(false);
+    };
+    doSearch();
   }, [currentPage, debouncedSearch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Auto-refresh every 30 seconds
@@ -277,9 +284,13 @@ function ConversationsPageContent() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-64 px-3 py-1.5 pl-9 text-sm bg-neutral-800/50 border border-neutral-700/50 rounded-lg text-white placeholder-neutral-500 focus:outline-none focus:border-neutral-600"
           />
-          <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          {searching ? (
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 border-2 border-neutral-600 border-t-white rounded-full animate-spin" />
+          ) : (
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          )}
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
