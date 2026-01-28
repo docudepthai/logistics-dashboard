@@ -21,12 +21,13 @@ export interface User {
   firstContactAt: string;
   freeTierExpiresAt?: string; // Optional - only set when trial starts (first search)
   membershipStatus: 'free_trial' | 'expired' | 'premium';
-  welcomeMessageSent: boolean;
   createdAt: string;
   updatedAt: string;
   paidUntil?: string;
   paymentId?: string;
   trialStartedAt?: string; // Set on first job search
+  lastMessageAt?: string; // Last message date from conversation
+  messageCount: number; // Total messages in conversation
 }
 
 function isFreeTierActive(user: User): boolean {
@@ -68,7 +69,7 @@ export async function GET() {
   try {
     // Scan for all user profiles with pagination
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allItems: any[] = [];
+    const profileItems: any[] = [];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let lastEvaluatedKey: Record<string, any> | undefined;
 
@@ -85,24 +86,63 @@ export async function GET() {
         })
       );
 
-      allItems.push(...(result.Items || []));
+      profileItems.push(...(result.Items || []));
       lastEvaluatedKey = result.LastEvaluatedKey;
     } while (lastEvaluatedKey);
 
-    const users: (User & { canViewPhones: boolean; daysRemaining: number | null })[] = allItems
+    // Scan for conversation data (for message counts and last message dates)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const conversationItems: any[] = [];
+    let convLastKey: Record<string, any> | undefined;
+
+    do {
+      const convResult = await docClient.send(
+        new ScanCommand({
+          TableName: CONVERSATIONS_TABLE,
+          FilterExpression: 'begins_with(pk, :pkPrefix) AND sk = :sk',
+          ExpressionAttributeValues: {
+            ':pkPrefix': 'USER#',
+            ':sk': 'CONVERSATION',
+          },
+          ProjectionExpression: 'pk, updatedAt, messages',
+          ExclusiveStartKey: convLastKey,
+        })
+      );
+
+      conversationItems.push(...(convResult.Items || []));
+      convLastKey = convResult.LastEvaluatedKey;
+    } while (convLastKey);
+
+    // Create a map of phone -> conversation data
+    const conversationMap = new Map<string, { lastMessageAt: string; messageCount: number }>();
+    for (const conv of conversationItems) {
+      const phone = (conv.pk as string)?.replace('USER#', '');
+      if (phone) {
+        const messages = conv.messages || [];
+        conversationMap.set(phone, {
+          lastMessageAt: conv.updatedAt || '',
+          messageCount: messages.length,
+        });
+      }
+    }
+
+    const users: (User & { canViewPhones: boolean; daysRemaining: number | null })[] = profileItems
       .filter((item) => item.phoneNumber) // Skip items without phoneNumber
       .map((item) => {
+      const convData = conversationMap.get(item.phoneNumber) || { lastMessageAt: '', messageCount: 0 };
+
       const user: User = {
         phoneNumber: item.phoneNumber || '',
         firstContactAt: item.firstContactAt || item.createdAt || new Date().toISOString(),
         freeTierExpiresAt: item.freeTierExpiresAt, // May be undefined if trial hasn't started
         membershipStatus: item.membershipStatus || 'free_trial',
-        welcomeMessageSent: item.welcomeMessageSent ?? false,
         createdAt: item.createdAt || new Date().toISOString(),
         updatedAt: item.updatedAt || new Date().toISOString(),
         paidUntil: item.paidUntil,
         paymentId: item.paymentId,
         trialStartedAt: item.trialStartedAt, // May be undefined if trial hasn't started
+        lastMessageAt: convData.lastMessageAt,
+        messageCount: convData.messageCount,
       };
 
       return {

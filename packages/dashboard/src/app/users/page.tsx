@@ -11,7 +11,6 @@ interface User {
   firstContactAt: string;
   freeTierExpiresAt?: string; // Optional - only set when trial starts
   membershipStatus: 'free_trial' | 'expired' | 'premium';
-  welcomeMessageSent: boolean;
   createdAt: string;
   updatedAt: string;
   paidUntil?: string;
@@ -19,6 +18,8 @@ interface User {
   trialStartedAt?: string; // Set on first job search
   canViewPhones: boolean;
   daysRemaining: number | null;
+  lastMessageAt?: string;
+  messageCount: number;
 }
 
 interface Stats {
@@ -227,7 +228,8 @@ function UsersPageContent() {
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Phone</th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Status</th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Days Left</th>
-                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Welcome</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Messages</th>
+                  <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">Last Message</th>
                   <th className="text-left text-xs font-medium text-neutral-500 uppercase tracking-wider px-4 py-3">
                     <button
                       onClick={() => toggleSort('firstContact')}
@@ -287,9 +289,12 @@ function UsersPageContent() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        <span className={user.welcomeMessageSent ? 'text-emerald-400 text-sm' : 'text-neutral-500 text-sm'}>
-                          {user.welcomeMessageSent ? 'Yes' : 'No'}
+                        <span className={`text-sm ${user.messageCount > 10 ? 'text-emerald-400' : user.messageCount > 0 ? 'text-neutral-300' : 'text-neutral-600'}`}>
+                          {user.messageCount}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 text-neutral-400 text-sm">
+                        {user.lastMessageAt ? formatDate(user.lastMessageAt) : <span className="text-neutral-600">-</span>}
                       </td>
                       <td className="px-4 py-3 text-neutral-400 text-sm">{formatDate(user.firstContactAt)}</td>
                       <td className="px-4 py-3 text-neutral-400 text-sm">
