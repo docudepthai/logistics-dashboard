@@ -1,0 +1,4582 @@
+[
+  {
+    "phone": "905453451319",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2400,
+    "timestamp": "2026-01-27T02:08:26.472Z",
+    "conversationContext": {}
+  },
+  {
+    "phone": "905453451319",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1794,
+    "timestamp": "2026-01-27T02:08:28.367Z",
+    "conversationContext": {}
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1831,
+    "timestamp": "2026-01-27T02:08:30.299Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Ankara Zonguldak",
+    "atlasResponse": "📍 *Ankara → Zonguldak/Eregli*\n📞 05325198575\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📦 az parça\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📦 Az parça çıkan araç\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n🚛 TIR | tenteli\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Çaycuma*\n🚛 acik | 13.60t\n📞 05330705555\n🕐 15 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak*\n🚛 TIR | kapali\n📞 05074418761\n🕐 17 saat once",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "ankara",
+      "destination": "zonguldak"
+    },
+    "jobsFound": 6,
+    "responseTimeMs": 4003,
+    "timestamp": "2026-01-27T02:08:34.403Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Zonguldak bursa",
+    "atlasResponse": "zonguldak bursa arasi su an yuk yok abi.\n\n*civarinda bakayim mi?* (cikis: duzce, bolu, karabuk / varis: canakkale, balikesir, kutahya) - bakmami istiyorsan *\"evet\"* yaz",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "zonguldak",
+      "destination": "bursa"
+    },
+    "jobsFound": 0,
+    "responseTimeMs": 2498,
+    "timestamp": "2026-01-27T02:08:37.003Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Olur",
+    "atlasResponse": "civardaki yukler:\n\n📍 *duzce*'dan:\n📍 *Duzce/Kirazli → Bursa/Karacabey*\n🚛 damperli\n📞 05325072955\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Duzce/Kirazli → Bursa/Karacabey*\n🚛 KAMYON | damperli\n📞 05325072955\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Duzce → Bursa/Karacabey*\n🚛 TIR | damperli\n📞 05325072955\n🕐 14 saat once\n\n📍 *bolu*'dan:\n📍 *Bolu/Gerede → Bursa*\n🚛 TIR | frigorifik | frigorifik\n📞 05333828331\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Bolu → Bursa/Yalova*\n🚛 TIR | kapali | 13.60t\n📞 0539 897 12 37\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Bolu → Bursa/Yalova*\n🚛 TIR | kapali | 13.60t\n📞 05398971237\n🕐 16 saat once\n\n📍 *karabuk*'dan:\n📍 *Karabuk → Bursa/Gemlik*\n🚛 acik | 13.60t\n📞 05425939641\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Karabuk → Bursa/Gemlik*\n🚛 TIR\n📞 05413894812\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Karabuk/Eflani → Bursa/Yenişehir*\n🚛 TIR | 750.00t\n📦 blok mermer\n📞 05325072955\n🕐 11 saat once",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 9,
+    "responseTimeMs": 4844,
+    "timestamp": "2026-01-27T02:08:41.948Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1909,
+    "timestamp": "2026-01-27T02:08:43.957Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Ankara Zonguldak",
+    "atlasResponse": "📍 *Ankara → Zonguldak/Eregli*\n📞 05325198575\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📦 az parça\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📦 Az parça çıkan araç\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n🚛 TIR | tenteli\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Çaycuma*\n🚛 acik | 13.60t\n📞 05330705555\n🕐 15 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak*\n🚛 TIR | kapali\n📞 05074418761\n🕐 17 saat once",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "ankara",
+      "destination": "zonguldak"
+    },
+    "jobsFound": 6,
+    "responseTimeMs": 2504,
+    "timestamp": "2026-01-27T02:08:46.563Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Zonguldak bursa",
+    "atlasResponse": "zonguldak bursa arasi su an yuk yok abi.\n\n*civarinda bakayim mi?* (cikis: duzce, bolu, karabuk / varis: canakkale, balikesir, kutahya) - bakmami istiyorsan *\"evet\"* yaz",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "zonguldak",
+      "destination": "bursa"
+    },
+    "jobsFound": 0,
+    "responseTimeMs": 2509,
+    "timestamp": "2026-01-27T02:08:49.173Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905375605972",
+    "userMessage": "Olur",
+    "atlasResponse": "civardaki yukler:\n\n📍 *duzce*'dan:\n📍 *Duzce/Kirazli → Bursa/Karacabey*\n🚛 damperli\n📞 05325072955\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Duzce/Kirazli → Bursa/Karacabey*\n🚛 KAMYON | damperli\n📞 05325072955\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Duzce → Bursa/Karacabey*\n🚛 TIR | damperli\n📞 05325072955\n🕐 14 saat once\n\n📍 *bolu*'dan:\n📍 *Bolu/Gerede → Bursa*\n🚛 TIR | frigorifik | frigorifik\n📞 05333828331\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Bolu → Bursa/Yalova*\n🚛 TIR | kapali | 13.60t\n📞 0539 897 12 37\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Bolu → Bursa/Yalova*\n🚛 TIR | kapali | 13.60t\n📞 05398971237\n🕐 16 saat once\n\n📍 *karabuk*'dan:\n📍 *Karabuk → Bursa/Gemlik*\n🚛 acik | 13.60t\n📞 05425939641\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Karabuk → Bursa/Gemlik*\n🚛 TIR\n📞 05413894812\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Karabuk/Eflani → Bursa/Yenişehir*\n🚛 TIR | 750.00t\n📦 blok mermer\n📞 05325072955\n🕐 11 saat once",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 9,
+    "responseTimeMs": 4767,
+    "timestamp": "2026-01-27T02:08:54.040Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T20:23:29.548Z",
+      "lastOffset": 0,
+      "totalSearches": 2,
+      "lastOrigin": "zonguldak",
+      "lastShownCount": 0,
+      "lastDestination": "bursa",
+      "frequentRoutes": [
+        {
+          "destination": "zonguldak",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:29.548Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:23:54.739Z",
+          "origin": "zonguldak"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2293,
+    "timestamp": "2026-01-27T02:08:56.434Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Ankara İstanbul yükün varmı",
+    "atlasResponse": "📍 *Ankara/Kızıltepe → Istanbul/Kurtköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Pendik*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Başakşehir*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatlı → Istanbul/Esenyurt*\n🚛 TIR | kapali\n📞 05016242154\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Istanbul/Hadimkoy*\n🚛 0.30t\n📦 2 palet\n📞 05393155346\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Avcilar*\n🚛 acik | 5.60t\n📦 Kereste\n📞 05458450671\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatlı → Istanbul/Esenyurt*\n🚛 TIR | kapali | frigorifik\n📞 05382311630\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Anadolu*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kochisar → Istanbul*\n🚛 KIRKAYAK\n📦 soğan\n📞 05394491899\n🕐 11 saat once\n\n_48 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYONET mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "ankara",
+      "destination": "istanbul"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3568,
+    "timestamp": "2026-01-27T02:09:00.103Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Panel araç için",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2193,
+    "timestamp": "2026-01-27T02:09:02.397Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Evet",
+    "atlasResponse": "KAMYONET isleri:\n\n📍 *Ankara/Kızıltepe → Istanbul/Başakşehir*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Kurtköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Pendik*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Istanbul/Hadimkoy*\n🚛 0.30t\n📦 2 palet\n📞 05393155346\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızılcahamam → Istanbul/Catalca*\n🚛 1.80t\n📦 palet\n📞 05539403469\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Tuzla*\n🚛 1.00t\n📦 1 Palet\n🔴 ACiL\n📞 05015971848\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Sincan → Istanbul/Sultanbeyli*\n🚛 0.50t\n📦 150X70\n📞 05308743694\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Yenimahalle → Istanbul/Arnavutkoy*\n🚛 KAMYONET | kapali | 1.00t\n📦 Parça Yük - Paletli 185 yer\n📞 05393155346\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Cankaya → Istanbul/Beyoglu*\n🚛 KAMYONET | frigorifik | frigorifik\n🔴 ACiL\n📞 05015972351\n🕐 15 saat once\n\n_6 is daha var, \"devam\" yaz_",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 1633,
+    "timestamp": "2026-01-27T02:09:04.131Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Aracım bu",
+    "atlasResponse": "tamam aracın kaydettim. nereye gitmek istiyorsun?",
+    "intent": "vehicle_info",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2162,
+    "timestamp": "2026-01-27T02:09:06.394Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Çıkış Ankara",
+    "atlasResponse": "📍 *Ankara/Ayas → Denizli/Kaklik*\n🚛 KAMYON | damperli\n📦 Dökme tavuk gübresi\n📞 05529478883\n🕐 1 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Sivas/Hafik*\n🚛 KAMYON | 27.50t\n🔴 ACiL\n📞 05529478883\n🕐 2 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Van/Edremit*\n🚛 TIR | kapali | 15.00t\n📞 05015971849\n🕐 3 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | açık | 10.00t\n📞 05015971849\n🕐 4 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Samsun/Vezirköprü*\n🚛 TIR\n📞 05382311630\n🕐 4 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altındağ → Ankara/Yenimahalle*\n🚛 TIR | kapali | 5.00t\n📞 05382311630\n🕐 4 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kocaeli/Gebze*\n🚛 TIR | kapali\n📞 05015972177\n🕐 4 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatlı → Kayseri*\n🚛 TIR\n📞 05382311630\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kocaeli/Gebze*\n🚛 TIR | kapali\n📞 05015972487\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Çobanbey → Konya/Çobanbey*\n🚛 tenteli\n📦 soğan\n📞 05333302767\n🕐 5 saat once\n\n_614 yuk daha var, \"devam\" yaz gostereyim_\n\n*aracın mu bakayim?* (evet de filtrelerim)",
+    "intent": "intra_city",
+    "parsedLocations": {
+      "origin": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3631,
+    "timestamp": "2026-01-27T02:09:10.127Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Evet",
+    "atlasResponse": "aracın isi su an yok abi. diger arac tipleri var, bak istersen.",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1410,
+    "timestamp": "2026-01-27T02:09:11.637Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Çıkış Ankara kamyonet",
+    "atlasResponse": "📍 *Ankara/Ayas → Denizli/Kaklik*\n🚛 KAMYON | damperli\n📦 Dökme tavuk gübresi\n📞 05529478883\n🕐 1 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Sivas/Hafik*\n🚛 KAMYON | 27.50t\n🔴 ACiL\n📞 05529478883\n🕐 2 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Anadolu*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Osmaniye/Kadirli*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kocaeli/Kartepe*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Konya*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Beypazari → Antalya*\n🚛 KAMYONET | 6.00t\n📞 05417639376\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Ankara/Gölbaşı*\n🚛 KAMYONET\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Yalova*\n🚛 KAMYON | kapali | 5.00t\n📞 05530111041\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Kutahya*\n🚛 KAMYONET | kapali\n📞 05313389886\n🕐 12 saat once\n\n_61 yuk daha var, \"devam\" yaz gostereyim_",
+    "intent": "vehicle_info",
+    "parsedLocations": {
+      "origin": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3415,
+    "timestamp": "2026-01-27T02:09:15.153Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara → Osmaniye*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Karaman*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Hatay*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altindag → Bursa/Mustafakemalpasa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05382312044\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Kutahya*\n🚛 KAMYONET | kapali\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Balikesir*\n🚛 KAMYON\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Mersin*\n🚛 KAMYONET | kapali\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya/Manavgat*\n🚛 KAMYONET | acik | 0.70t\n📦 Parça Yük\n📞 05417856992\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya/Manavgat*\n🚛 KAMYONET | kapali | 0.70t\n📦 Parça Yük\n📞 05417856992\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altindag → Bursa/Mustafakemalpasa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05382312113\n🕐 13 saat once\n\n_51 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3308,
+    "timestamp": "2026-01-27T02:09:18.562Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara → Karaman*\n🚛 KAMYON | kapali\n📞 0507 441 87 61\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Konya*\n🚛 KAMYON | kapali\n📞 0507 441 87 61\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Anadolu*\n🚛 KAMYON | kapali\n📞 0507 441 87 61\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kocaeli/Kartepe*\n🚛 KAMYON | kapali\n📞 0507 441 87 61\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Hatay/Kadirli*\n🚛 KAMYON | kapali\n📞 0507 441 87 61\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Temelli → Ankara/Hasanoğlan*\n🚛 KAMYON | damperli\n📞 05379149190\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kocaeli/Gebze*\n🚛 KAMYON | kapali\n📞 05545371717\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Karaman*\n🚛 KAMYON | kapali\n📞 05545371717\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Hatay/Kadirli*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altındağ → Bursa/Mustafakemalpaşa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05357320937\n🕐 13 saat once\n\n_41 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3269,
+    "timestamp": "2026-01-27T02:09:21.932Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Kamyonet Ankara çıkış",
+    "atlasResponse": "📍 *Ankara/Ayas → Denizli/Kaklik*\n🚛 KAMYON | damperli\n📦 Dökme tavuk gübresi\n📞 05529478883\n🕐 1 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Sivas/Hafik*\n🚛 KAMYON | 27.50t\n🔴 ACiL\n📞 05529478883\n🕐 2 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Anadolu*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kocaeli/Kartepe*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Osmaniye/Kadirli*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Konya*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Beypazari → Antalya*\n🚛 KAMYONET | 6.00t\n📞 05417639376\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Ankara/Gölbaşı*\n🚛 KAMYONET\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Yalova*\n🚛 KAMYON | kapali | 5.00t\n📞 05530111041\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Kutahya*\n🚛 KAMYONET | kapali\n📞 05313389886\n🕐 12 saat once\n\n_61 yuk daha var, \"devam\" yaz gostereyim_",
+    "intent": "pagination",
+    "parsedLocations": {
+      "origin": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3241,
+    "timestamp": "2026-01-27T02:09:25.274Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara → Karaman*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Hatay*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Osmaniye*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altindag → Bursa/Mustafakemalpasa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05382312044\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Balikesir*\n🚛 KAMYON\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Mersin*\n🚛 KAMYONET | kapali\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Kutahya*\n🚛 KAMYONET | kapali\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya/Manavgat*\n🚛 KAMYONET | acik | 0.70t\n📦 Parça Yük\n📞 05417856992\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya/Manavgat*\n🚛 KAMYONET | kapali | 0.70t\n📦 Parça Yük\n📞 05417856992\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altindag → Bursa/Mustafakemalpasa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05382312113\n🕐 13 saat once\n\n_51 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3237,
+    "timestamp": "2026-01-27T02:09:28.610Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Ankara panelvan",
+    "atlasResponse": "📍 *Ankara/Çobanbey → Konya/Çobanbey*\n🚛 tenteli\n📦 soğan\n📞 05333302767\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Milas*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Tokat/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Kocaeli/Gebze*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Başakşehir*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Kurtköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Fethiye*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Antalya/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Izmir/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n\n_111 yuk daha var, \"devam\" yaz gostereyim_",
+    "intent": "pagination",
+    "parsedLocations": {
+      "origin": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3226,
+    "timestamp": "2026-01-27T02:09:31.937Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Ankara panelvan çıkış",
+    "atlasResponse": "📍 *Ankara/Çobanbey → Konya/Çobanbey*\n🚛 tenteli\n📦 soğan\n📞 05333302767\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Kurtköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Kocaeli/Gebze*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Sakarya/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Duzce/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Pendik*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Milas*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Fethiye*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Tokat/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n\n_111 yuk daha var, \"devam\" yaz gostereyim_",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3687,
+    "timestamp": "2026-01-27T02:09:35.724Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara/Kızıltepe → Mugla/Fethiye*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Izmir/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Tokat/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📞 05325198575\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Cobanbey → Hatay/Cilvegözü*\n🚛 frigorifik | frigorifik\n📦 TENTE\n📞 05349286008\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Istanbul/Hadimkoy*\n🚛 0.30t\n📦 2 palet\n📞 05393155346\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Denizli*\n🚛 0.80t\n📦 PARÇA\n📞 05421202068\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Balikesir/Merkez*\n🚛 1.30t\n📦 1 palet (100x210x150cm)\n📞 05307744289\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Trabzon*\n📞 05326043703\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Sakarya/Adapazari*\n📞 05326043703\n🕐 10 saat once\n\n_101 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3559,
+    "timestamp": "2026-01-27T02:09:39.385Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Ankara Panelvan çıkış",
+    "atlasResponse": "📍 *Ankara/Çobanbey → Konya/Çobanbey*\n🚛 tenteli\n📦 soğan\n📞 05333302767\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Milas*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Fethiye*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Tokat/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Antalya/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Pendik*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Duzce/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Kurtköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Başakşehir*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n\n_111 yuk daha var, \"devam\" yaz gostereyim_",
+    "intent": "pagination",
+    "parsedLocations": {
+      "origin": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3562,
+    "timestamp": "2026-01-27T02:09:43.048Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara/Kızıltepe → Istanbul/Başakşehir*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Kocaeli/Gebze*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Sakarya/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📞 05325198575\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Cobanbey → Hatay/Cilvegözü*\n🚛 frigorifik | frigorifik\n📦 TENTE\n📞 05349286008\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Istanbul/Hadimkoy*\n🚛 0.30t\n📦 2 palet\n📞 05393155346\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Denizli*\n🚛 0.80t\n📦 PARÇA\n📞 05421202068\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Balikesir/Merkez*\n🚛 1.30t\n📦 1 palet (100x210x150cm)\n📞 05307744289\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Trabzon*\n📞 05326043703\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Erzurum*\n📞 05326043703\n🕐 10 saat once\n\n_101 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3566,
+    "timestamp": "2026-01-27T02:09:46.716Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Ankara panelvan çıkış",
+    "atlasResponse": "📍 *Ankara/Çobanbey → Konya/Çobanbey*\n🚛 tenteli\n📦 soğan\n📞 05333302767\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Kocaeli/Gebze*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Antalya/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Tokat/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Fethiye*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Mugla/Milas*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Izmir/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Pendik*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Kurtköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n\n_111 yuk daha var, \"devam\" yaz gostereyim_",
+    "intent": "pagination",
+    "parsedLocations": {
+      "origin": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3621,
+    "timestamp": "2026-01-27T02:09:50.439Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara/Kızıltepe → Kocaeli/Gebze*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Başakşehir*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📞 05325198575\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Cobanbey → Hatay/Cilvegözü*\n🚛 frigorifik | frigorifik\n📦 TENTE\n📞 05349286008\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Istanbul/Hadimkoy*\n🚛 0.30t\n📦 2 palet\n📞 05393155346\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Denizli*\n🚛 0.80t\n📦 PARÇA\n📞 05421202068\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Balikesir/Merkez*\n🚛 1.30t\n📦 1 palet (100x210x150cm)\n📞 05307744289\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Sakarya/Adapazari*\n📞 05326043703\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Trabzon*\n📞 05326043703\n🕐 10 saat once\n\n_101 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3552,
+    "timestamp": "2026-01-27T02:09:54.092Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara/Polatli → Sakarya/Adapazari*\n📞 05326043703\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Ostim → Denizli*\n🚛 3.00t\n📞 05313725252\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Beypazarı → Antalya*\n📦 parça\n📞 05417639376\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Rize*\n🚛 kapali | 0.25t\n📦 yük\n📞 05389528054\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Eskisehir*\n📦 hafif yük\n📞 05326462199\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Eskisehir*\n📦 hafif yük\n🔴 ACiL\n📞 05326462199\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Ankara/Gölbaşı*\n🚛 KAMYONET\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Gaziantep/Oncupinar*\n🚛 tenteli | frigorifik\n📦 Frigo\n📞 05323303176\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Ostim → Denizli/Cardak*\n🚛 3.00t\n📦 3 metre\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Saray → Eskisehir/Odunpazarı*\n🚛 2.00t\n📦 Hafif\n📞 05466835265\n🕐 11 saat once\n\n_91 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3551,
+    "timestamp": "2026-01-27T02:09:57.744Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara → Gaziantep/Oncupinar*\n🚛 tenteli | frigorifik\n📞 05323303176\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📦 az parça\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Zonguldak/Eregli*\n📦 Az parça çıkan araç\n📞 05325198575\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Kutahya*\n🚛 KAMYONET | kapali\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Nigde*\n🚛 1.20t\n📦 palet\n🔴 ACiL\n📞 05330488683\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Adana/Tarsus*\n🚛 1.20t\n📦 palet\n🔴 ACiL\n📞 05330488683\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Artvin/Hopa*\n📦 palet\n📞 05439282139\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kutahya/Emet*\n🚛 kapali\n📦 yarım kapak\n📞 05315212284\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kutahya/Emet*\n🚛 kapali\n📦 etimaden yarım kapak\n📞 05315212284\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Sanliurfa/Akcakale*\n🚛 frigorifik | frigorifik\n📞 05431184773\n🕐 12 saat once\n\n_81 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3587,
+    "timestamp": "2026-01-27T02:10:01.433Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara/Kızılcahamam → Istanbul/Catalca*\n🚛 1.80t\n📦 palet\n📞 05539403469\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altindag → Bursa/Mustafakemalpasa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05382312044\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Mersin*\n🚛 KAMYONET | kapali\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Kutahya*\n🚛 KAMYONET | kapali\n🔴 ACiL\n📞 05313389886\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Tuzla*\n🚛 1.00t\n📦 1 Palet\n🔴 ACiL\n📞 05015971848\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kastamonu/Tosya*\n🚛 1.00t\n📦 palet\n📞 05396925715\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya/Manavgat*\n🚛 KAMYONET | acik | 0.70t\n📦 Parça Yük\n📞 05417856992\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya/Manavgat*\n🚛 KAMYONET | kapali | 0.70t\n📦 Parça Yük\n📞 05417856992\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altindag → Bursa/Mustafakemalpasa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05382312113\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Manisa/Soma*\n📦 CSP kepçe\n📞 05444810223\n🕐 13 saat once\n\n_71 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3773,
+    "timestamp": "2026-01-27T02:10:05.307Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara/Sincan → Istanbul/Sultanbeyli*\n🚛 0.50t\n📦 150X70\n📞 05308743694\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Kars/Baglar*\n🚛 0.10t\n📦 2 M3\n📞 05308743694\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altındağ → Bursa/Mustafakemalpaşa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05357320937\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Hatay/Cilvegözü*\n🚛 acik\n🔴 ACiL\n📞 05373943184\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya*\n🚛 1.00t\n📦 plt\n📞 05327685643\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya*\n📦 parça\n📞 05327685643\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Kutahya/Emet*\n🚛 KAMYONET | kapali\n📦 Parça Yük - Yarım Kapak\n📞 05315212284\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Adana*\n🚛 2.50t\n📦 BIGBEG\n📞 05461448101\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kahramankazan → Konya/Selçuklu*\n📦 Panelvan\n📞 05016242154\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Yenimahalle → Istanbul/Arnavutkoy*\n🚛 KAMYONET | kapali | 1.00t\n📦 Parça Yük - Paletli 185 yer\n📞 05393155346\n🕐 13 saat once\n\n_61 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3735,
+    "timestamp": "2026-01-27T02:10:09.143Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Cevap",
+    "atlasResponse": "📍 *Ankara/Ostim → Denizli*\n🚛 3.00t\n📦 3 metre\n📞 05313725252\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altındağ → Bursa/Mustafakemalpaşa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05016004381\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Altındağ → Bursa/Mustafakemalpaşa*\n🚛 KAMYONET | kapali | 0.16t\n📞 05357321546\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kahramankazan → Konya/Selçuklu*\n📦 Panelvan\n📞 05357321546\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Elmadag → Mersin*\n🚛 KAMYONET | kapali\n📞 05313389886\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Elazig/Merkez*\n🚛 1.00t\n📦 yük\n📞 05307744289\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Gölbaşı → Ankara/Gölbaşı*\n🚛 KAMYONET | acik\n📦 Parça Yük - Hafif\n📞 05325198575\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Ostim → Denizli/Cardak*\n🚛 3.00t\n📞 05325198575\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Siteler → Ankara/Gölbaşı*\n🚛 KAMYONET\n📦 5 METRE ISUZU DAİLY HAFİF\n📞 05325198575\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Ankara/Ferhatpasa*\n🚛 0.16t\n📦 yük\n📞 05442534240\n🕐 14 saat once\n\n_51 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3932,
+    "timestamp": "2026-01-27T02:10:13.176Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Devam",
+    "atlasResponse": "📍 *Ankara → Mersin/Tarsus*\n🚛 parça | 1.20t\n📦 Malzeme\n🔴 ACiL\n📞 05316046929\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Nigde*\n🚛 parça | 1.20t\n📦 Malzeme\n🔴 ACiL\n📞 05316046929\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Gölbaşı → Afyonkarahisar/Salar*\n📦 Çuvalli yem\n📞 05327019075\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Şereflikoçhisar → Bursa*\n📦 yük\n📞 05386390326\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Nigde/Tarsus*\n🚛 1.20t\n📦 Malzeme\n🔴 ACiL\n📞 05316046929\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Ostim → Denizli/Çardak*\n🚛 3.00t\n📦 3 metre\n📞 05325198575\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Antalya/Alanya*\n📦 palet\n🔴 ACiL\n📞 05466750455\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Artvin/Hopa*\n🚛 KAMYONET | kapali\n📦 Parça Yük - 1 palet\n📞 05439282139\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Nigde/Tarsus*\n🚛 1.20t\n📦 Parça\n🔴 ACiL\n📞 05316046929\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Cankiri*\n🚛 kapali\n📞 05074418761\n🕐 15 saat once\n\n_41 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 4093,
+    "timestamp": "2026-01-27T02:10:17.369Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Başka grubunuz varmı",
+    "atlasResponse": "premium üyelik ayda 179₺. telefon numaraları + sınırsız arama + öncelikli destek. 7 gün bedava dene önce.",
+    "intent": "subscription",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2332,
+    "timestamp": "2026-01-27T02:10:19.802Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Çünkü bunda hiç\nBi şekilde iş bulamıyorum",
+    "atlasResponse": "üzüldüm abi. ne sıkıntı var anlat, düzeltmeye çalışalım.",
+    "intent": "feedback_negative",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2344,
+    "timestamp": "2026-01-27T02:10:22.248Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Sanki yalan gibi",
+    "atlasResponse": "üzüldüm abi. ne sıkıntı var anlat, düzeltmeye çalışalım.",
+    "intent": "feedback_negative",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2523,
+    "timestamp": "2026-01-27T02:10:24.872Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2324,
+    "timestamp": "2026-01-27T02:10:27.297Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Ankara İstanbul yükün varmı",
+    "atlasResponse": "📍 *Ankara/Kızıltepe → Istanbul/Kurtköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Arnavutköy*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Pendik*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Istanbul/Başakşehir*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatlı → Istanbul/Esenyurt*\n🚛 TIR | kapali\n📞 05016242154\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Istanbul/Hadimkoy*\n🚛 0.30t\n📦 2 palet\n📞 05393155346\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Avcilar*\n🚛 acik | 5.60t\n📦 Kereste\n📞 05458450671\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatlı → Istanbul/Esenyurt*\n🚛 TIR | kapali | frigorifik\n📞 05382311630\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Istanbul/Anadolu*\n🚛 KAMYON | kapali\n📞 05074418761\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kochisar → Istanbul*\n🚛 KIRKAYAK\n📦 soğan\n📞 05394491899\n🕐 11 saat once\n\n_48 yuk daha var, \"devam\" yaz gostereyim_\n\n*aracın mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "ankara",
+      "destination": "istanbul"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3598,
+    "timestamp": "2026-01-27T02:10:30.996Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Panel araç için",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2387,
+    "timestamp": "2026-01-27T02:10:33.484Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905334019720",
+    "userMessage": "Evet",
+    "atlasResponse": "aracın isi su an yok abi. diger arac tipleri var, bak istersen.",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1343,
+    "timestamp": "2026-01-27T02:10:34.928Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-24T13:03:09.889Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "ankara",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 8,
+          "lastSearched": "2026-01-26T20:50:40.875Z",
+          "origin": "ankara"
+        },
+        {
+          "destination": "istanbul",
+          "count": 3,
+          "lastSearched": "2026-01-24T13:04:39.359Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 109
+    }
+  },
+  {
+    "phone": "905445433112",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1764,
+    "timestamp": "2026-01-27T02:10:36.793Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [
+        "d2fd907c-d8a9-4120-b3b4-a3fbd876e674",
+        "2c35520d-b56c-42a6-9755-0b1ad1664deb",
+        "4bd9f9ab-9352-4cff-96d9-24a36ee9e1ed",
+        "af8c7abc-a706-4771-a731-bab6d1f33449",
+        "88b96ee6-cd81-48d4-a525-27f9fc251144",
+        "430a2587-f5fd-431f-b7b8-790c8afc1a9f",
+        "5b8ecffb-53b2-478d-ab68-10485f632e2f",
+        "0e8b554a-624e-429c-92e9-52a007dfc7d2",
+        "ea23b205-13a6-4b31-a155-b39a72157c91"
+      ],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T18:36:35.301Z",
+      "lastOffset": 0,
+      "totalSearches": 1,
+      "lastOrigin": "hatay",
+      "lastShownCount": 9,
+      "lastDestination": "mersin",
+      "frequentRoutes": [
+        {
+          "destination": "mersin",
+          "count": 1,
+          "lastSearched": "2026-01-26T18:36:35.301Z",
+          "origin": "hatay"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 9
+    }
+  },
+  {
+    "phone": "905445433112",
+    "userMessage": "Hatay Mersin yük",
+    "atlasResponse": "📍 *Hatay/Iskenderun → Mersin*\n🚛 KAMYON\n📦 Tuğla Sevkiyatı\n📞 05425307960\n🕐 2 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Iskenderun → Mersin/Mersin Liman*\n📦 Tuğla Sevkiyatı\n📞 05394368780\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandag → Mersin/Mut*\n🚛 TIR | acik | 24.00t\n📞 05382311630\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandag → Mersin/Mut*\n🚛 TIR | acik | 24.00t\n📞 05015971850\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandag → Mersin/Mut*\n🚛 TIR | acik | 24.00t\n📞 05357320784\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandag → Mersin/Mut*\n🚛 TIR | acik | 24.00t\n📞 05015972481\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandağ → Mersin/Mut*\n🚛 TIR | acik | 24.00t\n🔴 ACiL\n📞 05015971848\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandag → Mersin/Mut*\n🚛 TIR | acik | 24.00t\n📞 05357321669\n🕐 15 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandag → Mersin/Mut*\n🚛 TIR | acik | frigorifik | 24.00t\n📦 30m³\n📞 05382311630\n🕐 15 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Hatay/Samandağ → Mersin/Mut*\n🚛 TIR | acik | 24.00t\n📞 05016004367\n🕐 18 saat once\n\n_1 yuk daha var, \"devam\" yaz gostereyim_",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "hatay",
+      "destination": "mersin"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 2484,
+    "timestamp": "2026-01-27T02:10:39.378Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [
+        "d2fd907c-d8a9-4120-b3b4-a3fbd876e674",
+        "2c35520d-b56c-42a6-9755-0b1ad1664deb",
+        "4bd9f9ab-9352-4cff-96d9-24a36ee9e1ed",
+        "af8c7abc-a706-4771-a731-bab6d1f33449",
+        "88b96ee6-cd81-48d4-a525-27f9fc251144",
+        "430a2587-f5fd-431f-b7b8-790c8afc1a9f",
+        "5b8ecffb-53b2-478d-ab68-10485f632e2f",
+        "0e8b554a-624e-429c-92e9-52a007dfc7d2",
+        "ea23b205-13a6-4b31-a155-b39a72157c91"
+      ],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T18:36:35.301Z",
+      "lastOffset": 0,
+      "totalSearches": 1,
+      "lastOrigin": "hatay",
+      "lastShownCount": 9,
+      "lastDestination": "mersin",
+      "frequentRoutes": [
+        {
+          "destination": "mersin",
+          "count": 1,
+          "lastSearched": "2026-01-26T18:36:35.301Z",
+          "origin": "hatay"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 9
+    }
+  },
+  {
+    "phone": "905445433112",
+    "userMessage": "Fiyat",
+    "atlasResponse": "7 günlük deneme bedava, sonra 179₺/ay. şimdilik ücretsiz, hadi bi rota söyle.",
+    "intent": "pricing",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1777,
+    "timestamp": "2026-01-27T02:10:41.256Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [
+        "d2fd907c-d8a9-4120-b3b4-a3fbd876e674",
+        "2c35520d-b56c-42a6-9755-0b1ad1664deb",
+        "4bd9f9ab-9352-4cff-96d9-24a36ee9e1ed",
+        "af8c7abc-a706-4771-a731-bab6d1f33449",
+        "88b96ee6-cd81-48d4-a525-27f9fc251144",
+        "430a2587-f5fd-431f-b7b8-790c8afc1a9f",
+        "5b8ecffb-53b2-478d-ab68-10485f632e2f",
+        "0e8b554a-624e-429c-92e9-52a007dfc7d2",
+        "ea23b205-13a6-4b31-a155-b39a72157c91"
+      ],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T18:36:35.301Z",
+      "lastOffset": 0,
+      "totalSearches": 1,
+      "lastOrigin": "hatay",
+      "lastShownCount": 9,
+      "lastDestination": "mersin",
+      "frequentRoutes": [
+        {
+          "destination": "mersin",
+          "count": 1,
+          "lastSearched": "2026-01-26T18:36:35.301Z",
+          "origin": "hatay"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 9
+    }
+  },
+  {
+    "phone": "905396987904",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1765,
+    "timestamp": "2026-01-27T02:10:43.121Z",
+    "conversationContext": {
+      "lastBodyType": "KAPALI",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T19:22:42.901Z",
+      "lastOffset": 0,
+      "totalSearches": 3,
+      "lastOrigin": "ankara",
+      "lastShownCount": 1,
+      "lastDestination": "izmir",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 3,
+          "lastSearched": "2026-01-26T19:24:13.614Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 1
+    }
+  },
+  {
+    "phone": "905396987904",
+    "userMessage": "Ankara izmir",
+    "atlasResponse": "📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | açık | 10.00t\n📞 05015971849\n🕐 4 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n🔴 ACiL\n📞 05015971848\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05357320784\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Izmir/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05015972177\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Foça*\n🚛 TIR | kapali\n📞 05015972487\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05015972487\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Kemalpasa*\n🚛 TIR | 4.00t\n📞 05322383704\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Kemalpasa*\n🚛 TIR | damperli | 13.60t\n📦 Kuru Yük\n📞 05322383704\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Izmir*\n🚛 TIR\n📦 soğan\n📞 05394491899\n🕐 10 saat once\n\n_9 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "ankara",
+      "destination": "izmir"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 2715,
+    "timestamp": "2026-01-27T02:10:45.937Z",
+    "conversationContext": {
+      "lastBodyType": "KAPALI",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T19:22:42.901Z",
+      "lastOffset": 0,
+      "totalSearches": 3,
+      "lastOrigin": "ankara",
+      "lastShownCount": 1,
+      "lastDestination": "izmir",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 3,
+          "lastSearched": "2026-01-26T19:24:13.614Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 1
+    }
+  },
+  {
+    "phone": "905396987904",
+    "userMessage": "10 teker kapalı için",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1782,
+    "timestamp": "2026-01-27T02:10:47.820Z",
+    "conversationContext": {
+      "lastBodyType": "KAPALI",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T19:22:42.901Z",
+      "lastOffset": 0,
+      "totalSearches": 3,
+      "lastOrigin": "ankara",
+      "lastShownCount": 1,
+      "lastDestination": "izmir",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 3,
+          "lastSearched": "2026-01-26T19:24:13.614Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 1
+    }
+  },
+  {
+    "phone": "905396987904",
+    "userMessage": "Kamyon",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1771,
+    "timestamp": "2026-01-27T02:10:49.691Z",
+    "conversationContext": {
+      "lastBodyType": "KAPALI",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T19:22:42.901Z",
+      "lastOffset": 0,
+      "totalSearches": 3,
+      "lastOrigin": "ankara",
+      "lastShownCount": 1,
+      "lastDestination": "izmir",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 3,
+          "lastSearched": "2026-01-26T19:24:13.614Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 1
+    }
+  },
+  {
+    "phone": "905396987904",
+    "userMessage": "Ankara izmir",
+    "atlasResponse": "📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | açık | 10.00t\n📞 05015971849\n🕐 4 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n🔴 ACiL\n📞 05015971848\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05357320784\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Izmir/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05015972177\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Foça*\n🚛 TIR | kapali\n📞 05015972487\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05015972487\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Kemalpasa*\n🚛 TIR | 4.00t\n📞 05322383704\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Kemalpasa*\n🚛 TIR | damperli | 13.60t\n📦 Kuru Yük\n📞 05322383704\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Izmir*\n🚛 TIR\n📦 soğan\n📞 05394491899\n🕐 10 saat once\n\n_9 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "ankara",
+      "destination": "izmir"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 2650,
+    "timestamp": "2026-01-27T02:10:52.442Z",
+    "conversationContext": {
+      "lastBodyType": "KAPALI",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T19:22:42.901Z",
+      "lastOffset": 0,
+      "totalSearches": 3,
+      "lastOrigin": "ankara",
+      "lastShownCount": 1,
+      "lastDestination": "izmir",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 3,
+          "lastSearched": "2026-01-26T19:24:13.614Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 1
+    }
+  },
+  {
+    "phone": "905396987904",
+    "userMessage": "Tm",
+    "atlasResponse": "📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | açık | 10.00t\n📞 05015971849\n🕐 4 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n🔴 ACiL\n📞 05015971848\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05357320784\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Kızıltepe → Izmir/Merkez*\n🚛 tenteli\n📦 pres saman\n📞 05363412979\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05015972177\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Foça*\n🚛 TIR | kapali\n📞 05015972487\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Akyurt → Izmir/Buca*\n🚛 KIRKAYAK | acik | 10.00t\n📞 05015972487\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Kemalpasa*\n🚛 TIR | 4.00t\n📞 05322383704\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara → Izmir/Kemalpasa*\n🚛 TIR | damperli | 13.60t\n📦 Kuru Yük\n📞 05322383704\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Ankara/Polatli → Izmir*\n🚛 TIR\n📦 soğan\n📞 05394491899\n🕐 10 saat once\n\n_9 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "ankara",
+      "destination": "izmir"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 2624,
+    "timestamp": "2026-01-27T02:10:55.166Z",
+    "conversationContext": {
+      "lastBodyType": "KAPALI",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T19:22:42.901Z",
+      "lastOffset": 0,
+      "totalSearches": 3,
+      "lastOrigin": "ankara",
+      "lastShownCount": 1,
+      "lastDestination": "izmir",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 3,
+          "lastSearched": "2026-01-26T19:24:13.614Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 1
+    }
+  },
+  {
+    "phone": "905396987904",
+    "userMessage": "Okay",
+    "atlasResponse": "ok, hazırım. söyle.",
+    "intent": "confirmation",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1765,
+    "timestamp": "2026-01-27T02:10:57.032Z",
+    "conversationContext": {
+      "lastBodyType": "KAPALI",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T19:22:42.901Z",
+      "lastOffset": 0,
+      "totalSearches": 3,
+      "lastOrigin": "ankara",
+      "lastShownCount": 1,
+      "lastDestination": "izmir",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 3,
+          "lastSearched": "2026-01-26T19:24:13.614Z",
+          "origin": "ankara"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 1
+    }
+  },
+  {
+    "phone": "905443180226",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1766,
+    "timestamp": "2026-01-27T02:10:58.899Z",
+    "conversationContext": {}
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1777,
+    "timestamp": "2026-01-27T02:11:00.777Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Uşak izmir",
+    "atlasResponse": "usak izmir arasi su an yuk yok abi.\n\n*civarinda bakayim mi?* (cikis: manisa, kutahya, afyonkarahisar / varis: balikesir, manisa, aydin) - bakmami istiyorsan *\"evet\"* yaz",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "usak",
+      "destination": "izmir"
+    },
+    "jobsFound": 0,
+    "responseTimeMs": 2508,
+    "timestamp": "2026-01-27T02:11:03.386Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Evet",
+    "atlasResponse": "civardaki yukler:\n\n📍 *manisa*'dan:\n📍 *Manisa/Turgutlu → Izmir/Gaziemir*\n🚛 TIR | acik\n📦 BOŞ PALET\n📞 05447420181\n🕐 2 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Manisa → Izmir*\n🚛 TIR | kapali | 5.00t\n📦 HAFİF\n📞 05525362101\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Manisa/Salihli → Izmir*\n🚛 TIR | kapali\n📞 05525362101\n🕐 8 saat once\n\n📍 *kutahya*'dan:\n📍 *Kutahya → Izmir/Cesme*\n🚛 TIR\n📞 05016004417\n🕐 13 saat once\n\n📍 *afyonkarahisar*'dan:\n📍 *Afyonkarahisar/Emirdag → Izmir*\n🚛 KAMYON | frigorifik | frigorifik\n📞 0538 054 72 10\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Afyonkarahisar → Izmir/Bayrakli*\n🚛 2.00t\n📦 Palet\n📞 05323821421\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Afyonkarahisar/Sandikli → Izmir*\n🚛 TIR | frigorifik | frigorifik\n📞 05305589365\n🕐 17 saat once\n\n📍 *aydin*'a:\n📍 *Usak → Aydin*\n🚛 KAMYON | acik\n📞 05327710494\n🕐 12 saat once",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 8,
+    "responseTimeMs": 4867,
+    "timestamp": "2026-01-27T02:11:08.353Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "evet",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1974,
+    "timestamp": "2026-01-27T02:11:10.429Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Kamyonet için varmı yük",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1770,
+    "timestamp": "2026-01-27T02:11:12.300Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "evet",
+    "atlasResponse": "usak izmir arasi su an yuk yok abi.\n\n*civarinda bakayim mi?* (cikis: manisa, kutahya, afyonkarahisar / varis: balikesir, manisa, aydin) - bakmami istiyorsan *\"evet\"* yaz",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "usak",
+      "destination": "izmir"
+    },
+    "jobsFound": 0,
+    "responseTimeMs": 2654,
+    "timestamp": "2026-01-27T02:11:15.055Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Uşak tan kamyon nereye sararsa",
+    "atlasResponse": "📍 *Usak/Esme → Cankiri/Kursunlu*\n🚛 KAMYON | damperli | 900.00t\n📦 Dökme Maden\n🔴 ACiL\n📞 05415367573\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Usak/Esmeden → Cankiri/Kurşunlu*\n🚛 KAMYON | damperli | 1000.00t\n📞 05431325250\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Usak → Aydin*\n🚛 KAMYON | acik\n📞 05327710494\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Usak/Esme → Cankiri/Kurşunlu*\n🚛 KAMYON | damperli | 900.00t\n📦 Dökme maden\n🔴 ACiL\n📞 05415367573\n🕐 17 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "usak"
+    },
+    "jobsFound": 4,
+    "responseTimeMs": 2908,
+    "timestamp": "2026-01-27T02:11:18.064Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Devam",
+    "atlasResponse": "hepsini gosterdim abi, baska yuk yok. farkli rota dene?",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1928,
+    "timestamp": "2026-01-27T02:11:20.094Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "devam",
+    "atlasResponse": "hepsini gosterdim abi, baska yuk yok. farkli rota dene?",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1928,
+    "timestamp": "2026-01-27T02:11:22.123Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Kütahya dan usaga kamyonet sarar",
+    "atlasResponse": "📍 *Kutahya → Bursa*\n🚛 KAMYONET | 0.50t\n📦 1 Palet\n📞 05016242154\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Kutahya → Bursa*\n🚛 KAMYONET | 0.50t\n📦 1Palet\n📞 05357320995\n🕐 16 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "kutahya"
+    },
+    "jobsFound": 2,
+    "responseTimeMs": 2799,
+    "timestamp": "2026-01-27T02:11:25.023Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "devam",
+    "atlasResponse": "hepsini gosterdim abi, baska yuk yok. farkli rota dene?",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1930,
+    "timestamp": "2026-01-27T02:11:27.055Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Devam",
+    "atlasResponse": "hepsini gosterdim abi, baska yuk yok. farkli rota dene?",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2068,
+    "timestamp": "2026-01-27T02:11:29.224Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905513546064",
+    "userMessage": "Devam",
+    "atlasResponse": "hepsini gosterdim abi, baska yuk yok. farkli rota dene?",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2206,
+    "timestamp": "2026-01-27T02:11:31.530Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYONET",
+      "lastJobIds": [
+        "7fef6fb0-9f61-46b6-a27b-c451d7b70098",
+        "3d3d2c11-e5df-4352-9a62-593d34d8b4ef",
+        "67e7920e-36b0-4d9c-ab48-abaad0af70ac",
+        "173579b8-7e16-40ae-8939-3478222aa6eb",
+        "1a4313e6-25dd-4006-936e-0e570617f3f5",
+        "e5ed19a3-7219-458b-b66c-820d0e444e40",
+        "7331e2e0-e9f9-4693-bbc7-54912f80698f",
+        "93a8965e-d3f8-415d-84df-decaf8f72cfd",
+        "a9b22421-2c3b-4d12-9ebd-795cd5963481",
+        "ace52d0d-c4af-49d9-85f5-ef14c648bfaa"
+      ],
+      "lastVehicleType": "KAMYONET",
+      "firstSeen": "2026-01-26T13:45:10.888Z",
+      "lastOffset": 20,
+      "totalSearches": 4,
+      "lastOrigin": "kutahya",
+      "lastShownCount": 10,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "destination": "izmir",
+          "count": 2,
+          "lastSearched": "2026-01-26T13:46:38.393Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:34:54.920Z",
+          "origin": "usak"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T21:38:52.050Z",
+          "origin": "kutahya"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 22
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "bu mesaj spam gibi görünüyor. gerçek bi soru varsa yaz.",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1969,
+    "timestamp": "2026-01-27T02:11:33.600Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokat’dan anlaraya yük var mı",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1200.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3032,
+    "timestamp": "2026-01-27T02:11:36.733Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "On teker için",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1998,
+    "timestamp": "2026-01-27T02:11:38.831Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tamam",
+    "atlasResponse": "KAMYON isleri:\n\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 4,
+    "responseTimeMs": 1530,
+    "timestamp": "2026-01-27T02:11:40.460Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Merhaba onteker için tokattan Çorum’a veya tokattan afyona veya tokattan ankaraya iş varmıdır",
+    "atlasResponse": "tokat'dan yukler:\n\n📍 *tokat*:\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n📦 farketmez\n📞 05415717787\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat/Turhal*\n🚛 damperli\n📞 05334079907\n🕐 15 saat once",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "tokat",
+      "destination": "corum"
+    },
+    "jobsFound": 3,
+    "responseTimeMs": 3709,
+    "timestamp": "2026-01-27T02:11:44.270Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tamamdır üstad",
+    "atlasResponse": "tamam, devam edelim. ne yapayım?",
+    "intent": "confirmation",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2152,
+    "timestamp": "2026-01-27T02:11:46.523Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Merhaba onteker için tokattan Çorum’a veya tokattan afyona veya tokattan ankaraya iş varmıdır",
+    "atlasResponse": "tokat'dan yukler:\n\n📍 *tokat*:\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n📦 farketmez\n📞 05415717787\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat/Turhal*\n🚛 damperli\n📞 05334079907\n🕐 15 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat",
+      "destination": "corum"
+    },
+    "jobsFound": 3,
+    "responseTimeMs": 3755,
+    "timestamp": "2026-01-27T02:11:50.378Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokat çıkış yükü yok mu kamyona",
+    "atlasResponse": "📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 4,
+    "responseTimeMs": 3228,
+    "timestamp": "2026-01-27T02:11:53.707Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Evet",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1150.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3570,
+    "timestamp": "2026-01-27T02:11:57.378Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Başka varmı",
+    "atlasResponse": "📍 *Tokat → Canakkale*\n🚛 1150.00t\n📞 05431325150\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Sivas*\n🚛 TIR | kapali\n📞 05345097876\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n📦 farketmez\n📞 05415717787\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Samsun*\n🚛 TIR | kapali | 10.00t\n📞 05373399757\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Diyarbakir*\n🚛 TIR | tenteli | frigorifik\n📦 HAFİF\n📞 05326430958\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Kayseri*\n🚛 TIR | acik\n📞 05074350031\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Batman*\n🚛 TIR\n📞 05074350031\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Sivas*\n🚛 TIR | kisa dorse\n📞 05074350031\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep*\n🚛 kapali\n📞 05074350031\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 TIR\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n\n_27 yuk daha var, \"devam\" yaz_",
+    "intent": "pagination",
+    "parsedLocations": {},
+    "jobsFound": 10,
+    "responseTimeMs": 3569,
+    "timestamp": "2026-01-27T02:12:01.048Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Şu an Çorum’dan ankara tarafına iş varmı onteker için",
+    "atlasResponse": "📍 *Corum → Ankara*\n🚛 TIR | acik\n📦 Kuru Yük\n📞 05302839044\n🕐 11 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "corum",
+      "destination": "ankara"
+    },
+    "jobsFound": 1,
+    "responseTimeMs": 3045,
+    "timestamp": "2026-01-27T02:12:04.194Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tamam bekliyoruz",
+    "atlasResponse": "KAMYON isi su an yok abi. diger arac tipleri var, bak istersen.",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1472,
+    "timestamp": "2026-01-27T02:12:05.766Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Onteker için geldi mi",
+    "atlasResponse": "📍 *Corum → Ankara*\n🚛 TIR | acik\n📦 Kuru Yük\n📞 05302839044\n🕐 11 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "corum",
+      "destination": "ankara"
+    },
+    "jobsFound": 1,
+    "responseTimeMs": 4092,
+    "timestamp": "2026-01-27T02:12:09.960Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokat çıkış yükü yok mu kamyona",
+    "atlasResponse": "📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 4,
+    "responseTimeMs": 3045,
+    "timestamp": "2026-01-27T02:12:13.106Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Fiyat ne yazıyorlar",
+    "atlasResponse": "fiyat bilgisi yok çünkü her iş farklı. yük sahibiyle konuşunca netleşir.",
+    "intent": "load_price",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2151,
+    "timestamp": "2026-01-27T02:12:15.358Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokat",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1150.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3414,
+    "timestamp": "2026-01-27T02:12:18.873Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Evet kamyona bak",
+    "atlasResponse": "KAMYON isleri:\n\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 4,
+    "responseTimeMs": 1473,
+    "timestamp": "2026-01-27T02:12:20.446Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokat çıkış yükü yok mu kamyona",
+    "atlasResponse": "📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "load_price",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 4,
+    "responseTimeMs": 3044,
+    "timestamp": "2026-01-27T02:12:23.592Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokat çıkış yükü yok mu kamyona",
+    "atlasResponse": "📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "load_price",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 4,
+    "responseTimeMs": 3045,
+    "timestamp": "2026-01-27T02:12:26.738Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Ondan hariç",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1150.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3372,
+    "timestamp": "2026-01-27T02:12:30.211Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tm alıyorum bu işi verilmediyse",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1200.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3275,
+    "timestamp": "2026-01-27T02:12:33.587Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tamam",
+    "atlasResponse": "KAMYON isleri:\n\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 4,
+    "responseTimeMs": 1464,
+    "timestamp": "2026-01-27T02:12:35.152Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokat çıkış yükü yok mu kamyona",
+    "atlasResponse": "📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 4,
+    "responseTimeMs": 3055,
+    "timestamp": "2026-01-27T02:12:38.308Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Evet",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1150.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3402,
+    "timestamp": "2026-01-27T02:12:41.811Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Yük var mı dostum",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1150.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3372,
+    "timestamp": "2026-01-27T02:12:45.284Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Tokattan",
+    "atlasResponse": "📍 *Tokat/Niksar → Izmir/Karabaglar*\n🚛 13.60t\n📞 05324311197\n🕐 5 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | frigorifik | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 6 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 Palet\n📞 05324311197\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Gaziantep/Çobanbey*\n🚛 tenteli\n📦 mıkser\n📞 05447996300\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Zile → Istanbul/Bayrampasa*\n📦 1 PALET\n📞 05324311197\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Ankara*\n🚛 TIR | tenteli\n📞 05325599603\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Tokat*\n🚛 TIR | frigorifik | frigorifik\n📞 0533 372 21 35\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Aksaray*\n🚛 TIR | tenteli | frigorifik\n📦 Yük\n🔴 ACiL\n📞 05326430958\n🕐 9 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat → Canakkale*\n🚛 1200.00t\n📞 05431325150\n🕐 10 saat once\n\n_37 yuk daha var, \"devam\" yaz gostereyim_\n\n*KAMYON mu bakayim?* (evet de filtrelerim)",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "tokat"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 3243,
+    "timestamp": "2026-01-27T02:12:48.627Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905393728782",
+    "userMessage": "Evet",
+    "atlasResponse": "KAMYON isleri:\n\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYONET\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Merkez → Kutahya/Simav*\n🚛 KAMYON\n🔴 ACiL\n📞 05301092272\n🕐 13 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Erbaa → Istanbul/Hadimkoy*\n🚛 KAMYON | kapali\n📦 Hafif tonaj\n📞 05384071898\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Tokat/Çamlıbel → Aksaray*\n🚛 KAMYON | damperli | 600.00t\n📞 05529478883\n🕐 14 saat once",
+    "intent": "unknown",
+    "parsedLocations": {},
+    "jobsFound": 4,
+    "responseTimeMs": 1636,
+    "timestamp": "2026-01-27T02:12:50.364Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [
+        "cc7b4649-99bf-46a4-9325-8277205a015f",
+        "6e358174-1087-4d20-96a7-2f86bebf8a3f",
+        "2cfc483e-5753-49ba-8360-40c177a8a5ff",
+        "dd94947a-b7e9-4429-9fa8-5c5743fcd291",
+        "7e2d3e9b-e4a6-4c41-8336-70f4dfd46c3a",
+        "e2938935-bfb7-4637-918a-355e74971c1e",
+        "0eb8373a-4870-4b4e-98e7-307095353c56",
+        "d670ebf8-ddad-4f0f-9dd4-e1cc8b58ff2e",
+        "5f68f8f1-0585-4624-b3b2-f066050642c8",
+        "ea2e848c-83ae-4c20-9da7-2071ac6dd7db"
+      ],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-24T08:54:55.430Z",
+      "lastOffset": 0,
+      "totalSearches": 11,
+      "lastOrigin": "tokat",
+      "lastShownCount": 4,
+      "lastDestination": "",
+      "frequentRoutes": [
+        {
+          "count": 9,
+          "lastSearched": "2026-01-26T20:47:37.867Z",
+          "origin": "tokat"
+        },
+        {
+          "destination": "ankara",
+          "count": 2,
+          "lastSearched": "2026-01-24T09:00:24.357Z",
+          "origin": "corum"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 4
+    }
+  },
+  {
+    "phone": "905417780905",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2159,
+    "timestamp": "2026-01-27T02:12:52.624Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T18:26:28.996Z",
+      "lastOffset": 0,
+      "totalSearches": 1,
+      "lastOrigin": "samsun",
+      "lastShownCount": 0,
+      "lastDestination": "amasya",
+      "frequentRoutes": [
+        {
+          "destination": "amasya",
+          "count": 1,
+          "lastSearched": "2026-01-26T18:26:28.996Z",
+          "origin": "samsun"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "pendingNearbySuggestion": {
+        "destination": "amasya",
+        "neighboringOrigins": [
+          "sinop",
+          "corum",
+          "amasya"
+        ],
+        "neighboringDestinations": [
+          "samsun",
+          "tokat",
+          "yozgat"
+        ],
+        "vehicleType": "KAMYON",
+        "origin": "samsun"
+      },
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905417780905",
+    "userMessage": "Yarın için Çorum’dan Amasya / Taşova / Niksar erbaa tarafına Kırkayak için yük varmı",
+    "atlasResponse": "corum'dan yukler:\n\n📍 *tokat*:\n📍 *Corum/Merkez → Tokat/Merkez*\n🚛 3.00t\n📦 makina\n🔴 ACiL\n📞 05324311197\n🕐 11 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Corum → Tokat*\n🚛 TIR\n📞 05074350031\n🕐 12 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Corum → Tokat*\n🚛 TIR | tenteli | 13.60t\n📦 Kuru Yük\n📞 05333245879\n🕐 15 saat once",
+    "intent": "spam",
+    "parsedLocations": {
+      "origin": "corum",
+      "destination": "amasya"
+    },
+    "jobsFound": 3,
+    "responseTimeMs": 3391,
+    "timestamp": "2026-01-27T02:12:56.116Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T18:26:28.996Z",
+      "lastOffset": 0,
+      "totalSearches": 1,
+      "lastOrigin": "samsun",
+      "lastShownCount": 0,
+      "lastDestination": "amasya",
+      "frequentRoutes": [
+        {
+          "destination": "amasya",
+          "count": 1,
+          "lastSearched": "2026-01-26T18:26:28.996Z",
+          "origin": "samsun"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "pendingNearbySuggestion": {
+        "destination": "amasya",
+        "neighboringOrigins": [
+          "sinop",
+          "corum",
+          "amasya"
+        ],
+        "neighboringDestinations": [
+          "samsun",
+          "tokat",
+          "yozgat"
+        ],
+        "vehicleType": "KAMYON",
+        "origin": "samsun"
+      },
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905417780905",
+    "userMessage": "5 gün ücretsiz denemeden sonra ücret ne kadar",
+    "atlasResponse": "deneme süresi ücretsiz abi. beğenirsen devam edersin. şehir yaz bakalım.",
+    "intent": "pricing",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 1998,
+    "timestamp": "2026-01-27T02:12:58.215Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T18:26:28.996Z",
+      "lastOffset": 0,
+      "totalSearches": 1,
+      "lastOrigin": "samsun",
+      "lastShownCount": 0,
+      "lastDestination": "amasya",
+      "frequentRoutes": [
+        {
+          "destination": "amasya",
+          "count": 1,
+          "lastSearched": "2026-01-26T18:26:28.996Z",
+          "origin": "samsun"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "pendingNearbySuggestion": {
+        "destination": "amasya",
+        "neighboringOrigins": [
+          "sinop",
+          "corum",
+          "amasya"
+        ],
+        "neighboringDestinations": [
+          "samsun",
+          "tokat",
+          "yozgat"
+        ],
+        "vehicleType": "KAMYON",
+        "origin": "samsun"
+      },
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905417780905",
+    "userMessage": "Samsun Amasya yönüne kırkayak kamyon için yük varmı",
+    "atlasResponse": "samsun amasya arasi su an yuk yok abi.\n\n*civarinda bakayim mi?* (cikis: sinop, corum, amasya / varis: samsun, tokat, yozgat) - bakmami istiyorsan *\"evet\"* yaz",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "samsun",
+      "destination": "amasya"
+    },
+    "jobsFound": 0,
+    "responseTimeMs": 2754,
+    "timestamp": "2026-01-27T02:13:01.070Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "preferredVehicle": "KAMYON",
+      "lastJobIds": [],
+      "lastVehicleType": "KAMYON",
+      "firstSeen": "2026-01-26T18:26:28.996Z",
+      "lastOffset": 0,
+      "totalSearches": 1,
+      "lastOrigin": "samsun",
+      "lastShownCount": 0,
+      "lastDestination": "amasya",
+      "frequentRoutes": [
+        {
+          "destination": "amasya",
+          "count": 1,
+          "lastSearched": "2026-01-26T18:26:28.996Z",
+          "origin": "samsun"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "pendingNearbySuggestion": {
+        "destination": "amasya",
+        "neighboringOrigins": [
+          "sinop",
+          "corum",
+          "amasya"
+        ],
+        "neighboringDestinations": [
+          "samsun",
+          "tokat",
+          "yozgat"
+        ],
+        "vehicleType": "KAMYON",
+        "origin": "samsun"
+      },
+      "lastTotalCount": 0
+    }
+  },
+  {
+    "phone": "905443186490",
+    "userMessage": "Merhaba! Bunun hakkında daha faza bilgi alabilir miyim?",
+    "atlasResponse": "abi normal yaz lütfen. nerden nereye yük arıyorsun?",
+    "intent": "spam",
+    "parsedLocations": {},
+    "jobsFound": 0,
+    "responseTimeMs": 2250,
+    "timestamp": "2026-01-27T02:13:03.421Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T19:04:17.151Z",
+      "lastOffset": 0,
+      "totalSearches": 14,
+      "lastOrigin": "nevsehir",
+      "lastShownCount": 10,
+      "lastDestination": "istanbul",
+      "frequentRoutes": [
+        {
+          "count": 3,
+          "lastSearched": "2026-01-26T20:01:39.022Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "ankara",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:04:17.151Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "konya",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:04:52.550Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "kayseri",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:08:58.951Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:55:59.070Z",
+          "origin": "bursa"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:56:43.665Z",
+          "origin": "nevsehir"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T19:57:54.582Z",
+          "origin": "bursa"
+        },
+        {
+          "destination": "kayseri",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:58:32.774Z",
+          "origin": "izmir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:58:51.800Z",
+          "origin": "izmir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:03:22.519Z",
+          "origin": "kayseri"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 16
+    }
+  },
+  {
+    "phone": "905443186490",
+    "userMessage": "Nevşehir Ankara",
+    "atlasResponse": "📍 *Nevsehir → Ankara/Sincan*\n🚛 TIR | acik | 13.60t\n📞 0533 493 92 50\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara/Iskitler*\n🚛 TIR | acik | 13.60t\n📞 0533 493 92 50\n🕐 7 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara/Iskitler*\n🚛 TIR | acik | 13.60t\n📞 05334939250\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara/Sincan*\n🚛 TIR | acik | 13.60t\n📞 05334939250\n🕐 8 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara*\n🚛 KIRKAYAK | kapali\n📞 05336585006\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara*\n🚛 KIRKAYAK | acik\n📞 05336585006\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara/Temelli*\n📞 05333519856\n🕐 10 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara/Esenboga*\n🚛 TIR\n📞 0543 103 06 96\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara/Kizilcahamam*\n🚛 TIR\n📞 0543 103 06 96\n🕐 14 saat once\n━━━━━━━━━━━━━━━━━━\n📍 *Nevsehir → Ankara/Esenboga*\n🚛 TIR | 550.00t\n📦 Bims\n📞 05425307960\n🕐 16 saat once",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "nevsehir",
+      "destination": "ankara"
+    },
+    "jobsFound": 10,
+    "responseTimeMs": 2891,
+    "timestamp": "2026-01-27T02:13:06.413Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T19:04:17.151Z",
+      "lastOffset": 0,
+      "totalSearches": 14,
+      "lastOrigin": "nevsehir",
+      "lastShownCount": 10,
+      "lastDestination": "istanbul",
+      "frequentRoutes": [
+        {
+          "count": 3,
+          "lastSearched": "2026-01-26T20:01:39.022Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "ankara",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:04:17.151Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "konya",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:04:52.550Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "kayseri",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:08:58.951Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:55:59.070Z",
+          "origin": "bursa"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:56:43.665Z",
+          "origin": "nevsehir"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T19:57:54.582Z",
+          "origin": "bursa"
+        },
+        {
+          "destination": "kayseri",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:58:32.774Z",
+          "origin": "izmir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:58:51.800Z",
+          "origin": "izmir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:03:22.519Z",
+          "origin": "kayseri"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 16
+    }
+  },
+  {
+    "phone": "905443186490",
+    "userMessage": "Nevşehir den Konya",
+    "atlasResponse": "nevsehir konya arasi su an yuk yok abi.\n\n*civarinda bakayim mi?* (cikis: aksaray, kirsehir, kayseri / varis: afyonkarahisar, eskisehir, ankara) - bakmami istiyorsan *\"evet\"* yaz",
+    "intent": "search",
+    "parsedLocations": {
+      "origin": "nevsehir",
+      "destination": "konya"
+    },
+    "jobsFound": 0,
+    "responseTimeMs": 2888,
+    "timestamp": "2026-01-27T02:13:09.402Z",
+    "conversationContext": {
+      "lastBodyType": "",
+      "lastIsRefrigerated": false,
+      "lastCargoType": "",
+      "lastJobIds": [],
+      "lastVehicleType": "",
+      "firstSeen": "2026-01-26T19:04:17.151Z",
+      "lastOffset": 0,
+      "totalSearches": 14,
+      "lastOrigin": "nevsehir",
+      "lastShownCount": 10,
+      "lastDestination": "istanbul",
+      "frequentRoutes": [
+        {
+          "count": 3,
+          "lastSearched": "2026-01-26T20:01:39.022Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "ankara",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:04:17.151Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "konya",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:04:52.550Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "kayseri",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:08:58.951Z",
+          "origin": "nevsehir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:55:59.070Z",
+          "origin": "bursa"
+        },
+        {
+          "destination": "bursa",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:56:43.665Z",
+          "origin": "nevsehir"
+        },
+        {
+          "count": 1,
+          "lastSearched": "2026-01-26T19:57:54.582Z",
+          "origin": "bursa"
+        },
+        {
+          "destination": "kayseri",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:58:32.774Z",
+          "origin": "izmir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T19:58:51.800Z",
+          "origin": "izmir"
+        },
+        {
+          "destination": "nevsehir",
+          "count": 1,
+          "lastSearched": "2026-01-26T20:03:22.519Z",
+          "origin": "kayseri"
+        }
+      ],
+      "pendingVehicleSuggestion": false,
+      "lastTotalCount": 16
+    }
+  }
+]

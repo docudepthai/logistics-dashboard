@@ -114,6 +114,7 @@ function UserAnalyticsPageContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [growthView, setGrowthView] = useState<'cumulative' | 'daily'>('cumulative');
+  const [timeRange, setTimeRange] = useState<'weekly' | 'monthly' | 'yearly'>('monthly');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -164,13 +165,23 @@ function UserAnalyticsPageContent() {
 
   const { engagement, conversion, trafficSources, searchAnalysis, customerGrowth } = behaviorData;
 
-  // Calculate growth stats
-  const totalNewUsersLast30Days = customerGrowth.reduce((sum, d) => sum + d.newUsers, 0);
-  const last7DaysGrowth = customerGrowth.slice(-7).reduce((sum, d) => sum + d.newUsers, 0);
-  const previousWeekGrowth = customerGrowth.slice(-14, -7).reduce((sum, d) => sum + d.newUsers, 0);
-  const weekOverWeekChange = previousWeekGrowth > 0
-    ? Math.round(((last7DaysGrowth - previousWeekGrowth) / previousWeekGrowth) * 100)
+  // Filter data based on time range
+  const daysToShow = timeRange === 'weekly' ? 7 : timeRange === 'monthly' ? 30 : 365;
+  const filteredGrowth = customerGrowth.slice(-daysToShow);
+
+  // Calculate growth stats based on selected range
+  const totalNewUsersInRange = filteredGrowth.reduce((sum, d) => sum + d.newUsers, 0);
+
+  // For comparison: previous period of same length
+  const previousPeriodStart = daysToShow * 2;
+  const previousPeriodGrowth = customerGrowth.slice(-previousPeriodStart, -daysToShow).reduce((sum, d) => sum + d.newUsers, 0);
+  const periodOverPeriodChange = previousPeriodGrowth > 0
+    ? Math.round(((totalNewUsersInRange - previousPeriodGrowth) / previousPeriodGrowth) * 100)
     : 0;
+
+  // Labels for stats
+  const rangeLabel = timeRange === 'weekly' ? 'this week' : timeRange === 'monthly' ? 'this month' : 'this year';
+  const comparisonLabel = timeRange === 'weekly' ? 'WoW' : timeRange === 'monthly' ? 'MoM' : 'YoY';
 
   return (
     <div className="space-y-6">
@@ -196,13 +207,40 @@ function UserAnalyticsPageContent() {
             {/* Stats pills */}
             <div className="flex items-center gap-3">
               <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-full px-3 py-1">
-                <span className="text-cyan-400 text-xs font-medium">+{totalNewUsersLast30Days} this month</span>
+                <span className="text-cyan-400 text-xs font-medium">+{totalNewUsersInRange} {rangeLabel}</span>
               </div>
-              <div className={`${weekOverWeekChange >= 0 ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'} border rounded-full px-3 py-1`}>
-                <span className={`${weekOverWeekChange >= 0 ? 'text-emerald-400' : 'text-red-400'} text-xs font-medium`}>
-                  {weekOverWeekChange >= 0 ? '↑' : '↓'} {Math.abs(weekOverWeekChange)}% WoW
+              <div className={`${periodOverPeriodChange >= 0 ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'} border rounded-full px-3 py-1`}>
+                <span className={`${periodOverPeriodChange >= 0 ? 'text-emerald-400' : 'text-red-400'} text-xs font-medium`}>
+                  {periodOverPeriodChange >= 0 ? '↑' : '↓'} {Math.abs(periodOverPeriodChange)}% {comparisonLabel}
                 </span>
               </div>
+            </div>
+            {/* Time range toggle */}
+            <div className="flex bg-neutral-800 rounded-lg p-1">
+              <button
+                onClick={() => setTimeRange('weekly')}
+                className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                  timeRange === 'weekly' ? 'bg-purple-500/20 text-purple-400' : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                7D
+              </button>
+              <button
+                onClick={() => setTimeRange('monthly')}
+                className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                  timeRange === 'monthly' ? 'bg-purple-500/20 text-purple-400' : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                30D
+              </button>
+              <button
+                onClick={() => setTimeRange('yearly')}
+                className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                  timeRange === 'yearly' ? 'bg-purple-500/20 text-purple-400' : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                1Y
+              </button>
             </div>
             {/* View toggle */}
             <div className="flex bg-neutral-800 rounded-lg p-1">
@@ -229,7 +267,7 @@ function UserAnalyticsPageContent() {
         <div className="h-72">
           <ResponsiveContainer width="100%" height="100%">
             {growthView === 'cumulative' ? (
-              <AreaChart data={customerGrowth} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <AreaChart data={filteredGrowth} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorCumulative" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
@@ -264,7 +302,7 @@ function UserAnalyticsPageContent() {
                 />
               </AreaChart>
             ) : (
-              <BarChart data={customerGrowth} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <BarChart data={filteredGrowth} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorNewUsers" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#06b6d4" stopOpacity={1} />
@@ -300,24 +338,24 @@ function UserAnalyticsPageContent() {
         {/* Mini stats under chart */}
         <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-neutral-800/50">
           <div className="text-center">
-            <div className="text-2xl font-bold text-white">{customerGrowth[customerGrowth.length - 1]?.cumulative || 0}</div>
+            <div className="text-2xl font-bold text-white">{filteredGrowth[filteredGrowth.length - 1]?.cumulative || 0}</div>
             <div className="text-neutral-500 text-xs mt-1">Total Users</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-cyan-400">+{last7DaysGrowth}</div>
-            <div className="text-neutral-500 text-xs mt-1">Last 7 Days</div>
+            <div className="text-2xl font-bold text-cyan-400">+{totalNewUsersInRange}</div>
+            <div className="text-neutral-500 text-xs mt-1">New in Period</div>
           </div>
           <div className="text-center">
             <div className="text-2xl font-bold text-purple-400">
-              {customerGrowth.length > 0 ? Math.round(totalNewUsersLast30Days / 30 * 10) / 10 : 0}
+              {filteredGrowth.length > 0 ? Math.round(totalNewUsersInRange / daysToShow * 10) / 10 : 0}
             </div>
             <div className="text-neutral-500 text-xs mt-1">Avg Daily</div>
           </div>
           <div className="text-center">
-            <div className={`text-2xl font-bold ${weekOverWeekChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
-              {weekOverWeekChange >= 0 ? '+' : ''}{weekOverWeekChange}%
+            <div className={`text-2xl font-bold ${periodOverPeriodChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {periodOverPeriodChange >= 0 ? '+' : ''}{periodOverPeriodChange}%
             </div>
-            <div className="text-neutral-500 text-xs mt-1">Week/Week</div>
+            <div className="text-neutral-500 text-xs mt-1">{comparisonLabel}</div>
           </div>
         </div>
       </div>

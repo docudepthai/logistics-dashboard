@@ -350,16 +350,16 @@ export async function GET() {
 
     // ===== CUSTOMER GROWTH DATA =====
 
-    // Group users by signup date for growth chart
+    // Group users by signup date for growth chart (last 365 days for yearly view)
     const signupsByDate = new Map<string, { total: number; premium: number; trial: number; expired: number }>();
 
-    // Get all dates from the last 30 days
-    const last30Days: string[] = [];
-    for (let i = 29; i >= 0; i--) {
+    // Get all dates from the last 365 days
+    const last365Days: string[] = [];
+    for (let i = 364; i >= 0; i--) {
       const date = new Date(now);
       date.setDate(date.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      last30Days.push(dateStr);
+      last365Days.push(dateStr);
       signupsByDate.set(dateStr, { total: 0, premium: 0, trial: 0, expired: 0 });
     }
 
@@ -382,13 +382,13 @@ export async function GET() {
     // Build growth chart data with cumulative totals
     const customerGrowth: { date: string; newUsers: number; cumulative: number; premium: number; trial: number; expired: number }[] = [];
 
-    // Calculate cumulative total starting from users before the 30-day window
+    // Calculate cumulative total starting from users before the 365-day window
     let cumulativeTotal = profiles.filter(p => {
       const signupDate = p.firstContactAt ? new Date(p.firstContactAt) : null;
-      return signupDate && signupDate < new Date(last30Days[0]);
+      return signupDate && signupDate < new Date(last365Days[0]);
     }).length;
 
-    for (const dateStr of last30Days) {
+    for (const dateStr of last365Days) {
       const dayData = signupsByDate.get(dateStr)!;
       cumulativeTotal += dayData.total;
       customerGrowth.push({
