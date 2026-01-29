@@ -2,6 +2,17 @@
 
 import { useEffect, useState } from 'react';
 import PageGuard from '../components/PageGuard';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+} from 'recharts';
 
 interface SourceData {
   count: number;
@@ -53,11 +64,21 @@ interface SearchAnalysisData {
   uniqueDestinations: number;
 }
 
+interface CustomerGrowthData {
+  date: string;
+  newUsers: number;
+  cumulative: number;
+  premium: number;
+  trial: number;
+  expired: number;
+}
+
 interface BehaviorData {
   engagement: EngagementData;
   conversion: ConversionData;
   trafficSources: TrafficSourcesData;
   searchAnalysis: SearchAnalysisData;
+  customerGrowth: CustomerGrowthData[];
 }
 
 interface UserStats {
@@ -67,11 +88,32 @@ interface UserStats {
   premium: number;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const GrowthTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-neutral-900 border border-neutral-700 rounded-lg p-3 shadow-xl">
+        <p className="text-neutral-400 text-xs mb-2">
+          {new Date(label).toLocaleDateString('tr-TR', { day: '2-digit', month: 'short' })}
+        </p>
+        {payload.map((entry: { name: string; value: number; color: string }, index: number) => (
+          <p key={index} className="text-sm" style={{ color: entry.color }}>
+            {entry.name === 'cumulative' ? 'Total Users' :
+             entry.name === 'newUsers' ? 'New Users' : entry.name}: {entry.value}
+          </p>
+        ))}
+      </div>
+    );
+  }
+  return null;
+};
+
 function UserAnalyticsPageContent() {
   const [behaviorData, setBehaviorData] = useState<BehaviorData | null>(null);
   const [userStats, setUserStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [growthView, setGrowthView] = useState<'cumulative' | 'daily'>('cumulative');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -120,7 +162,15 @@ function UserAnalyticsPageContent() {
 
   if (!behaviorData) return null;
 
-  const { engagement, conversion, trafficSources, searchAnalysis } = behaviorData;
+  const { engagement, conversion, trafficSources, searchAnalysis, customerGrowth } = behaviorData;
+
+  // Calculate growth stats
+  const totalNewUsersLast30Days = customerGrowth.reduce((sum, d) => sum + d.newUsers, 0);
+  const last7DaysGrowth = customerGrowth.slice(-7).reduce((sum, d) => sum + d.newUsers, 0);
+  const previousWeekGrowth = customerGrowth.slice(-14, -7).reduce((sum, d) => sum + d.newUsers, 0);
+  const weekOverWeekChange = previousWeekGrowth > 0
+    ? Math.round(((last7DaysGrowth - previousWeekGrowth) / previousWeekGrowth) * 100)
+    : 0;
 
   return (
     <div className="space-y-6">
@@ -128,6 +178,148 @@ function UserAnalyticsPageContent() {
       <div>
         <h1 className="text-2xl font-semibold text-white tracking-tight">User Analytics</h1>
         <p className="text-neutral-500 text-sm mt-1">Engagement metrics, retention, and conversion analysis</p>
+      </div>
+
+      {/* Customer Growth Chart */}
+      <div className="bg-neutral-900/50 border border-neutral-800/50 rounded-lg p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-sm font-medium text-white flex items-center gap-2">
+              <svg className="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+              Customer Growth
+            </h2>
+            <p className="text-neutral-500 text-xs mt-1">Last 30 days user acquisition</p>
+          </div>
+          <div className="flex items-center gap-4">
+            {/* Stats pills */}
+            <div className="flex items-center gap-3">
+              <div className="bg-cyan-500/10 border border-cyan-500/20 rounded-full px-3 py-1">
+                <span className="text-cyan-400 text-xs font-medium">+{totalNewUsersLast30Days} this month</span>
+              </div>
+              <div className={`${weekOverWeekChange >= 0 ? 'bg-emerald-500/10 border-emerald-500/20' : 'bg-red-500/10 border-red-500/20'} border rounded-full px-3 py-1`}>
+                <span className={`${weekOverWeekChange >= 0 ? 'text-emerald-400' : 'text-red-400'} text-xs font-medium`}>
+                  {weekOverWeekChange >= 0 ? '↑' : '↓'} {Math.abs(weekOverWeekChange)}% WoW
+                </span>
+              </div>
+            </div>
+            {/* View toggle */}
+            <div className="flex bg-neutral-800 rounded-lg p-1">
+              <button
+                onClick={() => setGrowthView('cumulative')}
+                className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                  growthView === 'cumulative' ? 'bg-cyan-500/20 text-cyan-400' : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                Total Growth
+              </button>
+              <button
+                onClick={() => setGrowthView('daily')}
+                className={`px-3 py-1.5 text-xs rounded-md transition-colors ${
+                  growthView === 'daily' ? 'bg-cyan-500/20 text-cyan-400' : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                Daily Signups
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="h-72">
+          <ResponsiveContainer width="100%" height="100%">
+            {growthView === 'cumulative' ? (
+              <AreaChart data={customerGrowth} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorCumulative" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.4} />
+                    <stop offset="50%" stopColor="#06b6d4" stopOpacity={0.1} />
+                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  stroke="#52525b"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' })}
+                />
+                <YAxis
+                  stroke="#52525b"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => value.toLocaleString()}
+                />
+                <Tooltip content={<GrowthTooltip />} />
+                <Area
+                  type="monotone"
+                  dataKey="cumulative"
+                  stroke="#06b6d4"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorCumulative)"
+                />
+              </AreaChart>
+            ) : (
+              <BarChart data={customerGrowth} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <defs>
+                  <linearGradient id="colorNewUsers" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#06b6d4" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#0891b2" stopOpacity={0.8} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                <XAxis
+                  dataKey="date"
+                  stroke="#52525b"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => new Date(value).toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit' })}
+                />
+                <YAxis
+                  stroke="#52525b"
+                  fontSize={11}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <Tooltip content={<GrowthTooltip />} />
+                <Bar
+                  dataKey="newUsers"
+                  fill="url(#colorNewUsers)"
+                  radius={[4, 4, 0, 0]}
+                />
+              </BarChart>
+            )}
+          </ResponsiveContainer>
+        </div>
+
+        {/* Mini stats under chart */}
+        <div className="grid grid-cols-4 gap-4 mt-6 pt-4 border-t border-neutral-800/50">
+          <div className="text-center">
+            <div className="text-2xl font-bold text-white">{customerGrowth[customerGrowth.length - 1]?.cumulative || 0}</div>
+            <div className="text-neutral-500 text-xs mt-1">Total Users</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-cyan-400">+{last7DaysGrowth}</div>
+            <div className="text-neutral-500 text-xs mt-1">Last 7 Days</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl font-bold text-purple-400">
+              {customerGrowth.length > 0 ? Math.round(totalNewUsersLast30Days / 30 * 10) / 10 : 0}
+            </div>
+            <div className="text-neutral-500 text-xs mt-1">Avg Daily</div>
+          </div>
+          <div className="text-center">
+            <div className={`text-2xl font-bold ${weekOverWeekChange >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+              {weekOverWeekChange >= 0 ? '+' : ''}{weekOverWeekChange}%
+            </div>
+            <div className="text-neutral-500 text-xs mt-1">Week/Week</div>
+          </div>
+        </div>
       </div>
 
       {/* Traffic Sources */}

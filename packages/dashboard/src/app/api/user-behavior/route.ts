@@ -348,7 +348,60 @@ export async function GET() {
       funnel,
     };
 
-    return NextResponse.json({ engagement, conversion, trafficSources, searchAnalysis });
+    // ===== CUSTOMER GROWTH DATA =====
+
+    // Group users by signup date for growth chart
+    const signupsByDate = new Map<string, { total: number; premium: number; trial: number; expired: number }>();
+
+    // Get all dates from the last 30 days
+    const last30Days: string[] = [];
+    for (let i = 29; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      last30Days.push(dateStr);
+      signupsByDate.set(dateStr, { total: 0, premium: 0, trial: 0, expired: 0 });
+    }
+
+    // Count signups by date
+    for (const profile of profiles) {
+      const signupDate = profile.firstContactAt ? profile.firstContactAt.split('T')[0] : null;
+      if (signupDate && signupsByDate.has(signupDate)) {
+        const dayData = signupsByDate.get(signupDate)!;
+        dayData.total++;
+        if (profile.membershipStatus === 'premium') {
+          dayData.premium++;
+        } else if (profile.membershipStatus === 'expired') {
+          dayData.expired++;
+        } else {
+          dayData.trial++;
+        }
+      }
+    }
+
+    // Build growth chart data with cumulative totals
+    const customerGrowth: { date: string; newUsers: number; cumulative: number; premium: number; trial: number; expired: number }[] = [];
+
+    // Calculate cumulative total starting from users before the 30-day window
+    let cumulativeTotal = profiles.filter(p => {
+      const signupDate = p.firstContactAt ? new Date(p.firstContactAt) : null;
+      return signupDate && signupDate < new Date(last30Days[0]);
+    }).length;
+
+    for (const dateStr of last30Days) {
+      const dayData = signupsByDate.get(dateStr)!;
+      cumulativeTotal += dayData.total;
+      customerGrowth.push({
+        date: dateStr,
+        newUsers: dayData.total,
+        cumulative: cumulativeTotal,
+        premium: dayData.premium,
+        trial: dayData.trial,
+        expired: dayData.expired,
+      });
+    }
+
+    return NextResponse.json({ engagement, conversion, trafficSources, searchAnalysis, customerGrowth });
   } catch (error) {
     console.error('Error fetching user behavior:', error);
     return NextResponse.json(
