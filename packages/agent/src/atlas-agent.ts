@@ -987,9 +987,9 @@ export class AtlasAgent {
         cardLines.push(`🔴 ACiL`);
       }
 
-      // Phone
+      // Phone (formatted as Turkish +90)
       if (job.contactPhone) {
-        cardLines.push(`📞 ${job.contactPhone}`);
+        cardLines.push(`📞 ${this.formatPhoneNumber(job.contactPhone)}`);
       }
 
       // Time posted
@@ -1001,6 +1001,27 @@ export class AtlasAgent {
     }
 
     return cards.join('\n━━━━━━━━━━━━━━━━━━\n');
+  }
+
+  /**
+   * Format phone number in Turkish format (+90 5XX XXX XX XX)
+   */
+  private formatPhoneNumber(phone: string): string {
+    const cleaned = phone.replace(/[\s\-\+\(\)]/g, '');
+
+    if (cleaned.length === 12 && cleaned.startsWith('90')) {
+      return `+90 ${cleaned.slice(2, 5)} ${cleaned.slice(5, 8)} ${cleaned.slice(8, 10)} ${cleaned.slice(10)}`;
+    }
+    if (cleaned.length === 10 && cleaned.startsWith('5')) {
+      return `+90 ${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8)}`;
+    }
+    if (cleaned.length === 11 && cleaned.startsWith('05')) {
+      return `+90 ${cleaned.slice(1, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 9)} ${cleaned.slice(9)}`;
+    }
+    if (!phone.startsWith('+')) {
+      return `+90 ${phone}`;
+    }
+    return phone;
   }
 
   /**

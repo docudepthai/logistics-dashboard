@@ -2362,9 +2362,9 @@ export class LogisticsAgent {
         parts.push(details.join(', '));
       }
 
-      // Phone number
+      // Phone number (formatted as Turkish +90)
       if (job.contactPhone) {
-        parts.push(`tel: ${job.contactPhone}`);
+        parts.push(`tel: ${this.formatPhoneNumber(job.contactPhone)}`);
       }
 
       // Time posted (relative time in Turkish)
@@ -2378,6 +2378,36 @@ export class LogisticsAgent {
     }
 
     return lines.join('\n');
+  }
+
+  /**
+   * Format phone number in Turkish format (+90 5XX XXX XX XX)
+   */
+  private formatPhoneNumber(phone: string): string {
+    // Remove any existing formatting
+    const cleaned = phone.replace(/[\s\-\+\(\)]/g, '');
+
+    // If it's already 12 digits starting with 90, format it
+    if (cleaned.length === 12 && cleaned.startsWith('90')) {
+      return `+90 ${cleaned.slice(2, 5)} ${cleaned.slice(5, 8)} ${cleaned.slice(8, 10)} ${cleaned.slice(10)}`;
+    }
+
+    // If it's 10 digits starting with 5 (Turkish mobile without country code)
+    if (cleaned.length === 10 && cleaned.startsWith('5')) {
+      return `+90 ${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8)}`;
+    }
+
+    // If it's 11 digits starting with 05 (Turkish format with leading 0)
+    if (cleaned.length === 11 && cleaned.startsWith('05')) {
+      return `+90 ${cleaned.slice(1, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 9)} ${cleaned.slice(9)}`;
+    }
+
+    // Return as-is with +90 prefix if not already there
+    if (!phone.startsWith('+')) {
+      return `+90 ${phone}`;
+    }
+
+    return phone;
   }
 
   /**
